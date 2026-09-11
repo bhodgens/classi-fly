@@ -1,0 +1,22 @@
+[
+  // Fixture corpus for the eval harness tests (19 items: 18 ID + 1 OOD).
+  {"text": "alpha parser", "intent": "alpha", "ood": false, "source": "eval-fixture"},
+  {"text": "alpha lexer", "intent": "alpha", "ood": false, "source": "eval-fixture"},
+  {"text": "alpha token stream", "intent": "alpha", "ood": false, "source": "eval-fixture"},
+  {"text": "alpha parse the config", "intent": "alpha", "ood": false, "source": "eval-fixture"},
+  {"text": "alpha ast builder", "intent": "alpha", "ood": false, "source": "eval-fixture"},
+  {"text": "alpha regex matcher", "intent": "alpha", "ood": false, "source": "eval-fixture"},
+  {"text": "beta sprint plan", "intent": "beta", "ood": false, "source": "eval-fixture"},
+  {"text": "beta backlog groom", "intent": "beta", "ood": false, "source": "eval-fixture"},
+  {"text": "beta roadmap draft", "intent": "beta", "ood": false, "source": "eval-fixture"},
+  {"text": "beta standup notes", "intent": "beta", "ood": false, "source": "eval-fixture"},
+  {"text": "beta quarterly okr", "intent": "beta", "ood": false, "source": "eval-fixture"},
+  {"text": "beta kanban board", "intent": "beta", "ood": false, "source": "eval-fixture"},
+  {"text": "gamma review the diff", "intent": "gamma", "ood": false, "source": "eval-fixture"},
+  {"text": "gamma merge conflict", "intent": "gamma", "ood": false, "source": "eval-fixture"},
+  {"text": "gamma code critique", "intent": "gamma", "ood": false, "source": "eval-fixture"},
+  {"text": "gamma pr feedback", "intent": "gamma", "ood": false, "source": "eval-fixture"},
+  {"text": "gamma rebase check", "intent": "gamma", "ood": false, "source": "eval-fixture"},
+  {"text": "gamma approval gate", "intent": "gamma", "ood": false, "source": "eval-fixture"},
+  {"text": "delta entirely novel query outside every trained lane", "intent": "alpha", "ood": true, "source": "eval-fixture"}
+]

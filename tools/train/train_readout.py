@@ -176,13 +176,25 @@ def train_from_pairs(fly_path, pairs_path, target_precision=0.97, lam=RIDGE_LAMB
     return export, report
 
 
+def _logits(W, bias, s):
+    """logits[j] = W[:, j] . s + bias[j] for W stored [N][K] (Contract 3).
+
+    W is neuron-major (one row per neuron, one column per class); bias is
+    length K. The prior implementation zipped W's rows with bias, treating
+    rows as class-major - correct only by accident of shape, wrong for every
+    N != K (and for N == K too, since W is not symmetric).
+    """
+    return [sum(W[i][j] * v for i, v in enumerate(s)) + bias[j]
+            for j in range(len(bias))]
+
+
 def score_readout(W, bias, S, y, classes):
     """Train accuracy and mean cross-entropy of a fitted readout."""
     idx = {c: i for i, c in enumerate(classes)}
     correct = 0
     total = 0.0
     for s, label in zip(S, y):
-        logits = [sum(w * v for w, v in zip(row, s)) + b for row, b in zip(W, bias)]
+        logits = _logits(W, bias, s)
         m = max(logits)
         exps = [math.exp(v - m) for v in logits]
         logz = math.log(sum(exps))
@@ -196,7 +208,7 @@ def _class_scores(W, bias, S, classes):
     """Per-row softmax over lanes: the route-probability rows calibration consumes."""
     rows = []
     for s in S:
-        logits = [sum(w * v for w, v in zip(row, s)) + b for row, b in zip(W, bias)]
+        logits = _logits(W, bias, s)
         probs = _softmax_probs(logits)
         rows.append({classes[j]: probs[j] for j in range(len(classes))})
     return rows

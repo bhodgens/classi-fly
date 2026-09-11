@@ -76,6 +76,8 @@ def test_square_case_is_also_wrong():
             correct += 1
     acc_correct = correct / len(S)
     assert acc_correct == pytest.approx(1.0)
-    assert acc_prod < acc_correct, (
-        "N==K production scoring now matches - the fix likely landed; "
-        "update VERIFICATION.md and this pin")
+    # FIXED 2026-09-11: _logits() now consumes W[N][K] neuron-major, so
+    # production scoring matches the correct orientation at N == K too.
+    assert acc_prod == pytest.approx(acc_correct), (
+        "N==K production scoring diverges from the correct orientation"
+    )

@@ -68,11 +68,11 @@ hand-off's parenthetical was empirically wrong, though the bug it flagged is
 real and worse than described. The confusion likely came from small
 hand-symmetric fixtures.
 
-Disposition: **open — fix dispatched separately** (per orchestrator). This leaf
-was instructed to verify, not fix. `test_ridge_orientation.py` pins both the
-N≠K and N==K signatures; when the fix lands those tests will fail loudly and
-`ridge_orientation_repro.py` will exit 1, at which point Finding 1 can be
-closed and the pin flipped.
+Disposition: **FIXED 2026-09-11** (orchestrator). `train_readout._logits()`
+now consumes W[N][K] neuron-major; `score_readout` and `_class_scores` both
+route through it. The N≠K pin passes (production acc now equals the correct
+orientation) and the N==K pin was flipped to assert parity. Full suite:
+`python3 -m pytest tools/train tools/verify -q` -> 37 passed.
 
 ### Finding 2 — `classi-fly build` convenience path fails on scaffold pairs (REPRODUCED)
 

@@ -277,14 +277,14 @@ deterministic output (sorted map keys, epsilon float compares), stdlib
 
 | Child | Status | Iterations | Review Notes |
 |-------|--------|------------|-------------|
-| 01-reservoir-core | IN_PROGRESS | 0 | 01-sparse-core dispatched (wave A) |
-| 02-connectome-ingest | IN_PROGRESS | 0 | dispatched (wave A) |
-| 03-synthetic-reservoir | IN_PROGRESS | 0 | dispatched (wave A) |
-| 04-training | IN_PROGRESS | 0 | dispatched (wave A) |
-| 05-eval-harness | IN_PROGRESS | 0 | dispatched early (file-disjoint, own fixtures) |
-| 06-cli-package | PENDING | 0 | |
-| 07-integration | PENDING | 0 | |
-| 08-verification | PENDING | 0 | |
+| 01-reservoir-core | COMPLETE | 1 | 01: committed 1b50ce5; 02 (fly-format): committed cc5c8c0 w/ raw-payload fallback + serve/info fixes |
+| 02-connectome-ingest | COMPLETE | 0 | committed 87fe447; 37 tests |
+| 03-synthetic-reservoir | COMPLETE | 0 | committed 87fe447; byte-identical reruns verified |
+| 04-training | COMPLETE | 1 | committed 87fe447; Finding-1 orientation fix 16c0ea9 |
+| 05-eval-harness | COMPLETE | 0 | committed 8201da2; CHAIN_BASELINE deterministic, route-count disclosed |
+| 06-cli-package | COMPLETE | 0 | committed cc5c8c0; release binary 6.8MB; build path UNVALIDATED (Finding 2) |
+| 07-integration | COMPLETE | 1 | committed cc5c8c0; RED-BUILD-BLOCKED at return, resolved; judge empty-label fix |
+| 08-verification | COMPLETE | 0 | committed 535d244; 25 tests; 6 findings; E1-E5 UNVALIDATED pending real-data run |
 
 Status values: PENDING | IN_PROGRESS | IMPLEMENTED | REVIEWED | COMPLETE | BLOCKED
 

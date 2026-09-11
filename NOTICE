@@ -1,0 +1,31 @@
+classi-fly NOTICE
+=================
+
+This repository ships a runtime and CLI that operate on `.fly` classifier
+artifacts. Artifacts built from third-party data carry their source's
+license and attribution in the artifact header (`license`, `attribution`
+fields). The following sources are used by the offline tooling:
+
+1. Hemibrain connectome (Janelia FlyEM, Drosophila melanogaster adult brain)
+   License: CC-BY 4.0 (Creative Commons Attribution 4.0 International).
+   Source: FlyEM Hemibrain release, Janelia Research Campus
+   (https://www.janelia.org/project-team/flyem/hemibrain).
+   Required attribution when shipping an artifact derived from it:
+   "Hemibrain: Scheffer et al. 2020, eLife 9:e57443" (adjust to the exact
+   citation of the version used).
+
+2. Larval connectome (Drosophila melanogaster larval brain, Winding 2023)
+   License: CC BY 4.0 (Creative Commons Attribution 4.0 International).
+   Source: Winding et al. 2023, Science 379:eadd9330.
+   Required attribution when shipping an artifact derived from it:
+   "Winding et al. 2023, Science 379:eadd9330".
+
+3. Synthetic reservoirs (seed-generated via tools/ingest/synthetic.py)
+   License: none. No third-party data. The default shippable artifact.
+
+FlyWire-derived data (FAFB, BANC, MCNS, MANC) is licensed CC BY-NC 4.0
+(non-commercial). The `classi-fly pack` command refuses to ship it without
+an explicit `--allow-noncommercial` flag; artifacts produced that way are
+for benchmark and research use only and must not be used commercially.
+
+This project's own code is licensed under the MIT License (see LICENSE).

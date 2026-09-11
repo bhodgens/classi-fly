@@ -277,11 +277,11 @@ deterministic output (sorted map keys, epsilon float compares), stdlib
 
 | Child | Status | Iterations | Review Notes |
 |-------|--------|------------|-------------|
-| 01-reservoir-core | PENDING | 0 | |
-| 02-connectome-ingest | PENDING | 0 | |
-| 03-synthetic-reservoir | PENDING | 0 | |
-| 04-training | PENDING | 0 | |
-| 05-eval-harness | PENDING | 0 | |
+| 01-reservoir-core | IN_PROGRESS | 0 | 01-sparse-core dispatched (wave A) |
+| 02-connectome-ingest | IN_PROGRESS | 0 | dispatched (wave A) |
+| 03-synthetic-reservoir | IN_PROGRESS | 0 | dispatched (wave A) |
+| 04-training | IN_PROGRESS | 0 | dispatched (wave A) |
+| 05-eval-harness | IN_PROGRESS | 0 | dispatched early (file-disjoint, own fixtures) |
 | 06-cli-package | PENDING | 0 | |
 | 07-integration | PENDING | 0 | |
 | 08-verification | PENDING | 0 | |

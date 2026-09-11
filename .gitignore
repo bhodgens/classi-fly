@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.test
+/bin/
+/results.json
+*.fly.lock

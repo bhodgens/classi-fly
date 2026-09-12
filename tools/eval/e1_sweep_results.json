@@ -1,0 +1,185 @@
+{
+  "sweep": "larval head, win_scale x steps, 5-fold seed 42, thr target 0.97",
+  "rows": [
+    {
+      "routes": 50,
+      "P": 0.88,
+      "C": 0.1385,
+      "A": 0.1219,
+      "E2E": 0.8697,
+      "win_scale": 0.02,
+      "steps": 2,
+      "saturation": 0.0
+    },
+    {
+      "routes": 50,
+      "P": 0.9,
+      "C": 0.1385,
+      "A": 0.1247,
+      "E2E": 0.8724,
+      "win_scale": 0.02,
+      "steps": 4,
+      "saturation": 0.0
+    },
+    {
+      "routes": 49,
+      "P": 0.898,
+      "C": 0.1357,
+      "A": 0.1219,
+      "E2E": 0.8721,
+      "win_scale": 0.02,
+      "steps": 8,
+      "saturation": 0.0
+    },
+    {
+      "routes": 47,
+      "P": 0.8723,
+      "C": 0.1302,
+      "A": 0.1136,
+      "E2E": 0.8686,
+      "win_scale": 0.05,
+      "steps": 2,
+      "saturation": 0.0
+    },
+    {
+      "routes": 44,
+      "P": 0.8864,
+      "C": 0.1219,
+      "A": 0.108,
+      "E2E": 0.8702,
+      "win_scale": 0.05,
+      "steps": 4,
+      "saturation": 0.0
+    },
+    {
+      "routes": 37,
+      "P": 0.8919,
+      "C": 0.1025,
+      "A": 0.0914,
+      "E2E": 0.8704,
+      "win_scale": 0.05,
+      "steps": 8,
+      "saturation": 0.0
+    },
+    {
+      "routes": 40,
+      "P": 0.875,
+      "C": 0.1108,
+      "A": 0.097,
+      "E2E": 0.8688,
+      "win_scale": 0.1,
+      "steps": 2,
+      "saturation": 0.002
+    },
+    {
+      "routes": 31,
+      "P": 0.9032,
+      "C": 0.0859,
+      "A": 0.0776,
+      "E2E": 0.871,
+      "win_scale": 0.1,
+      "steps": 4,
+      "saturation": 0.008
+    },
+    {
+      "routes": 23,
+      "P": 0.913,
+      "C": 0.0637,
+      "A": 0.0582,
+      "E2E": 0.8709,
+      "win_scale": 0.1,
+      "steps": 8,
+      "saturation": 0.009
+    },
+    {
+      "routes": 25,
+      "P": 0.88,
+      "C": 0.0693,
+      "A": 0.0609,
+      "E2E": 0.8688,
+      "win_scale": 0.2,
+      "steps": 2,
+      "saturation": 0.123
+    },
+    {
+      "routes": 21,
+      "P": 0.9048,
+      "C": 0.0582,
+      "A": 0.0526,
+      "E2E": 0.8701,
+      "win_scale": 0.2,
+      "steps": 4,
+      "saturation": 0.165
+    },
+    {
+      "routes": 17,
+      "P": 0.9412,
+      "C": 0.0471,
+      "A": 0.0443,
+      "E2E": 0.8714,
+      "win_scale": 0.2,
+      "steps": 8,
+      "saturation": 0.167
+    },
+    {
+      "routes": 17,
+      "P": 1.0,
+      "C": 0.0471,
+      "A": 0.0471,
+      "E2E": 0.8742,
+      "win_scale": 0.4,
+      "steps": 2,
+      "saturation": 0.44
+    },
+    {
+      "routes": 11,
+      "P": 1.0,
+      "C": 0.0305,
+      "A": 0.0305,
+      "E2E": 0.872,
+      "win_scale": 0.4,
+      "steps": 4,
+      "saturation": 0.483
+    },
+    {
+      "routes": 12,
+      "P": 1.0,
+      "C": 0.0332,
+      "A": 0.0332,
+      "E2E": 0.8724,
+      "win_scale": 0.4,
+      "steps": 8,
+      "saturation": 0.484
+    },
+    {
+      "routes": 11,
+      "P": 1.0,
+      "C": 0.0305,
+      "A": 0.0305,
+      "E2E": 0.872,
+      "win_scale": 0.8,
+      "steps": 2,
+      "saturation": 0.699
+    },
+    {
+      "routes": 10,
+      "P": 1.0,
+      "C": 0.0277,
+      "A": 0.0277,
+      "E2E": 0.8717,
+      "win_scale": 0.8,
+      "steps": 4,
+      "saturation": 0.724
+    },
+    {
+      "routes": 10,
+      "P": 1.0,
+      "C": 0.0277,
+      "A": 0.0277,
+      "E2E": 0.8717,
+      "win_scale": 0.8,
+      "steps": 8,
+      "saturation": 0.725
+    }
+  ]
+}

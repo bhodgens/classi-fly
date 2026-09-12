@@ -50,20 +50,64 @@ DECAY = 0.8
 
 
 def normalise_json5(text: str) -> str:
-    """JSON5 -> JSON for this corpus dialect: strip // comments, quote bare
-    keys, drop trailing commas."""
-    text = re.sub(r"//[^\n]*", "", text)
-    text = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
-    text = re.sub(r"([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)(\s*:)", r'\1"\2"\3', text)
-    text = re.sub(r",(\s*[}\]])", r"\1", text)
-    return text
+    """JSON5-subset -> JSON, STRING-AWARE.
+
+    Handles: // and /* */ comments (only outside strings - a naive regex
+    stripper eats the // in URLs, which this corpus contains), bare keys,
+    trailing commas, single-quoted strings, and the \\' escape that appears
+    inside double-quoted strings in this corpus dialect.
+    """
+    out, i, n = [], 0, len(text)
+    while i < n:
+        ch = text[i]
+        if ch in '"\'':
+            quote = ch
+            out.append('"')
+            i += 1
+            while i < n:
+                c = text[i]
+                if c == "\\":
+                    nxt = text[i + 1] if i + 1 < n else ""
+                    if nxt == "'":
+                        out.append("'")  # invalid JSON escape -> literal
+                    else:
+                        out.append(c)
+                        out.append(nxt)
+                    i += 2
+                    continue
+                if c == quote:
+                    i += 1
+                    break
+                if c == '"':
+                    out.append('\\"')
+                elif c in "\n\r":
+                    out.append("\\n" if c == "\n" else "\\r")
+                else:
+                    out.append(c)
+                i += 1
+            out.append('"')
+            continue
+        if ch == "/" and i + 1 < n and text[i + 1] == "/":
+            while i < n and text[i] != "\n":
+                i += 1
+            continue
+        if ch == "/" and i + 1 < n and text[i + 1] == "*":
+            j = text.find("*/", i + 2)
+            i = n if j < 0 else j + 2
+            continue
+        out.append(ch)
+        i += 1
+    s = "".join(out)
+    s = re.sub(r"([{,]\s*)([A-Za-z_$][A-Za-z0-9_$]*)(\s*:)", r'\1"\2"\3', s)
+    s = re.sub(r",(\s*[}\]])", r"\1", s)
+    return s
 
 
 def load_meept_corpus(base_path: Path, adv_path: Path):
     """Flatten the meept corpora into {text, intent|None, ood, silver}."""
     out = []
     if base_path.exists():
-        d = json.loads(normalise_json5(base_path.read_text()))
+        d = json.loads(normalise_json5(base_path.read_text()), strict=False)
         for cat, cases in d.get("categories", {}).items():
             for c in cases:
                 out.append({
@@ -74,7 +118,7 @@ def load_meept_corpus(base_path: Path, adv_path: Path):
                     "source": "base",
                 })
     if adv_path.exists():
-        d = json.loads(normalise_json5(adv_path.read_text()))
+        d = json.loads(normalise_json5(adv_path.read_text()), strict=False)
         for c in d.get("cases", []):
             out.append({
                 "text": c["input"],

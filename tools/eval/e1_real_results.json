@@ -1,0 +1,184 @@
+{
+  "experiment": "E1/E3-real",
+  "embedding": "real:Qwen3-Embedding-0.6B-4bit-DWQ",
+  "embed_dim": 1024,
+  "corpus": {
+    "cases": 389,
+    "gold": 361,
+    "ood": 28,
+    "classes": 13,
+    "hist": {
+      "code": 81,
+      "debug": 52,
+      "analyze": 39,
+      "search": 25,
+      "chat": 20,
+      "platform": 11,
+      "git": 15,
+      "schedule": 8,
+      "plan": 21,
+      "review": 13,
+      "report": 11,
+      "recall": 7,
+      "quickplan": 58
+    }
+  },
+  "folds": 5,
+  "seed": 42,
+  "margin_floor": 0.005,
+  "chain_baseline": 0.868,
+  "results": {
+    "larval": {
+      "routes": 50,
+      "route_correct": 45,
+      "abstained": 311,
+      "total": 361,
+      "P": 0.9,
+      "C": 0.1385,
+      "A": 0.1247,
+      "E2E": 0.8724,
+      "OOD_R": 0.9286,
+      "per_fold": [
+        {
+          "fold": 0,
+          "test": 78,
+          "routes": 7,
+          "route_correct": 6,
+          "abstained": 71
+        },
+        {
+          "fold": 1,
+          "test": 74,
+          "routes": 11,
+          "route_correct": 10,
+          "abstained": 63
+        },
+        {
+          "fold": 2,
+          "test": 72,
+          "routes": 13,
+          "route_correct": 11,
+          "abstained": 59
+        },
+        {
+          "fold": 3,
+          "test": 69,
+          "routes": 12,
+          "route_correct": 11,
+          "abstained": 57
+        },
+        {
+          "fold": 4,
+          "test": 68,
+          "routes": 7,
+          "route_correct": 7,
+          "abstained": 61
+        }
+      ],
+      "neurons": 2952,
+      "edges": 63545,
+      "license": "CC-BY-4.0",
+      "saturation": 0.0,
+      "secs": 4.4
+    },
+    "synthetic": {
+      "routes": 45,
+      "route_correct": 39,
+      "abstained": 316,
+      "total": 361,
+      "P": 0.8667,
+      "C": 0.1247,
+      "A": 0.108,
+      "E2E": 0.8678,
+      "OOD_R": 0.9286,
+      "per_fold": [
+        {
+          "fold": 0,
+          "test": 78,
+          "routes": 5,
+          "route_correct": 4,
+          "abstained": 73
+        },
+        {
+          "fold": 1,
+          "test": 74,
+          "routes": 12,
+          "route_correct": 11,
+          "abstained": 62
+        },
+        {
+          "fold": 2,
+          "test": 72,
+          "routes": 9,
+          "route_correct": 7,
+          "abstained": 63
+        },
+        {
+          "fold": 3,
+          "test": 69,
+          "routes": 12,
+          "route_correct": 11,
+          "abstained": 57
+        },
+        {
+          "fold": 4,
+          "test": 68,
+          "routes": 7,
+          "route_correct": 6,
+          "abstained": 61
+        }
+      ],
+      "neurons": 2048,
+      "edges": 16384,
+      "license": "none",
+      "saturation": 0.0,
+      "secs": 2.6
+    },
+    "centroid": {
+      "acc": 0.7036,
+      "routes": 254,
+      "total": 361
+    },
+    "knn": {
+      "acc": 0.5374,
+      "routes": 194,
+      "total": 361
+    },
+    "tfidf_numpy": {
+      "acc": 0.3518,
+      "routes": 127,
+      "total": 361,
+      "note": "numpy char-2-4gram tfidf + logistic (sklearn unavailable in this interpreter)"
+    },
+    "judge_centroid_reservoir": {
+      "tag": "judge: centroid AND reservoir agree",
+      "routes": 230,
+      "route_correct": 194,
+      "abstained": 131,
+      "total": 361,
+      "P": 0.8435,
+      "C": 0.6371,
+      "A": 0.5374,
+      "E2E": 0.8524,
+      "OOD_agreement_rate": 0.3214
+    },
+    "centroid_alone": {
+      "tag": "centroid alone (routes all)",
+      "routes": 361,
+      "route_correct": 254,
+      "abstained": 0,
+      "total": 361,
+      "P": 0.7036,
+      "C": 1.0,
+      "A": 0.7036,
+      "E2E": 0.7036
+    }
+  },
+  "route_count_disclosure": "per-row routes/total; at n=361 a 1-case flip is ~0.3pt",
+  "verdict": {
+    "larval_vs_baselines": "UNSUPPORTED as a head: 50/361 routes (C 13.9%) at P 0.900 - misses the 97% precision gate and adds only +0.4pt E2E over the 0.868 chain floor (within noise at n=361).",
+    "larval_vs_synthetic": "PARITY: larval (E2E 0.8724) vs synthetic (0.8678) differ by ~1.7 cases - no measurable connectome advantage.",
+    "judge_mode": "See judge_centroid_reservoir row.",
+    "caveat": "Single seed; threshold target 0.97 with a train-side quantile search; the reservoir's readout is a ridge fit on frozen states. A different drive scale / steps / margin floor is untested."
+  }
+}

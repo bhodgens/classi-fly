@@ -23,11 +23,15 @@ consumers in [docs/INTEGRATION.md](docs/INTEGRATION.md).
 | License audit | PASS; FlyWire fenced as benchmark-only |
 | E2E metric recomputation | matches to 1e-9; tamper detection works |
 | `classi-fly build` end-to-end | PASS (4 tests; was UNVALIDATED, fixed 2026-09-11) |
+| E1/E3 classifier value (real embeddings) | **NOT DEMONSTRATED** - see docs/EXPERIMENTS.md |
 
-**Honest limits** (from docs/VERIFICATION.md): the classifier *machinery* is
-verified; the *accuracy claims* are not. Experiments E1-E5 (does the reservoir
-beat baselines on real embeddings?) are UNVALIDATED - no real-corpus run has
-happened yet.
+**Honest limits** (from docs/VERIFICATION.md and docs/EXPERIMENTS.md): the
+classifier *machinery* is verified; the *classifier value* was measured and
+**NOT demonstrated**. E1/E3 ran with real embeddings (Qwen3-Embedding-0.6B,
+389 cases, 5-fold): the reservoir routes 50/361 cases at P 0.900 (E2E 0.8724)
+and is dominated by a plain embedding centroid (0.704 accuracy). A 18-cell
+drive/step sweep stayed inside a 0.6-point E2E band. Verdict: do not wire it
+into the classification chain. Full numbers in docs/EXPERIMENTS.md.
 
 ## What is in this repository
 
@@ -199,12 +203,11 @@ needed to build the binary itself.
 
 ## Roadmap
 
-1. **E1-E5 experiments** (RESEARCH.md §7): run the judge-mode evaluation on a
-   real corpus against the baselines. **Pipeline shakedown done** (see
-   `tools/eval/e1_shakedown.py`): the full path runs on the real 2,952-neuron
-   larval connectome with stand-in embeddings; precision-first gates behave.
-   The accuracy claim still needs real embeddings (a local embedding server;
-   network probing from the agent is blocked by policy).
-2. Validate or fix the `build` scaffold path (Finding 2).
-3. Consumer wiring: the first host to use classi-fly as a second-opinion
-   judge in production.
+1. ~~E1-E5 experiments~~ **DONE (negative result)** - see docs/EXPERIMENTS.md.
+   Real embeddings, 389 cases, 5-fold, 18-cell config sweep. The reservoir is
+   dominated by a plain embedding centroid; do not wire it into the chain.
+   Remaining untested axes (mushroom-body subcircuit extraction, logistic
+   readout, per-class margins, live-traffic replay) are listed in that doc.
+2. Consumer wiring: the first host to use classi-fly as a second-opinion
+   judge in production - the machinery is ready, but the accuracy case for
+   doing so is not made.

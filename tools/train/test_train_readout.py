@@ -15,7 +15,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import fixture
 import flybytes
-from train_readout import fit_readout, logistic_train
+import numpy as _np
+from train_readout import (
+    RIDGE_LAMBDA,
+    RIDGE_LAMBDA_GRID,
+    REPORT_KEYS,
+    _one_hot,
+    fit_readout,
+    heuristic_ridge_lambda,
+    logistic_train,
+    resolve_ridge_lambda,
+    ridge_fit,
+    train_from_pairs,
+)
 from calibrate import choose_thresholds
 
 
@@ -82,6 +94,140 @@ def _eval(W, bias, X, y, classes):
         total_loss += -math.log(max(probs[idx[label]], 1e-12))
     n = len(y)
     return correct / n, total_loss / n
+
+
+class TestRidgeLambdaPolicy(unittest.TestCase):
+    """Pins the wide-readout ridge penalty policy (repo defect fix).
+
+    The defect: RIDGE_LAMBDA was a hardcoded 1e-3, which is effectively
+    unregularized for a ~2952-dim readout on ~289 samples/fold and made a
+    working reservoir look useless (measured all-case accuracy 0.125 -> 0.726
+    once corrected). The policy: the penalty is resolved per problem -
+    deterministic inner CV for wide readouts, the legacy floor for narrow
+    ones, a documented ratio heuristic when there are too few rows to split.
+    """
+
+    @staticmethod
+    def _wide_problem(seed=12, dim=400, per_class=15, signal=3, noise=2.0,
+                      test_n=80):
+        """Overcomplete problem: a 3-dim class signal buried in 397 pure-noise
+        features with FEWER rows than columns, so lambda=1e-3 overfits."""
+        rng = _np.random.default_rng(seed)
+        centers = rng.normal(0, 1.5, size=(2, signal))
+
+        def gen(n):
+            X = _np.zeros((n, dim))
+            y = []
+            for i in range(n):
+                c = i % 2
+                y.append("c%d" % c)
+                X[i, :signal] = centers[c] + rng.normal(0, noise, signal)
+                X[i, signal:] = rng.normal(0, 1.0, dim - signal)
+            return X, y
+
+        Xtr, ytr = gen(per_class * 2)
+        Xte, yte = gen(test_n)
+        return Xtr, ytr, Xte, yte
+
+    @staticmethod
+    def _held_out_acc(Xtr, Ytr, Xte, yte, classes, lam):
+        W, bias = ridge_fit(Xtr, Ytr, lam=lam)
+        Xb = _np.hstack([Xte, _np.ones((Xte.shape[0], 1))])
+        pred = _np.argmax(Xb @ _np.vstack([_np.asarray(W), _np.asarray(bias)]), axis=1)
+        return float((_np.asarray(classes)[pred] == _np.asarray(yte)).mean())
+
+    def test_wide_readout_penalty_is_not_the_legacy_floor(self):
+        Xtr, ytr, Xte, yte = self._wide_problem()
+        classes = ["c0", "c1"]
+        Ytr = _one_hot(ytr, classes)
+        lam = resolve_ridge_lambda(Xtr, Ytr)
+        self.assertIn(lam, RIDGE_LAMBDA_GRID)
+        self.assertGreater(lam, RIDGE_LAMBDA, "wide readout kept the 1e-3 floor")
+        # deterministic: same design matrix -> same penalty, every call
+        self.assertEqual(lam, resolve_ridge_lambda(Xtr, Ytr))
+        # and the point of the fix: the resolved penalty does not do worse
+        # (here: better) than the legacy floor on rows it never saw
+        acc_auto = self._held_out_acc(Xtr, Ytr, Xte, yte, classes, lam)
+        acc_legacy = self._held_out_acc(Xtr, Ytr, Xte, yte, classes, RIDGE_LAMBDA)
+        self.assertGreaterEqual(acc_auto, acc_legacy - 1e-9)
+        self.assertGreater(acc_auto, acc_legacy)
+
+    def test_narrow_readout_keeps_the_legacy_floor(self):
+        """Back-compat: the tiny fixtures and the orientation repro are narrow,
+        so their fits must be byte-identical to the pre-fix behaviour."""
+        X, y = _separable_states(dim=6)
+        classes = fixture.CLASSES
+        Y = _one_hot(y, classes)
+        self.assertEqual(resolve_ridge_lambda(X, Y), RIDGE_LAMBDA)
+        self.assertEqual(ridge_fit(X, Y), ridge_fit(X, Y, lam=RIDGE_LAMBDA))
+
+    def test_fit_readout_uses_the_resolved_penalty(self):
+        Xtr, ytr, _, _ = self._wide_problem()
+        Ytr = _one_hot(ytr, ["c0", "c1"])
+        lam = resolve_ridge_lambda(Xtr, Ytr)
+        W_auto, b_auto = fit_readout(Xtr, ytr, ["c0", "c1"])
+        W_exp, b_exp = fit_readout(Xtr, ytr, ["c0", "c1"], lam=lam)
+        self.assertEqual(W_auto, W_exp)
+        self.assertEqual(b_auto, b_exp)
+
+    def test_too_few_rows_falls_back_to_documented_heuristic(self):
+        X = _np.zeros((6, 80))  # wide but unsplittable
+        Y = _one_hot(["a"] * 6, ["a"])
+        self.assertEqual(resolve_ridge_lambda(X, Y), heuristic_ridge_lambda(80, 6))
+        self.assertGreater(heuristic_ridge_lambda(2952, 289), RIDGE_LAMBDA)
+
+    def test_explicit_lambda_still_wins(self):
+        Xtr, ytr, _, _ = self._wide_problem()
+        Ytr = _one_hot(ytr, ["c0", "c1"])
+        self.assertEqual(resolve_ridge_lambda(Xtr, Ytr, lam=7.5), 7.5)
+        self.assertEqual(
+            fit_readout(Xtr, ytr, ["c0", "c1"], lam=0.25),
+            fit_readout(Xtr, ytr, ["c0", "c1"], lam=0.25),
+        )
+
+
+class TestWideReadoutEndToEnd(unittest.TestCase):
+    """train_from_pairs on a WIDE .fly artifact: the auto penalty path must run
+    and both outputs must keep their exact Contract 3 key sets."""
+
+    def setUp(self):
+        self.tmp = Path("/tmp") / "classi-fly-train-test" / "wide"
+        self.tmp.mkdir(parents=True, exist_ok=True)
+        self.fly = self.tmp / "wide.fly"
+        self.pairs = self.tmp / "pairs.jsonl"
+        rng = _np.random.default_rng(3)
+        n, emb = 100, 8
+        indptr, indices, weights = [0], [], []
+        for _ in range(n):
+            for _ in range(3):
+                indices.append(int(rng.integers(0, n)))
+                weights.append(int(rng.integers(-8, 9)))
+            indptr.append(len(indices))
+        artifact = {
+            "name": "wide", "neurons": n, "edges": len(indices), "embed_dim": emb,
+            "steps": 4, "decay": 0.8, "classes": ["c0", "c1"], "indptr": indptr,
+            "indices": indices, "weights": weights, "weight_scale": 1.0 / 127.0,
+            "in_w": [int(v) for v in rng.integers(-6, 7, size=emb * n)],
+            "in_scale": 0.02, "source": "synthetic", "license": "none",
+            "attribution": "n/a",
+        }
+        flybytes.write_fly(self.fly, artifact)
+        with self.pairs.open("w") as f:
+            for i in range(40):
+                c = i % 2
+                x = [0.0] * emb
+                x[0] = 0.5 if c == 0 else -0.5
+                f.write(json.dumps({"embedding": x, "label": "c%d" % c}) + "\n")
+
+    def test_wide_auto_path_keeps_both_contracts(self):
+        export, report = train_from_pairs(str(self.fly), str(self.pairs))
+        self.assertEqual(
+            set(export.keys()),
+            {"classes", "W", "bias", "threshold", "weight_scale", "readout_scale"},
+        )
+        self.assertEqual(set(report.keys()), set(REPORT_KEYS))
+        self.assertEqual(report["pair_count"], 40)
+        self.assertGreater(report["train_accuracy"], 0.9)
 
 
 class TestEndToEndExport(unittest.TestCase):

@@ -208,5 +208,9 @@ and OOD novelty. In every case the reservoir is at parity with - never
 meaningfully better than - a linear probe or centroid over the embedding the
 host already computes.
 
-Use the machinery if you want a self-contained, pure-Go, per-host-untrainable
-artifact; do not expect an accuracy improvement from the fly brain.
+**Superseded in part by `docs/AXES-2026-09-12.md`**, which adds the four
+untested levers (spectral radius, trained projection, mushroom-body subcircuit,
+robustness under corrupted input). Summary: three of the four are parity or
+worse, and the fourth - robustness to missing input dimensions - is a real win
+(+19 pt at 75% truncation, +7.8 pt at 50% dropout) that a synthetic,
+license-free matrix reproduces. Read that document before acting on this one.

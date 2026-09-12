@@ -1,0 +1,1122 @@
+{
+  "experiment": "axis-D-robustness",
+  "question": "Does the reservoir representation degrade more slowly than a linear probe on raw embeddings when the embedding is corrupted (the published robustness claim)?",
+  "data": {
+    "gold_cases": 361,
+    "classes": 13,
+    "embed_dim": 1024,
+    "one_case_pt": 0.277
+  },
+  "protocol": {
+    "folds": 5,
+    "seed": 42,
+    "corrupt_seed": 7,
+    "fold_rule": "per-class shuffle with default_rng(42); fold = position % 5",
+    "readout": "closed-form ridge, bias folded in",
+    "lambda_grid": [
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      30.0,
+      100.0
+    ],
+    "lambda_policy": "clean-optimal per representation, held fixed across all corruptions (no tuning on corrupted test data)",
+    "corruption_scope": "TEST fold only, after training on clean train folds",
+    "corruption_rng": "fresh default_rng(7) per (condition, fold); identical corrupted tensor for all three representations",
+    "noise_op": "x_c + sigma * N(0,1), 1024 draws",
+    "noise_scale_note": "embeddings are unit-norm, so the added noise has norm sigma*sqrt(1024) = sigma*32: ||noise||/||x|| = 160% (sigma=0.05), 320% (0.1), 640% (0.2), 1280% (0.4). Even the smallest sigma is a LARGE perturbation; by sigma=0.4 the input is essentially pure noise.",
+    "dropout_op": "zero each dim independently with probability frac (per-case mask from rng(7))",
+    "trunc_op": "zero the last round(1024*frac) dims (short-input proxy)",
+    "metric": "argmax accuracy over ALL 361 cases, no gate",
+    "recurrence": "s = tanh(decay*s + W*s + win@x), steps=4, decay=0.8, win = default_rng(42) int8(-6..6) * 0.02, weights/127"
+  },
+  "clean_sweep": {
+    "embeddings_linear_probe": {
+      "dim": 1024,
+      "acc": 0.7175,
+      "correct": 259,
+      "best_lam": 0.1,
+      "saturation": 0.0
+    },
+    "larval_reservoir": {
+      "dim": 2952,
+      "acc": 0.7258,
+      "correct": 262,
+      "best_lam": 30.0,
+      "saturation": 0.0
+    },
+    "synthetic_reservoir": {
+      "dim": 2048,
+      "acc": 0.7313,
+      "correct": 264,
+      "best_lam": 10.0,
+      "saturation": 0.0
+    }
+  },
+  "reference_cross_check": {
+    "committed_clean_A": {
+      "embeddings_linear_probe": 0.7175,
+      "larval_reservoir": 0.7258,
+      "synthetic_reservoir": 0.7313
+    },
+    "reproduced_clean_A": {
+      "embeddings_linear_probe": 0.7175,
+      "larval_reservoir": 0.7258,
+      "synthetic_reservoir": 0.7313
+    },
+    "committed_clean_best_lam": {
+      "embeddings_linear_probe": 0.1,
+      "larval_reservoir": 30,
+      "synthetic_reservoir": 10
+    },
+    "reproduced_best_lam": {
+      "embeddings_linear_probe": 0.1,
+      "larval_reservoir": 30.0,
+      "synthetic_reservoir": 10.0
+    },
+    "committed_larval_gated": {
+      "routes": 71,
+      "P": 0.9577,
+      "C": 0.1967,
+      "E2E": 0.8857
+    },
+    "note": "clean A, clean best-lambda and the gated margin-0.05 rows for ALL THREE representations reproduce e1_corrected_results.json exactly, which validates this runner's folds, readout, gate and projections. The input projection uses a fresh default_rng(42) PER representation; a single continued RNG stream reproduces larval/embeddings but misses the committed synthetic 0.7313."
+  },
+  "rows": [
+    {
+      "representation": "embeddings_linear_probe",
+      "dim": 1024,
+      "condition": "clean",
+      "kind": "clean",
+      "param": 0.0,
+      "lam": 0.1,
+      "acc": 0.7175,
+      "correct": 259,
+      "n": 361,
+      "delta_cases": 0,
+      "delta_pt": -0.0,
+      "rel_drop_pct": 0.0
+    },
+    {
+      "representation": "larval_reservoir",
+      "dim": 2952,
+      "condition": "clean",
+      "kind": "clean",
+      "param": 0.0,
+      "lam": 30.0,
+      "acc": 0.7258,
+      "correct": 262,
+      "n": 361,
+      "delta_cases": 0,
+      "delta_pt": -0.0,
+      "rel_drop_pct": 0.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "dim": 2048,
+      "condition": "clean",
+      "kind": "clean",
+      "param": 0.0,
+      "lam": 10.0,
+      "acc": 0.7313,
+      "correct": 264,
+      "n": 361,
+      "delta_cases": 0,
+      "delta_pt": 0.0,
+      "rel_drop_pct": 0.0
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "dim": 1024,
+      "condition": "noise_sigma=0.05",
+      "kind": "noise",
+      "param": 0.05,
+      "lam": 0.1,
+      "acc": 0.4626,
+      "correct": 167,
+      "n": 361,
+      "delta_cases": -92,
+      "delta_pt": -25.49,
+      "rel_drop_pct": 35.53
+    },
+    {
+      "representation": "larval_reservoir",
+      "dim": 2952,
+      "condition": "noise_sigma=0.05",
+      "kind": "noise",
+      "param": 0.05,
+      "lam": 30.0,
+      "acc": 0.482,
+      "correct": 174,
+      "n": 361,
+      "delta_cases": -88,
+      "delta_pt": -24.38,
+      "rel_drop_pct": 33.59
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "dim": 2048,
+      "condition": "noise_sigma=0.05",
+      "kind": "noise",
+      "param": 0.05,
+      "lam": 10.0,
+      "acc": 0.4681,
+      "correct": 169,
+      "n": 361,
+      "delta_cases": -95,
+      "delta_pt": -26.32,
+      "rel_drop_pct": 35.98
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "dim": 1024,
+      "condition": "noise_sigma=0.1",
+      "kind": "noise",
+      "param": 0.1,
+      "lam": 0.1,
+      "acc": 0.3102,
+      "correct": 112,
+      "n": 361,
+      "delta_cases": -147,
+      "delta_pt": -40.73,
+      "rel_drop_pct": 56.76
+    },
+    {
+      "representation": "larval_reservoir",
+      "dim": 2952,
+      "condition": "noise_sigma=0.1",
+      "kind": "noise",
+      "param": 0.1,
+      "lam": 30.0,
+      "acc": 0.3047,
+      "correct": 110,
+      "n": 361,
+      "delta_cases": -152,
+      "delta_pt": -42.11,
+      "rel_drop_pct": 58.02
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "dim": 2048,
+      "condition": "noise_sigma=0.1",
+      "kind": "noise",
+      "param": 0.1,
+      "lam": 10.0,
+      "acc": 0.2798,
+      "correct": 101,
+      "n": 361,
+      "delta_cases": -163,
+      "delta_pt": -45.15,
+      "rel_drop_pct": 61.74
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "dim": 1024,
+      "condition": "noise_sigma=0.2",
+      "kind": "noise",
+      "param": 0.2,
+      "lam": 0.1,
+      "acc": 0.1939,
+      "correct": 70,
+      "n": 361,
+      "delta_cases": -189,
+      "delta_pt": -52.36,
+      "rel_drop_pct": 72.97
+    },
+    {
+      "representation": "larval_reservoir",
+      "dim": 2952,
+      "condition": "noise_sigma=0.2",
+      "kind": "noise",
+      "param": 0.2,
+      "lam": 30.0,
+      "acc": 0.1884,
+      "correct": 68,
+      "n": 361,
+      "delta_cases": -194,
+      "delta_pt": -53.74,
+      "rel_drop_pct": 74.05
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "dim": 2048,
+      "condition": "noise_sigma=0.2",
+      "kind": "noise",
+      "param": 0.2,
+      "lam": 10.0,
+      "acc": 0.1717,
+      "correct": 62,
+      "n": 361,
+      "delta_cases": -202,
+      "delta_pt": -55.96,
+      "rel_drop_pct": 76.52
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "dim": 1024,
+      "condition": "noise_sigma=0.4",
+      "kind": "noise",
+      "param": 0.4,
+      "lam": 0.1,
+      "acc": 0.1551,
+      "correct": 56,
+      "n": 361,
+      "delta_cases": -203,
+      "delta_pt": -56.24,
+      "rel_drop_pct": 78.38
+    },
+    {
+      "representation": "larval_reservoir",
+      "dim": 2952,
+      "condition": "noise_sigma=0.4",
+      "kind": "noise",
+      "param": 0.4,
+      "lam": 30.0,
+      "acc": 0.1385,
+      "correct": 50,
+      "n": 361,
+      "delta_cases": -212,
+      "delta_pt": -58.73,
+      "rel_drop_pct": 80.92
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "dim": 2048,
+      "condition": "noise_sigma=0.4",
+      "kind": "noise",
+      "param": 0.4,
+      "lam": 10.0,
+      "acc": 0.1413,
+      "correct": 51,
+      "n": 361,
+      "delta_cases": -213,
+      "delta_pt": -59.0,
+      "rel_drop_pct": 80.68
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "dim": 1024,
+      "condition": "dropout_frac=0.1",
+      "kind": "dropout",
+      "param": 0.1,
+      "lam": 0.1,
+      "acc": 0.6953,
+      "correct": 251,
+      "n": 361,
+      "delta_cases": -8,
+      "delta_pt": -2.22,
+      "rel_drop_pct": 3.1
+    },
+    {
+      "representation": "larval_reservoir",
+      "dim": 2952,
+      "condition": "dropout_frac=0.1",
+      "kind": "dropout",
+      "param": 0.1,
+      "lam": 30.0,
+      "acc": 0.7175,
+      "correct": 259,
+      "n": 361,
+      "delta_cases": -3,
+      "delta_pt": -0.83,
+      "rel_drop_pct": 1.15
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "dim": 2048,
+      "condition": "dropout_frac=0.1",
+      "kind": "dropout",
+      "param": 0.1,
+      "lam": 10.0,
+      "acc": 0.7008,
+      "correct": 253,
+      "n": 361,
+      "delta_cases": -11,
+      "delta_pt": -3.05,
+      "rel_drop_pct": 4.17
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "dim": 1024,
+      "condition": "dropout_frac=0.25",
+      "kind": "dropout",
+      "param": 0.25,
+      "lam": 0.1,
+      "acc": 0.6787,
+      "correct": 245,
+      "n": 361,
+      "delta_cases": -14,
+      "delta_pt": -3.88,
+      "rel_drop_pct": 5.41
+    },
+    {
+      "representation": "larval_reservoir",
+      "dim": 2952,
+      "condition": "dropout_frac=0.25",
+      "kind": "dropout",
+      "param": 0.25,
+      "lam": 30.0,
+      "acc": 0.7008,
+      "correct": 253,
+      "n": 361,
+      "delta_cases": -9,
+      "delta_pt": -2.5,
+      "rel_drop_pct": 3.44
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "dim": 2048,
+      "condition": "dropout_frac=0.25",
+      "kind": "dropout",
+      "param": 0.25,
+      "lam": 10.0,
+      "acc": 0.6454,
+      "correct": 233,
+      "n": 361,
+      "delta_cases": -31,
+      "delta_pt": -8.59,
+      "rel_drop_pct": 11.74
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "dim": 1024,
+      "condition": "dropout_frac=0.5",
+      "kind": "dropout",
+      "param": 0.5,
+      "lam": 0.1,
+      "acc": 0.5208,
+      "correct": 188,
+      "n": 361,
+      "delta_cases": -71,
+      "delta_pt": -19.67,
+      "rel_drop_pct": 27.42
+    },
+    {
+      "representation": "larval_reservoir",
+      "dim": 2952,
+      "condition": "dropout_frac=0.5",
+      "kind": "dropout",
+      "param": 0.5,
+      "lam": 30.0,
+      "acc": 0.5734,
+      "correct": 207,
+      "n": 361,
+      "delta_cases": -55,
+      "delta_pt": -15.24,
+      "rel_drop_pct": 21.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "dim": 2048,
+      "condition": "dropout_frac=0.5",
+      "kind": "dropout",
+      "param": 0.5,
+      "lam": 10.0,
+      "acc": 0.5928,
+      "correct": 214,
+      "n": 361,
+      "delta_cases": -50,
+      "delta_pt": -13.85,
+      "rel_drop_pct": 18.94
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "dim": 1024,
+      "condition": "trunc_last50pct",
+      "kind": "trunc",
+      "param": 0.5,
+      "lam": 0.1,
+      "acc": 0.6205,
+      "correct": 224,
+      "n": 361,
+      "delta_cases": -35,
+      "delta_pt": -9.7,
+      "rel_drop_pct": 13.52
+    },
+    {
+      "representation": "larval_reservoir",
+      "dim": 2952,
+      "condition": "trunc_last50pct",
+      "kind": "trunc",
+      "param": 0.5,
+      "lam": 30.0,
+      "acc": 0.687,
+      "correct": 248,
+      "n": 361,
+      "delta_cases": -14,
+      "delta_pt": -3.88,
+      "rel_drop_pct": 5.35
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "dim": 2048,
+      "condition": "trunc_last50pct",
+      "kind": "trunc",
+      "param": 0.5,
+      "lam": 10.0,
+      "acc": 0.6648,
+      "correct": 240,
+      "n": 361,
+      "delta_cases": -24,
+      "delta_pt": -6.65,
+      "rel_drop_pct": 9.09
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "dim": 1024,
+      "condition": "trunc_last75pct",
+      "kind": "trunc",
+      "param": 0.75,
+      "lam": 0.1,
+      "acc": 0.3878,
+      "correct": 140,
+      "n": 361,
+      "delta_cases": -119,
+      "delta_pt": -32.97,
+      "rel_drop_pct": 45.95
+    },
+    {
+      "representation": "larval_reservoir",
+      "dim": 2952,
+      "condition": "trunc_last75pct",
+      "kind": "trunc",
+      "param": 0.75,
+      "lam": 30.0,
+      "acc": 0.5762,
+      "correct": 208,
+      "n": 361,
+      "delta_cases": -54,
+      "delta_pt": -14.96,
+      "rel_drop_pct": 20.61
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "dim": 2048,
+      "condition": "trunc_last75pct",
+      "kind": "trunc",
+      "param": 0.75,
+      "lam": 10.0,
+      "acc": 0.4931,
+      "correct": 178,
+      "n": 361,
+      "delta_cases": -86,
+      "delta_pt": -23.82,
+      "rel_drop_pct": 32.58
+    }
+  ],
+  "paired_vs_probe": [
+    {
+      "representation": "larval_reservoir",
+      "condition": "clean",
+      "reservoir_right_probe_wrong": 13,
+      "probe_right_reservoir_wrong": 10,
+      "net_cases": 3,
+      "mcnemar_exact_p": 0.6776
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "clean",
+      "reservoir_right_probe_wrong": 11,
+      "probe_right_reservoir_wrong": 6,
+      "net_cases": 5,
+      "mcnemar_exact_p": 0.3323
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "noise_sigma=0.05",
+      "reservoir_right_probe_wrong": 32,
+      "probe_right_reservoir_wrong": 25,
+      "net_cases": 7,
+      "mcnemar_exact_p": 0.427
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "noise_sigma=0.05",
+      "reservoir_right_probe_wrong": 28,
+      "probe_right_reservoir_wrong": 26,
+      "net_cases": 2,
+      "mcnemar_exact_p": 0.8919
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "noise_sigma=0.1",
+      "reservoir_right_probe_wrong": 30,
+      "probe_right_reservoir_wrong": 32,
+      "net_cases": -2,
+      "mcnemar_exact_p": 0.8991
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "noise_sigma=0.1",
+      "reservoir_right_probe_wrong": 28,
+      "probe_right_reservoir_wrong": 39,
+      "net_cases": -11,
+      "mcnemar_exact_p": 0.2215
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "noise_sigma=0.2",
+      "reservoir_right_probe_wrong": 20,
+      "probe_right_reservoir_wrong": 22,
+      "net_cases": -2,
+      "mcnemar_exact_p": 0.8776
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "noise_sigma=0.2",
+      "reservoir_right_probe_wrong": 22,
+      "probe_right_reservoir_wrong": 30,
+      "net_cases": -8,
+      "mcnemar_exact_p": 0.3317
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "noise_sigma=0.4",
+      "reservoir_right_probe_wrong": 18,
+      "probe_right_reservoir_wrong": 24,
+      "net_cases": -6,
+      "mcnemar_exact_p": 0.4408
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "noise_sigma=0.4",
+      "reservoir_right_probe_wrong": 22,
+      "probe_right_reservoir_wrong": 27,
+      "net_cases": -5,
+      "mcnemar_exact_p": 0.5682
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "dropout_frac=0.1",
+      "reservoir_right_probe_wrong": 21,
+      "probe_right_reservoir_wrong": 13,
+      "net_cases": 8,
+      "mcnemar_exact_p": 0.2295
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "dropout_frac=0.1",
+      "reservoir_right_probe_wrong": 13,
+      "probe_right_reservoir_wrong": 11,
+      "net_cases": 2,
+      "mcnemar_exact_p": 0.8388
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "dropout_frac=0.25",
+      "reservoir_right_probe_wrong": 22,
+      "probe_right_reservoir_wrong": 14,
+      "net_cases": 8,
+      "mcnemar_exact_p": 0.243
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "dropout_frac=0.25",
+      "reservoir_right_probe_wrong": 15,
+      "probe_right_reservoir_wrong": 27,
+      "net_cases": -12,
+      "mcnemar_exact_p": 0.0884
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "dropout_frac=0.5",
+      "reservoir_right_probe_wrong": 49,
+      "probe_right_reservoir_wrong": 30,
+      "net_cases": 19,
+      "mcnemar_exact_p": 0.0422
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "dropout_frac=0.5",
+      "reservoir_right_probe_wrong": 52,
+      "probe_right_reservoir_wrong": 26,
+      "net_cases": 26,
+      "mcnemar_exact_p": 0.0043
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "trunc_last50pct",
+      "reservoir_right_probe_wrong": 48,
+      "probe_right_reservoir_wrong": 24,
+      "net_cases": 24,
+      "mcnemar_exact_p": 0.0063
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "trunc_last50pct",
+      "reservoir_right_probe_wrong": 38,
+      "probe_right_reservoir_wrong": 22,
+      "net_cases": 16,
+      "mcnemar_exact_p": 0.0519
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "trunc_last75pct",
+      "reservoir_right_probe_wrong": 84,
+      "probe_right_reservoir_wrong": 16,
+      "net_cases": 68,
+      "mcnemar_exact_p": 0.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "trunc_last75pct",
+      "reservoir_right_probe_wrong": 66,
+      "probe_right_reservoir_wrong": 28,
+      "net_cases": 38,
+      "mcnemar_exact_p": 0.0001
+    }
+  ],
+  "by_family": {
+    "noise": {
+      "embeddings_linear_probe": {
+        "conditions": [
+          "noise_sigma=0.05",
+          "noise_sigma=0.1",
+          "noise_sigma=0.2",
+          "noise_sigma=0.4"
+        ],
+        "cases_vs_probe_summed": 0,
+        "mean_cases_vs_probe": 0.0
+      },
+      "larval_reservoir": {
+        "conditions": [
+          "noise_sigma=0.05",
+          "noise_sigma=0.1",
+          "noise_sigma=0.2",
+          "noise_sigma=0.4"
+        ],
+        "cases_vs_probe_summed": -3,
+        "mean_cases_vs_probe": -0.8
+      },
+      "synthetic_reservoir": {
+        "conditions": [
+          "noise_sigma=0.05",
+          "noise_sigma=0.1",
+          "noise_sigma=0.2",
+          "noise_sigma=0.4"
+        ],
+        "cases_vs_probe_summed": -22,
+        "mean_cases_vs_probe": -5.5
+      }
+    },
+    "missing_input": {
+      "embeddings_linear_probe": {
+        "conditions": [
+          "dropout_frac=0.1",
+          "dropout_frac=0.25",
+          "dropout_frac=0.5",
+          "trunc_last50pct",
+          "trunc_last75pct"
+        ],
+        "cases_vs_probe_summed": 0,
+        "mean_cases_vs_probe": 0.0
+      },
+      "larval_reservoir": {
+        "conditions": [
+          "dropout_frac=0.1",
+          "dropout_frac=0.25",
+          "dropout_frac=0.5",
+          "trunc_last50pct",
+          "trunc_last75pct"
+        ],
+        "cases_vs_probe_summed": 127,
+        "mean_cases_vs_probe": 25.4
+      },
+      "synthetic_reservoir": {
+        "conditions": [
+          "dropout_frac=0.1",
+          "dropout_frac=0.25",
+          "dropout_frac=0.5",
+          "trunc_last50pct",
+          "trunc_last75pct"
+        ],
+        "cases_vs_probe_summed": 70,
+        "mean_cases_vs_probe": 14.0
+      }
+    }
+  },
+  "secondary_per_condition_swept_best": [
+    {
+      "representation": "embeddings_linear_probe",
+      "condition": "clean",
+      "swept_best_acc": 0.7175,
+      "swept_best_lam": 0.1
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "clean",
+      "swept_best_acc": 0.7258,
+      "swept_best_lam": 30.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "clean",
+      "swept_best_acc": 0.7313,
+      "swept_best_lam": 10.0
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "condition": "noise_sigma=0.05",
+      "swept_best_acc": 0.5512,
+      "swept_best_lam": 1.0
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "noise_sigma=0.05",
+      "swept_best_acc": 0.5263,
+      "swept_best_lam": 100.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "noise_sigma=0.05",
+      "swept_best_acc": 0.5319,
+      "swept_best_lam": 100.0
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "condition": "noise_sigma=0.1",
+      "swept_best_acc": 0.4044,
+      "swept_best_lam": 1.0
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "noise_sigma=0.1",
+      "swept_best_acc": 0.3324,
+      "swept_best_lam": 100.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "noise_sigma=0.1",
+      "swept_best_acc": 0.3601,
+      "swept_best_lam": 100.0
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "condition": "noise_sigma=0.2",
+      "swept_best_acc": 0.3158,
+      "swept_best_lam": 10.0
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "noise_sigma=0.2",
+      "swept_best_acc": 0.2105,
+      "swept_best_lam": 100.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "noise_sigma=0.2",
+      "swept_best_acc": 0.241,
+      "swept_best_lam": 100.0
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "condition": "noise_sigma=0.4",
+      "swept_best_acc": 0.2216,
+      "swept_best_lam": 30.0
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "noise_sigma=0.4",
+      "swept_best_acc": 0.1579,
+      "swept_best_lam": 100.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "noise_sigma=0.4",
+      "swept_best_acc": 0.1884,
+      "swept_best_lam": 100.0
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "condition": "dropout_frac=0.1",
+      "swept_best_acc": 0.6953,
+      "swept_best_lam": 0.1
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "dropout_frac=0.1",
+      "swept_best_acc": 0.7175,
+      "swept_best_lam": 30.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "dropout_frac=0.1",
+      "swept_best_acc": 0.7036,
+      "swept_best_lam": 30.0
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "condition": "dropout_frac=0.25",
+      "swept_best_acc": 0.6787,
+      "swept_best_lam": 0.1
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "dropout_frac=0.25",
+      "swept_best_acc": 0.7008,
+      "swept_best_lam": 30.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "dropout_frac=0.25",
+      "swept_best_acc": 0.6593,
+      "swept_best_lam": 30.0
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "condition": "dropout_frac=0.5",
+      "swept_best_acc": 0.5208,
+      "swept_best_lam": 0.1
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "dropout_frac=0.5",
+      "swept_best_acc": 0.5928,
+      "swept_best_lam": 100.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "dropout_frac=0.5",
+      "swept_best_acc": 0.6288,
+      "swept_best_lam": 30.0
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "condition": "trunc_last50pct",
+      "swept_best_acc": 0.6205,
+      "swept_best_lam": 0.1
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "trunc_last50pct",
+      "swept_best_acc": 0.687,
+      "swept_best_lam": 30.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "trunc_last50pct",
+      "swept_best_acc": 0.6842,
+      "swept_best_lam": 30.0
+    },
+    {
+      "representation": "embeddings_linear_probe",
+      "condition": "trunc_last75pct",
+      "swept_best_acc": 0.3878,
+      "swept_best_lam": 0.1
+    },
+    {
+      "representation": "larval_reservoir",
+      "condition": "trunc_last75pct",
+      "swept_best_acc": 0.6066,
+      "swept_best_lam": 100.0
+    },
+    {
+      "representation": "synthetic_reservoir",
+      "condition": "trunc_last75pct",
+      "swept_best_acc": 0.5983,
+      "swept_best_lam": 100.0
+    }
+  ],
+  "gated_clean": {
+    "embeddings_linear_probe": {
+      "margin_0.05": {
+        "routes": 88,
+        "route_correct": 81,
+        "abstained": 273,
+        "total": 361,
+        "margin": 0.05,
+        "P": 0.9205,
+        "C": 0.2438,
+        "E2E": 0.8808,
+        "route_count_disclosure": "88/361 direct routes"
+      },
+      "margin_0.005": {
+        "routes": 192,
+        "route_correct": 166,
+        "abstained": 169,
+        "total": 361,
+        "margin": 0.005,
+        "P": 0.8646,
+        "C": 0.5319,
+        "E2E": 0.8662,
+        "route_count_disclosure": "192/361 direct routes"
+      },
+      "margin_0.0": {
+        "routes": 198,
+        "route_correct": 167,
+        "abstained": 163,
+        "total": 361,
+        "margin": 0.0,
+        "P": 0.8434,
+        "C": 0.5485,
+        "E2E": 0.8545,
+        "route_count_disclosure": "198/361 direct routes"
+      }
+    },
+    "larval_reservoir": {
+      "margin_0.05": {
+        "routes": 71,
+        "route_correct": 68,
+        "abstained": 290,
+        "total": 361,
+        "margin": 0.05,
+        "P": 0.9577,
+        "C": 0.1967,
+        "E2E": 0.8857,
+        "route_count_disclosure": "71/361 direct routes"
+      },
+      "margin_0.005": {
+        "routes": 208,
+        "route_correct": 177,
+        "abstained": 153,
+        "total": 361,
+        "margin": 0.005,
+        "P": 0.851,
+        "C": 0.5762,
+        "E2E": 0.8582,
+        "route_count_disclosure": "208/361 direct routes"
+      },
+      "margin_0.0": {
+        "routes": 211,
+        "route_correct": 178,
+        "abstained": 150,
+        "total": 361,
+        "margin": 0.0,
+        "P": 0.8436,
+        "C": 0.5845,
+        "E2E": 0.8537,
+        "route_count_disclosure": "211/361 direct routes"
+      }
+    },
+    "synthetic_reservoir": {
+      "margin_0.05": {
+        "routes": 86,
+        "route_correct": 81,
+        "abstained": 275,
+        "total": 361,
+        "margin": 0.05,
+        "P": 0.9419,
+        "C": 0.2382,
+        "E2E": 0.8856,
+        "route_count_disclosure": "86/361 direct routes"
+      },
+      "margin_0.005": {
+        "routes": 207,
+        "route_correct": 180,
+        "abstained": 154,
+        "total": 361,
+        "margin": 0.005,
+        "P": 0.8696,
+        "C": 0.5734,
+        "E2E": 0.8689,
+        "route_count_disclosure": "207/361 direct routes"
+      },
+      "margin_0.0": {
+        "routes": 210,
+        "route_correct": 180,
+        "abstained": 151,
+        "total": 361,
+        "margin": 0.0,
+        "P": 0.8571,
+        "C": 0.5817,
+        "E2E": 0.8617,
+        "route_count_disclosure": "210/361 direct routes"
+      }
+    }
+  },
+  "verdict": {
+    "worst_condition_probe": {
+      "condition": "noise_sigma=0.4",
+      "correct": 56,
+      "acc": 0.1551
+    },
+    "worst_condition_larval": {
+      "condition": "noise_sigma=0.4",
+      "correct": 50,
+      "acc": 0.1385
+    },
+    "worst_condition_synthetic": {
+      "condition": "noise_sigma=0.4",
+      "correct": 51,
+      "acc": 0.1413
+    },
+    "larval_minus_probe_at_larval_worst_condition": {
+      "condition": "noise_sigma=0.4",
+      "larval": 50,
+      "probe": 56,
+      "delta_cases": -6,
+      "mcnemar_exact_p": 0.4408
+    },
+    "synthetic_minus_probe_at_synthetic_worst_condition": {
+      "condition": "noise_sigma=0.4",
+      "synthetic": 51,
+      "probe": 56,
+      "delta_cases": -5
+    },
+    "mean_rel_drop_pct_over_corruptions": {
+      "embeddings_linear_probe": 37.67,
+      "larval_reservoir": 33.12,
+      "synthetic_reservoir": 36.83
+    },
+    "headline_result": {
+      "condition": "trunc_last75pct (last 75% of embedding dims zeroed)",
+      "larval_correct": 208,
+      "probe_correct": 140,
+      "delta_cases": 68,
+      "n": 361,
+      "acc_larval": 0.5762,
+      "acc_probe": 0.3878,
+      "mcnemar_exact_p": 0.0
+    },
+    "sub_verdicts": {
+      "single_worst_condition": {
+        "condition": "noise_sigma=0.4",
+        "delta_cases": -6,
+        "mcnemar_exact_p": 0.4408,
+        "label": "RESERVOIR LESS ROBUST",
+        "caveat": "this -6 case deficit is NOT statistically distinguishable (p=0.44); by sigma=0.4 the input is essentially pure noise and all three representations sit near chance (1/13 = 27.8 cases expected)"
+      },
+      "missing_or_degraded_inputs_dropout_and_truncation": {
+        "conditions": [
+          "dropout_frac=0.1",
+          "dropout_frac=0.25",
+          "dropout_frac=0.5",
+          "trunc_last50pct",
+          "trunc_last75pct"
+        ],
+        "delta_cases_summed": 127,
+        "mean_delta_cases": 25.4,
+        "label": "RESERVOIR MORE ROBUST"
+      },
+      "dense_gaussian_noise": {
+        "conditions": [
+          "noise_sigma=0.05",
+          "noise_sigma=0.1",
+          "noise_sigma=0.2",
+          "noise_sigma=0.4"
+        ],
+        "delta_cases_summed": -3,
+        "mean_delta_cases": -0.8,
+        "label": "PARITY"
+      },
+      "aggregate_mean_relative_drop": {
+        "larval_pct": 33.12,
+        "probe_pct": 37.67,
+        "delta_pt": 4.55,
+        "label": "RESERVOIR MORE ROBUST"
+      }
+    },
+    "label": "RESERVOIR MORE ROBUST (missing/degraded inputs, the published claim's core: +127 cases across dropout+truncation, up to +68 cases at 75% truncation, p<1e-4); PARITY under dense Gaussian noise (net -3 cases over 4 sigmas; the -6 at sigma=0.4 is not significant)",
+    "label_enum": {
+      "overall": "RESERVOIR MORE ROBUST",
+      "worst_single_condition": "RESERVOIR LESS ROBUST",
+      "worst_single_condition_significant": false,
+      "missing_or_degraded_inputs": "RESERVOIR MORE ROBUST",
+      "dense_gaussian_noise": "PARITY",
+      "aggregate": "RESERVOIR MORE ROBUST"
+    },
+    "rule": "+/-4 cases (1.1 pt) at n=361 is the noise band this project uses for a one-case-per-0.28pt ruler"
+  }
+}

@@ -1,0 +1,2020 @@
+{
+  "axis": "A: spectral-radius scaling + trained input projection",
+  "data": {
+    "gold": 361,
+    "ood": 28,
+    "classes": 13,
+    "embed_dim": 1024,
+    "neurons": 2952,
+    "edges": 63545,
+    "one_case_pt": 0.277
+  },
+  "protocol": {
+    "folds": 5,
+    "seed": 42,
+    "margin": 0.05,
+    "target_precision": 0.97,
+    "steps": 4,
+    "decay": 0.8,
+    "in_scale": 0.02,
+    "lambdas": [
+      0.001,
+      0.01,
+      0.1,
+      0.5,
+      1.0,
+      3.0,
+      10.0,
+      30.0,
+      100.0
+    ],
+    "chain_floor": 0.868,
+    "readout": "dual-form ridge (algebraically == primal ridge_fit)",
+    "A_ungated": "plain argmax accuracy over all 361 - the quantity the reference 0.7258/0.7175 are",
+    "A_gated": "route_correct/total, as the brief defines; gate-limited to ~0.19 and NOT comparable to 0.7258"
+  },
+  "spectral_radius_as_scaled": 0.372691,
+  "rho_effective_transition_decay0.8": 1.169694,
+  "reference": {
+    "larval_lam30_A_ungated": 0.7258,
+    "routes": 71,
+    "P": 0.9577,
+    "C": 0.1967,
+    "E2E": 0.8857,
+    "linear_probe_A_ungated": 0.7175,
+    "chain_floor": 0.868
+  },
+  "sections": {
+    "baseline_fixed_proj_rho_as_scaled": {
+      "rho": 0.372691,
+      "saturation": 0.0,
+      "best": {
+        "lam": 30.0,
+        "routes": 71,
+        "route_correct": 68,
+        "abstained": 290,
+        "total": 361,
+        "A_ungated": 0.7258,
+        "P": 0.9577,
+        "C": 0.1967,
+        "A": 0.1884,
+        "E2E": 0.8857
+      },
+      "by_lambda": {
+        "0.001": {
+          "lam": 0.001,
+          "routes": 50,
+          "route_correct": 45,
+          "abstained": 311,
+          "total": 361,
+          "A_ungated": 0.6343,
+          "P": 0.9,
+          "C": 0.1385,
+          "A": 0.1247,
+          "E2E": 0.8724
+        },
+        "0.01": {
+          "lam": 0.01,
+          "routes": 50,
+          "route_correct": 45,
+          "abstained": 311,
+          "total": 361,
+          "A_ungated": 0.6343,
+          "P": 0.9,
+          "C": 0.1385,
+          "A": 0.1247,
+          "E2E": 0.8724
+        },
+        "0.1": {
+          "lam": 0.1,
+          "routes": 51,
+          "route_correct": 46,
+          "abstained": 310,
+          "total": 361,
+          "A_ungated": 0.6482,
+          "P": 0.902,
+          "C": 0.1413,
+          "A": 0.1274,
+          "E2E": 0.8728
+        },
+        "0.5": {
+          "lam": 0.5,
+          "routes": 61,
+          "route_correct": 55,
+          "abstained": 300,
+          "total": 361,
+          "A_ungated": 0.651,
+          "P": 0.9016,
+          "C": 0.169,
+          "A": 0.1524,
+          "E2E": 0.8737
+        },
+        "1.0": {
+          "lam": 1.0,
+          "routes": 76,
+          "route_correct": 68,
+          "abstained": 285,
+          "total": 361,
+          "A_ungated": 0.6676,
+          "P": 0.8947,
+          "C": 0.2105,
+          "A": 0.1884,
+          "E2E": 0.8736
+        },
+        "3.0": {
+          "lam": 3.0,
+          "routes": 99,
+          "route_correct": 92,
+          "abstained": 262,
+          "total": 361,
+          "A_ungated": 0.6842,
+          "P": 0.9293,
+          "C": 0.2742,
+          "A": 0.2548,
+          "E2E": 0.8848
+        },
+        "10.0": {
+          "lam": 10.0,
+          "routes": 93,
+          "route_correct": 86,
+          "abstained": 268,
+          "total": 361,
+          "A_ungated": 0.7064,
+          "P": 0.9247,
+          "C": 0.2576,
+          "A": 0.2382,
+          "E2E": 0.8826
+        },
+        "30.0": {
+          "lam": 30.0,
+          "routes": 71,
+          "route_correct": 68,
+          "abstained": 290,
+          "total": 361,
+          "A_ungated": 0.7258,
+          "P": 0.9577,
+          "C": 0.1967,
+          "A": 0.1884,
+          "E2E": 0.8857
+        },
+        "100.0": {
+          "lam": 100.0,
+          "routes": 27,
+          "route_correct": 26,
+          "abstained": 334,
+          "total": 361,
+          "A_ungated": 0.6787,
+          "P": 0.963,
+          "C": 0.0748,
+          "A": 0.072,
+          "E2E": 0.8751
+        }
+      },
+      "ood_r_at_best_lam": 0.9286
+    },
+    "spectral_radius_sweep_fixed_proj": {
+      "0.5": {
+        "rho_target": 0.5,
+        "rho_eff_transition": 1.296,
+        "saturation": 0.0,
+        "best": {
+          "lam": 30.0,
+          "routes": 69,
+          "route_correct": 66,
+          "abstained": 292,
+          "total": 361,
+          "A_ungated": 0.7258,
+          "P": 0.9565,
+          "C": 0.1911,
+          "A": 0.1828,
+          "E2E": 0.8849
+        },
+        "by_lambda": {
+          "0.001": {
+            "lam": 0.001,
+            "routes": 52,
+            "route_correct": 47,
+            "abstained": 309,
+            "total": 361,
+            "A_ungated": 0.6371,
+            "P": 0.9038,
+            "C": 0.144,
+            "A": 0.1302,
+            "E2E": 0.8732
+          },
+          "0.01": {
+            "lam": 0.01,
+            "routes": 52,
+            "route_correct": 47,
+            "abstained": 309,
+            "total": 361,
+            "A_ungated": 0.6371,
+            "P": 0.9038,
+            "C": 0.144,
+            "A": 0.1302,
+            "E2E": 0.8732
+          },
+          "0.1": {
+            "lam": 0.1,
+            "routes": 54,
+            "route_correct": 49,
+            "abstained": 307,
+            "total": 361,
+            "A_ungated": 0.6454,
+            "P": 0.9074,
+            "C": 0.1496,
+            "A": 0.1357,
+            "E2E": 0.8739
+          },
+          "0.5": {
+            "lam": 0.5,
+            "routes": 60,
+            "route_correct": 55,
+            "abstained": 301,
+            "total": 361,
+            "A_ungated": 0.651,
+            "P": 0.9167,
+            "C": 0.1662,
+            "A": 0.1524,
+            "E2E": 0.8761
+          },
+          "1.0": {
+            "lam": 1.0,
+            "routes": 77,
+            "route_correct": 69,
+            "abstained": 284,
+            "total": 361,
+            "A_ungated": 0.6648,
+            "P": 0.8961,
+            "C": 0.2133,
+            "A": 0.1911,
+            "E2E": 0.874
+          },
+          "3.0": {
+            "lam": 3.0,
+            "routes": 100,
+            "route_correct": 93,
+            "abstained": 261,
+            "total": 361,
+            "A_ungated": 0.6814,
+            "P": 0.93,
+            "C": 0.277,
+            "A": 0.2576,
+            "E2E": 0.8852
+          },
+          "10.0": {
+            "lam": 10.0,
+            "routes": 95,
+            "route_correct": 88,
+            "abstained": 266,
+            "total": 361,
+            "A_ungated": 0.7036,
+            "P": 0.9263,
+            "C": 0.2632,
+            "A": 0.2438,
+            "E2E": 0.8833
+          },
+          "30.0": {
+            "lam": 30.0,
+            "routes": 69,
+            "route_correct": 66,
+            "abstained": 292,
+            "total": 361,
+            "A_ungated": 0.7258,
+            "P": 0.9565,
+            "C": 0.1911,
+            "A": 0.1828,
+            "E2E": 0.8849
+          },
+          "100.0": {
+            "lam": 100.0,
+            "routes": 29,
+            "route_correct": 27,
+            "abstained": 332,
+            "total": 361,
+            "A_ungated": 0.6953,
+            "P": 0.931,
+            "C": 0.0803,
+            "A": 0.0748,
+            "E2E": 0.8731
+          }
+        }
+      },
+      "0.8": {
+        "rho_target": 0.8,
+        "rho_eff_transition": 1.5936,
+        "saturation": 0.0001,
+        "best": {
+          "lam": 30.0,
+          "routes": 71,
+          "route_correct": 66,
+          "abstained": 290,
+          "total": 361,
+          "A_ungated": 0.7202,
+          "P": 0.9296,
+          "C": 0.1967,
+          "A": 0.1828,
+          "E2E": 0.8801
+        },
+        "by_lambda": {
+          "0.001": {
+            "lam": 0.001,
+            "routes": 52,
+            "route_correct": 46,
+            "abstained": 309,
+            "total": 361,
+            "A_ungated": 0.6399,
+            "P": 0.8846,
+            "C": 0.144,
+            "A": 0.1274,
+            "E2E": 0.8704
+          },
+          "0.01": {
+            "lam": 0.01,
+            "routes": 52,
+            "route_correct": 46,
+            "abstained": 309,
+            "total": 361,
+            "A_ungated": 0.6399,
+            "P": 0.8846,
+            "C": 0.144,
+            "A": 0.1274,
+            "E2E": 0.8704
+          },
+          "0.1": {
+            "lam": 0.1,
+            "routes": 53,
+            "route_correct": 47,
+            "abstained": 308,
+            "total": 361,
+            "A_ungated": 0.6427,
+            "P": 0.8868,
+            "C": 0.1468,
+            "A": 0.1302,
+            "E2E": 0.8708
+          },
+          "0.5": {
+            "lam": 0.5,
+            "routes": 60,
+            "route_correct": 54,
+            "abstained": 301,
+            "total": 361,
+            "A_ungated": 0.6565,
+            "P": 0.9,
+            "C": 0.1662,
+            "A": 0.1496,
+            "E2E": 0.8733
+          },
+          "1.0": {
+            "lam": 1.0,
+            "routes": 71,
+            "route_correct": 61,
+            "abstained": 290,
+            "total": 361,
+            "A_ungated": 0.6593,
+            "P": 0.8592,
+            "C": 0.1967,
+            "A": 0.169,
+            "E2E": 0.8663
+          },
+          "3.0": {
+            "lam": 3.0,
+            "routes": 92,
+            "route_correct": 86,
+            "abstained": 269,
+            "total": 361,
+            "A_ungated": 0.6759,
+            "P": 0.9348,
+            "C": 0.2548,
+            "A": 0.2382,
+            "E2E": 0.885
+          },
+          "10.0": {
+            "lam": 10.0,
+            "routes": 96,
+            "route_correct": 89,
+            "abstained": 265,
+            "total": 361,
+            "A_ungated": 0.7119,
+            "P": 0.9271,
+            "C": 0.2659,
+            "A": 0.2465,
+            "E2E": 0.8837
+          },
+          "30.0": {
+            "lam": 30.0,
+            "routes": 71,
+            "route_correct": 66,
+            "abstained": 290,
+            "total": 361,
+            "A_ungated": 0.7202,
+            "P": 0.9296,
+            "C": 0.1967,
+            "A": 0.1828,
+            "E2E": 0.8801
+          },
+          "100.0": {
+            "lam": 100.0,
+            "routes": 35,
+            "route_correct": 33,
+            "abstained": 326,
+            "total": 361,
+            "A_ungated": 0.6814,
+            "P": 0.9429,
+            "C": 0.097,
+            "A": 0.0914,
+            "E2E": 0.8753
+          }
+        }
+      },
+      "0.95": {
+        "rho_target": 0.95,
+        "rho_eff_transition": 1.7424,
+        "saturation": 0.0003,
+        "best": {
+          "lam": 30.0,
+          "routes": 74,
+          "route_correct": 68,
+          "abstained": 287,
+          "total": 361,
+          "A_ungated": 0.7175,
+          "P": 0.9189,
+          "C": 0.205,
+          "A": 0.1884,
+          "E2E": 0.8784
+        },
+        "by_lambda": {
+          "0.001": {
+            "lam": 0.001,
+            "routes": 51,
+            "route_correct": 46,
+            "abstained": 310,
+            "total": 361,
+            "A_ungated": 0.6343,
+            "P": 0.902,
+            "C": 0.1413,
+            "A": 0.1274,
+            "E2E": 0.8728
+          },
+          "0.01": {
+            "lam": 0.01,
+            "routes": 51,
+            "route_correct": 46,
+            "abstained": 310,
+            "total": 361,
+            "A_ungated": 0.6371,
+            "P": 0.902,
+            "C": 0.1413,
+            "A": 0.1274,
+            "E2E": 0.8728
+          },
+          "0.1": {
+            "lam": 0.1,
+            "routes": 51,
+            "route_correct": 46,
+            "abstained": 310,
+            "total": 361,
+            "A_ungated": 0.6427,
+            "P": 0.902,
+            "C": 0.1413,
+            "A": 0.1274,
+            "E2E": 0.8728
+          },
+          "0.5": {
+            "lam": 0.5,
+            "routes": 59,
+            "route_correct": 54,
+            "abstained": 302,
+            "total": 361,
+            "A_ungated": 0.651,
+            "P": 0.9153,
+            "C": 0.1634,
+            "A": 0.1496,
+            "E2E": 0.8757
+          },
+          "1.0": {
+            "lam": 1.0,
+            "routes": 71,
+            "route_correct": 61,
+            "abstained": 290,
+            "total": 361,
+            "A_ungated": 0.6565,
+            "P": 0.8592,
+            "C": 0.1967,
+            "A": 0.169,
+            "E2E": 0.8663
+          },
+          "3.0": {
+            "lam": 3.0,
+            "routes": 90,
+            "route_correct": 83,
+            "abstained": 271,
+            "total": 361,
+            "A_ungated": 0.6704,
+            "P": 0.9222,
+            "C": 0.2493,
+            "A": 0.2299,
+            "E2E": 0.8815
+          },
+          "10.0": {
+            "lam": 10.0,
+            "routes": 96,
+            "route_correct": 89,
+            "abstained": 265,
+            "total": 361,
+            "A_ungated": 0.7119,
+            "P": 0.9271,
+            "C": 0.2659,
+            "A": 0.2465,
+            "E2E": 0.8837
+          },
+          "30.0": {
+            "lam": 30.0,
+            "routes": 74,
+            "route_correct": 68,
+            "abstained": 287,
+            "total": 361,
+            "A_ungated": 0.7175,
+            "P": 0.9189,
+            "C": 0.205,
+            "A": 0.1884,
+            "E2E": 0.8784
+          },
+          "100.0": {
+            "lam": 100.0,
+            "routes": 38,
+            "route_correct": 36,
+            "abstained": 323,
+            "total": 361,
+            "A_ungated": 0.6814,
+            "P": 0.9474,
+            "C": 0.1053,
+            "A": 0.0997,
+            "E2E": 0.8764
+          }
+        }
+      },
+      "1.0": {
+        "rho_target": 1.0,
+        "rho_eff_transition": 1.792,
+        "saturation": 0.0005,
+        "best": {
+          "lam": 30.0,
+          "routes": 73,
+          "route_correct": 67,
+          "abstained": 288,
+          "total": 361,
+          "A_ungated": 0.7147,
+          "P": 0.9178,
+          "C": 0.2022,
+          "A": 0.1856,
+          "E2E": 0.8781
+        },
+        "by_lambda": {
+          "0.001": {
+            "lam": 0.001,
+            "routes": 50,
+            "route_correct": 45,
+            "abstained": 311,
+            "total": 361,
+            "A_ungated": 0.6288,
+            "P": 0.9,
+            "C": 0.1385,
+            "A": 0.1247,
+            "E2E": 0.8724
+          },
+          "0.01": {
+            "lam": 0.01,
+            "routes": 50,
+            "route_correct": 45,
+            "abstained": 311,
+            "total": 361,
+            "A_ungated": 0.6288,
+            "P": 0.9,
+            "C": 0.1385,
+            "A": 0.1247,
+            "E2E": 0.8724
+          },
+          "0.1": {
+            "lam": 0.1,
+            "routes": 51,
+            "route_correct": 46,
+            "abstained": 310,
+            "total": 361,
+            "A_ungated": 0.6427,
+            "P": 0.902,
+            "C": 0.1413,
+            "A": 0.1274,
+            "E2E": 0.8728
+          },
+          "0.5": {
+            "lam": 0.5,
+            "routes": 59,
+            "route_correct": 54,
+            "abstained": 302,
+            "total": 361,
+            "A_ungated": 0.6454,
+            "P": 0.9153,
+            "C": 0.1634,
+            "A": 0.1496,
+            "E2E": 0.8757
+          },
+          "1.0": {
+            "lam": 1.0,
+            "routes": 69,
+            "route_correct": 60,
+            "abstained": 292,
+            "total": 361,
+            "A_ungated": 0.6593,
+            "P": 0.8696,
+            "C": 0.1911,
+            "A": 0.1662,
+            "E2E": 0.8683
+          },
+          "3.0": {
+            "lam": 3.0,
+            "routes": 91,
+            "route_correct": 84,
+            "abstained": 270,
+            "total": 361,
+            "A_ungated": 0.6731,
+            "P": 0.9231,
+            "C": 0.2521,
+            "A": 0.2327,
+            "E2E": 0.8819
+          },
+          "10.0": {
+            "lam": 10.0,
+            "routes": 96,
+            "route_correct": 89,
+            "abstained": 265,
+            "total": 361,
+            "A_ungated": 0.7091,
+            "P": 0.9271,
+            "C": 0.2659,
+            "A": 0.2465,
+            "E2E": 0.8837
+          },
+          "30.0": {
+            "lam": 30.0,
+            "routes": 73,
+            "route_correct": 67,
+            "abstained": 288,
+            "total": 361,
+            "A_ungated": 0.7147,
+            "P": 0.9178,
+            "C": 0.2022,
+            "A": 0.1856,
+            "E2E": 0.8781
+          },
+          "100.0": {
+            "lam": 100.0,
+            "routes": 41,
+            "route_correct": 39,
+            "abstained": 320,
+            "total": 361,
+            "A_ungated": 0.6814,
+            "P": 0.9512,
+            "C": 0.1136,
+            "A": 0.108,
+            "E2E": 0.8775
+          }
+        }
+      },
+      "1.1": {
+        "rho_target": 1.1,
+        "rho_eff_transition": 1.8912,
+        "saturation": 0.0009,
+        "best": {
+          "lam": 30.0,
+          "routes": 72,
+          "route_correct": 66,
+          "abstained": 289,
+          "total": 361,
+          "A_ungated": 0.7202,
+          "P": 0.9167,
+          "C": 0.1994,
+          "A": 0.1828,
+          "E2E": 0.8777
+        },
+        "by_lambda": {
+          "0.001": {
+            "lam": 0.001,
+            "routes": 48,
+            "route_correct": 43,
+            "abstained": 313,
+            "total": 361,
+            "A_ungated": 0.626,
+            "P": 0.8958,
+            "C": 0.133,
+            "A": 0.1191,
+            "E2E": 0.8717
+          },
+          "0.01": {
+            "lam": 0.01,
+            "routes": 48,
+            "route_correct": 43,
+            "abstained": 313,
+            "total": 361,
+            "A_ungated": 0.626,
+            "P": 0.8958,
+            "C": 0.133,
+            "A": 0.1191,
+            "E2E": 0.8717
+          },
+          "0.1": {
+            "lam": 0.1,
+            "routes": 54,
+            "route_correct": 49,
+            "abstained": 307,
+            "total": 361,
+            "A_ungated": 0.6288,
+            "P": 0.9074,
+            "C": 0.1496,
+            "A": 0.1357,
+            "E2E": 0.8739
+          },
+          "0.5": {
+            "lam": 0.5,
+            "routes": 58,
+            "route_correct": 53,
+            "abstained": 303,
+            "total": 361,
+            "A_ungated": 0.6482,
+            "P": 0.9138,
+            "C": 0.1607,
+            "A": 0.1468,
+            "E2E": 0.8754
+          },
+          "1.0": {
+            "lam": 1.0,
+            "routes": 68,
+            "route_correct": 61,
+            "abstained": 293,
+            "total": 361,
+            "A_ungated": 0.6537,
+            "P": 0.8971,
+            "C": 0.1884,
+            "A": 0.169,
+            "E2E": 0.8735
+          },
+          "3.0": {
+            "lam": 3.0,
+            "routes": 91,
+            "route_correct": 84,
+            "abstained": 270,
+            "total": 361,
+            "A_ungated": 0.6648,
+            "P": 0.9231,
+            "C": 0.2521,
+            "A": 0.2327,
+            "E2E": 0.8819
+          },
+          "10.0": {
+            "lam": 10.0,
+            "routes": 97,
+            "route_correct": 90,
+            "abstained": 264,
+            "total": 361,
+            "A_ungated": 0.7091,
+            "P": 0.9278,
+            "C": 0.2687,
+            "A": 0.2493,
+            "E2E": 0.8841
+          },
+          "30.0": {
+            "lam": 30.0,
+            "routes": 72,
+            "route_correct": 66,
+            "abstained": 289,
+            "total": 361,
+            "A_ungated": 0.7202,
+            "P": 0.9167,
+            "C": 0.1994,
+            "A": 0.1828,
+            "E2E": 0.8777
+          },
+          "100.0": {
+            "lam": 100.0,
+            "routes": 42,
+            "route_correct": 40,
+            "abstained": 319,
+            "total": 361,
+            "A_ungated": 0.6814,
+            "P": 0.9524,
+            "C": 0.1163,
+            "A": 0.1108,
+            "E2E": 0.8778
+          }
+        }
+      },
+      "1.3": {
+        "rho_target": 1.3,
+        "rho_eff_transition": 2.0895,
+        "saturation": 0.0027,
+        "best": {
+          "lam": 30.0,
+          "routes": 77,
+          "route_correct": 71,
+          "abstained": 284,
+          "total": 361,
+          "A_ungated": 0.7091,
+          "P": 0.9221,
+          "C": 0.2133,
+          "A": 0.1967,
+          "E2E": 0.8795
+        },
+        "by_lambda": {
+          "0.001": {
+            "lam": 0.001,
+            "routes": 52,
+            "route_correct": 47,
+            "abstained": 309,
+            "total": 361,
+            "A_ungated": 0.6371,
+            "P": 0.9038,
+            "C": 0.144,
+            "A": 0.1302,
+            "E2E": 0.8732
+          },
+          "0.01": {
+            "lam": 0.01,
+            "routes": 52,
+            "route_correct": 47,
+            "abstained": 309,
+            "total": 361,
+            "A_ungated": 0.6371,
+            "P": 0.9038,
+            "C": 0.144,
+            "A": 0.1302,
+            "E2E": 0.8732
+          },
+          "0.1": {
+            "lam": 0.1,
+            "routes": 53,
+            "route_correct": 48,
+            "abstained": 308,
+            "total": 361,
+            "A_ungated": 0.6371,
+            "P": 0.9057,
+            "C": 0.1468,
+            "A": 0.133,
+            "E2E": 0.8735
+          },
+          "0.5": {
+            "lam": 0.5,
+            "routes": 58,
+            "route_correct": 52,
+            "abstained": 303,
+            "total": 361,
+            "A_ungated": 0.6399,
+            "P": 0.8966,
+            "C": 0.1607,
+            "A": 0.144,
+            "E2E": 0.8726
+          },
+          "1.0": {
+            "lam": 1.0,
+            "routes": 65,
+            "route_correct": 59,
+            "abstained": 296,
+            "total": 361,
+            "A_ungated": 0.6427,
+            "P": 0.9077,
+            "C": 0.1801,
+            "A": 0.1634,
+            "E2E": 0.8751
+          },
+          "3.0": {
+            "lam": 3.0,
+            "routes": 92,
+            "route_correct": 85,
+            "abstained": 269,
+            "total": 361,
+            "A_ungated": 0.6676,
+            "P": 0.9239,
+            "C": 0.2548,
+            "A": 0.2355,
+            "E2E": 0.8822
+          },
+          "10.0": {
+            "lam": 10.0,
+            "routes": 98,
+            "route_correct": 91,
+            "abstained": 263,
+            "total": 361,
+            "A_ungated": 0.6925,
+            "P": 0.9286,
+            "C": 0.2715,
+            "A": 0.2521,
+            "E2E": 0.8844
+          },
+          "30.0": {
+            "lam": 30.0,
+            "routes": 77,
+            "route_correct": 71,
+            "abstained": 284,
+            "total": 361,
+            "A_ungated": 0.7091,
+            "P": 0.9221,
+            "C": 0.2133,
+            "A": 0.1967,
+            "E2E": 0.8795
+          },
+          "100.0": {
+            "lam": 100.0,
+            "routes": 41,
+            "route_correct": 39,
+            "abstained": 320,
+            "total": 361,
+            "A_ungated": 0.6787,
+            "P": 0.9512,
+            "C": 0.1136,
+            "A": 0.108,
+            "E2E": 0.8775
+          }
+        }
+      }
+    },
+    "trained_input_projection_rho_as_scaled": {
+      "epochs30_lr0.003_l2out0.0": {
+        "epochs": 30,
+        "lr": 0.003,
+        "l2_out": 0.0,
+        "scratch_train_acc": [
+          0.9823,
+          0.993,
+          0.9965,
+          0.9897,
+          0.9932
+        ],
+        "saturation": 0.0002,
+        "best": {
+          "lam": 100.0,
+          "routes": 82,
+          "route_correct": 77,
+          "abstained": 279,
+          "total": 361,
+          "A_ungated": 0.7147,
+          "P": 0.939,
+          "C": 0.2271,
+          "A": 0.2133,
+          "E2E": 0.8841
+        },
+        "by_lambda": {
+          "0.001": {
+            "lam": 0.001,
+            "routes": 44,
+            "route_correct": 40,
+            "abstained": 317,
+            "total": 361,
+            "A_ungated": 0.651,
+            "P": 0.9091,
+            "C": 0.1219,
+            "A": 0.1108,
+            "E2E": 0.873
+          },
+          "0.01": {
+            "lam": 0.01,
+            "routes": 44,
+            "route_correct": 40,
+            "abstained": 317,
+            "total": 361,
+            "A_ungated": 0.6593,
+            "P": 0.9091,
+            "C": 0.1219,
+            "A": 0.1108,
+            "E2E": 0.873
+          },
+          "0.1": {
+            "lam": 0.1,
+            "routes": 48,
+            "route_correct": 44,
+            "abstained": 313,
+            "total": 361,
+            "A_ungated": 0.662,
+            "P": 0.9167,
+            "C": 0.133,
+            "A": 0.1219,
+            "E2E": 0.8745
+          },
+          "0.5": {
+            "lam": 0.5,
+            "routes": 58,
+            "route_correct": 53,
+            "abstained": 303,
+            "total": 361,
+            "A_ungated": 0.6593,
+            "P": 0.9138,
+            "C": 0.1607,
+            "A": 0.1468,
+            "E2E": 0.8754
+          },
+          "1.0": {
+            "lam": 1.0,
+            "routes": 76,
+            "route_correct": 70,
+            "abstained": 285,
+            "total": 361,
+            "A_ungated": 0.6704,
+            "P": 0.9211,
+            "C": 0.2105,
+            "A": 0.1939,
+            "E2E": 0.8792
+          },
+          "3.0": {
+            "lam": 3.0,
+            "routes": 94,
+            "route_correct": 88,
+            "abstained": 267,
+            "total": 361,
+            "A_ungated": 0.6814,
+            "P": 0.9362,
+            "C": 0.2604,
+            "A": 0.2438,
+            "E2E": 0.8858
+          },
+          "10.0": {
+            "lam": 10.0,
+            "routes": 106,
+            "route_correct": 98,
+            "abstained": 255,
+            "total": 361,
+            "A_ungated": 0.7008,
+            "P": 0.9245,
+            "C": 0.2936,
+            "A": 0.2715,
+            "E2E": 0.8846
+          },
+          "30.0": {
+            "lam": 30.0,
+            "routes": 95,
+            "route_correct": 89,
+            "abstained": 266,
+            "total": 361,
+            "A_ungated": 0.7091,
+            "P": 0.9368,
+            "C": 0.2632,
+            "A": 0.2465,
+            "E2E": 0.8861
+          },
+          "100.0": {
+            "lam": 100.0,
+            "routes": 82,
+            "route_correct": 77,
+            "abstained": 279,
+            "total": 361,
+            "A_ungated": 0.7147,
+            "P": 0.939,
+            "C": 0.2271,
+            "A": 0.2133,
+            "E2E": 0.8841
+          }
+        }
+      },
+      "epochs30_lr0.003_l2out0.01": {
+        "epochs": 30,
+        "lr": 0.003,
+        "l2_out": 0.01,
+        "scratch_train_acc": [
+          0.9823,
+          0.9895,
+          0.9965,
+          0.9897,
+          0.9898
+        ],
+        "saturation": 0.0002,
+        "best": {
+          "lam": 100.0,
+          "routes": 81,
+          "route_correct": 76,
+          "abstained": 280,
+          "total": 361,
+          "A_ungated": 0.7147,
+          "P": 0.9383,
+          "C": 0.2244,
+          "A": 0.2105,
+          "E2E": 0.8838
+        },
+        "by_lambda": {
+          "0.001": {
+            "lam": 0.001,
+            "routes": 44,
+            "route_correct": 40,
+            "abstained": 317,
+            "total": 361,
+            "A_ungated": 0.6565,
+            "P": 0.9091,
+            "C": 0.1219,
+            "A": 0.1108,
+            "E2E": 0.873
+          },
+          "0.01": {
+            "lam": 0.01,
+            "routes": 44,
+            "route_correct": 40,
+            "abstained": 317,
+            "total": 361,
+            "A_ungated": 0.6593,
+            "P": 0.9091,
+            "C": 0.1219,
+            "A": 0.1108,
+            "E2E": 0.873
+          },
+          "0.1": {
+            "lam": 0.1,
+            "routes": 48,
+            "route_correct": 44,
+            "abstained": 313,
+            "total": 361,
+            "A_ungated": 0.662,
+            "P": 0.9167,
+            "C": 0.133,
+            "A": 0.1219,
+            "E2E": 0.8745
+          },
+          "0.5": {
+            "lam": 0.5,
+            "routes": 58,
+            "route_correct": 53,
+            "abstained": 303,
+            "total": 361,
+            "A_ungated": 0.6593,
+            "P": 0.9138,
+            "C": 0.1607,
+            "A": 0.1468,
+            "E2E": 0.8754
+          },
+          "1.0": {
+            "lam": 1.0,
+            "routes": 75,
+            "route_correct": 69,
+            "abstained": 286,
+            "total": 361,
+            "A_ungated": 0.6648,
+            "P": 0.92,
+            "C": 0.2078,
+            "A": 0.1911,
+            "E2E": 0.8788
+          },
+          "3.0": {
+            "lam": 3.0,
+            "routes": 93,
+            "route_correct": 87,
+            "abstained": 268,
+            "total": 361,
+            "A_ungated": 0.6814,
+            "P": 0.9355,
+            "C": 0.2576,
+            "A": 0.241,
+            "E2E": 0.8854
+          },
+          "10.0": {
+            "lam": 10.0,
+            "routes": 106,
+            "route_correct": 98,
+            "abstained": 255,
+            "total": 361,
+            "A_ungated": 0.7008,
+            "P": 0.9245,
+            "C": 0.2936,
+            "A": 0.2715,
+            "E2E": 0.8846
+          },
+          "30.0": {
+            "lam": 30.0,
+            "routes": 94,
+            "route_correct": 88,
+            "abstained": 267,
+            "total": 361,
+            "A_ungated": 0.7091,
+            "P": 0.9362,
+            "C": 0.2604,
+            "A": 0.2438,
+            "E2E": 0.8858
+          },
+          "100.0": {
+            "lam": 100.0,
+            "routes": 81,
+            "route_correct": 76,
+            "abstained": 280,
+            "total": 361,
+            "A_ungated": 0.7147,
+            "P": 0.9383,
+            "C": 0.2244,
+            "A": 0.2105,
+            "E2E": 0.8838
+          }
+        }
+      },
+      "epochs100_lr0.003_l2out0.01": {
+        "epochs": 100,
+        "lr": 0.003,
+        "l2_out": 0.01,
+        "scratch_train_acc": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "saturation": 0.0001,
+        "best": {
+          "lam": 30.0,
+          "routes": 100,
+          "route_correct": 93,
+          "abstained": 261,
+          "total": 361,
+          "A_ungated": 0.7119,
+          "P": 0.93,
+          "C": 0.277,
+          "A": 0.2576,
+          "E2E": 0.8852
+        },
+        "by_lambda": {
+          "0.001": {
+            "lam": 0.001,
+            "routes": 51,
+            "route_correct": 46,
+            "abstained": 310,
+            "total": 361,
+            "A_ungated": 0.6676,
+            "P": 0.902,
+            "C": 0.1413,
+            "A": 0.1274,
+            "E2E": 0.8728
+          },
+          "0.01": {
+            "lam": 0.01,
+            "routes": 51,
+            "route_correct": 46,
+            "abstained": 310,
+            "total": 361,
+            "A_ungated": 0.6676,
+            "P": 0.902,
+            "C": 0.1413,
+            "A": 0.1274,
+            "E2E": 0.8728
+          },
+          "0.1": {
+            "lam": 0.1,
+            "routes": 53,
+            "route_correct": 48,
+            "abstained": 308,
+            "total": 361,
+            "A_ungated": 0.6648,
+            "P": 0.9057,
+            "C": 0.1468,
+            "A": 0.133,
+            "E2E": 0.8735
+          },
+          "0.5": {
+            "lam": 0.5,
+            "routes": 61,
+            "route_correct": 56,
+            "abstained": 300,
+            "total": 361,
+            "A_ungated": 0.6648,
+            "P": 0.918,
+            "C": 0.169,
+            "A": 0.1551,
+            "E2E": 0.8765
+          },
+          "1.0": {
+            "lam": 1.0,
+            "routes": 68,
+            "route_correct": 63,
+            "abstained": 293,
+            "total": 361,
+            "A_ungated": 0.6814,
+            "P": 0.9265,
+            "C": 0.1884,
+            "A": 0.1745,
+            "E2E": 0.879
+          },
+          "3.0": {
+            "lam": 3.0,
+            "routes": 93,
+            "route_correct": 86,
+            "abstained": 268,
+            "total": 361,
+            "A_ungated": 0.6842,
+            "P": 0.9247,
+            "C": 0.2576,
+            "A": 0.2382,
+            "E2E": 0.8826
+          },
+          "10.0": {
+            "lam": 10.0,
+            "routes": 106,
+            "route_correct": 98,
+            "abstained": 255,
+            "total": 361,
+            "A_ungated": 0.7008,
+            "P": 0.9245,
+            "C": 0.2936,
+            "A": 0.2715,
+            "E2E": 0.8846
+          },
+          "30.0": {
+            "lam": 30.0,
+            "routes": 100,
+            "route_correct": 93,
+            "abstained": 261,
+            "total": 361,
+            "A_ungated": 0.7119,
+            "P": 0.93,
+            "C": 0.277,
+            "A": 0.2576,
+            "E2E": 0.8852
+          },
+          "100.0": {
+            "lam": 100.0,
+            "routes": 91,
+            "route_correct": 85,
+            "abstained": 270,
+            "total": 361,
+            "A_ungated": 0.7036,
+            "P": 0.9341,
+            "C": 0.2521,
+            "A": 0.2355,
+            "E2E": 0.8847
+          }
+        }
+      },
+      "epochs30_lr0.01_l2out0.01": {
+        "epochs": 30,
+        "lr": 0.01,
+        "l2_out": 0.01,
+        "scratch_train_acc": [
+          0.8339,
+          0.9477,
+          0.8131,
+          0.8973,
+          0.9659
+        ],
+        "saturation": 0.0633,
+        "best": {
+          "lam": 3.0,
+          "routes": 111,
+          "route_correct": 105,
+          "abstained": 250,
+          "total": 361,
+          "A_ungated": 0.7147,
+          "P": 0.9459,
+          "C": 0.3075,
+          "A": 0.2909,
+          "E2E": 0.892
+        },
+        "by_lambda": {
+          "0.001": {
+            "lam": 0.001,
+            "routes": 47,
+            "route_correct": 45,
+            "abstained": 314,
+            "total": 361,
+            "A_ungated": 0.6842,
+            "P": 0.9574,
+            "C": 0.1302,
+            "A": 0.1247,
+            "E2E": 0.8796
+          },
+          "0.01": {
+            "lam": 0.01,
+            "routes": 47,
+            "route_correct": 45,
+            "abstained": 314,
+            "total": 361,
+            "A_ungated": 0.6842,
+            "P": 0.9574,
+            "C": 0.1302,
+            "A": 0.1247,
+            "E2E": 0.8796
+          },
+          "0.1": {
+            "lam": 0.1,
+            "routes": 50,
+            "route_correct": 48,
+            "abstained": 311,
+            "total": 361,
+            "A_ungated": 0.6842,
+            "P": 0.96,
+            "C": 0.1385,
+            "A": 0.133,
+            "E2E": 0.8807
+          },
+          "0.5": {
+            "lam": 0.5,
+            "routes": 69,
+            "route_correct": 66,
+            "abstained": 292,
+            "total": 361,
+            "A_ungated": 0.7008,
+            "P": 0.9565,
+            "C": 0.1911,
+            "A": 0.1828,
+            "E2E": 0.8849
+          },
+          "1.0": {
+            "lam": 1.0,
+            "routes": 88,
+            "route_correct": 83,
+            "abstained": 273,
+            "total": 361,
+            "A_ungated": 0.7091,
+            "P": 0.9432,
+            "C": 0.2438,
+            "A": 0.2299,
+            "E2E": 0.8863
+          },
+          "3.0": {
+            "lam": 3.0,
+            "routes": 111,
+            "route_correct": 105,
+            "abstained": 250,
+            "total": 361,
+            "A_ungated": 0.7147,
+            "P": 0.9459,
+            "C": 0.3075,
+            "A": 0.2909,
+            "E2E": 0.892
+          },
+          "10.0": {
+            "lam": 10.0,
+            "routes": 118,
+            "route_correct": 112,
+            "abstained": 243,
+            "total": 361,
+            "A_ungated": 0.7036,
+            "P": 0.9492,
+            "C": 0.3269,
+            "A": 0.3102,
+            "E2E": 0.8945
+          },
+          "30.0": {
+            "lam": 30.0,
+            "routes": 111,
+            "route_correct": 106,
+            "abstained": 250,
+            "total": 361,
+            "A_ungated": 0.6953,
+            "P": 0.955,
+            "C": 0.3075,
+            "A": 0.2936,
+            "E2E": 0.8947
+          },
+          "100.0": {
+            "lam": 100.0,
+            "routes": 103,
+            "route_correct": 97,
+            "abstained": 258,
+            "total": 361,
+            "A_ungated": 0.6898,
+            "P": 0.9417,
+            "C": 0.2853,
+            "A": 0.2687,
+            "E2E": 0.889
+          }
+        }
+      },
+      "epochs30_lr0.003_l2out0.05": {
+        "epochs": 30,
+        "lr": 0.003,
+        "l2_out": 0.05,
+        "scratch_train_acc": [
+          0.9823,
+          0.9895,
+          0.9896,
+          0.9897,
+          0.9898
+        ],
+        "saturation": 0.0001,
+        "best": {
+          "lam": 100.0,
+          "routes": 82,
+          "route_correct": 77,
+          "abstained": 279,
+          "total": 361,
+          "A_ungated": 0.7202,
+          "P": 0.939,
+          "C": 0.2271,
+          "A": 0.2133,
+          "E2E": 0.8841
+        },
+        "by_lambda": {
+          "0.001": {
+            "lam": 0.001,
+            "routes": 45,
+            "route_correct": 41,
+            "abstained": 316,
+            "total": 361,
+            "A_ungated": 0.6565,
+            "P": 0.9111,
+            "C": 0.1247,
+            "A": 0.1136,
+            "E2E": 0.8734
+          },
+          "0.01": {
+            "lam": 0.01,
+            "routes": 45,
+            "route_correct": 41,
+            "abstained": 316,
+            "total": 361,
+            "A_ungated": 0.6565,
+            "P": 0.9111,
+            "C": 0.1247,
+            "A": 0.1136,
+            "E2E": 0.8734
+          },
+          "0.1": {
+            "lam": 0.1,
+            "routes": 47,
+            "route_correct": 43,
+            "abstained": 314,
+            "total": 361,
+            "A_ungated": 0.6648,
+            "P": 0.9149,
+            "C": 0.1302,
+            "A": 0.1191,
+            "E2E": 0.8741
+          },
+          "0.5": {
+            "lam": 0.5,
+            "routes": 57,
+            "route_correct": 52,
+            "abstained": 304,
+            "total": 361,
+            "A_ungated": 0.6648,
+            "P": 0.9123,
+            "C": 0.1579,
+            "A": 0.144,
+            "E2E": 0.875
+          },
+          "1.0": {
+            "lam": 1.0,
+            "routes": 73,
+            "route_correct": 67,
+            "abstained": 288,
+            "total": 361,
+            "A_ungated": 0.6676,
+            "P": 0.9178,
+            "C": 0.2022,
+            "A": 0.1856,
+            "E2E": 0.8781
+          },
+          "3.0": {
+            "lam": 3.0,
+            "routes": 95,
+            "route_correct": 87,
+            "abstained": 266,
+            "total": 361,
+            "A_ungated": 0.687,
+            "P": 0.9158,
+            "C": 0.2632,
+            "A": 0.241,
+            "E2E": 0.8806
+          },
+          "10.0": {
+            "lam": 10.0,
+            "routes": 106,
+            "route_correct": 98,
+            "abstained": 255,
+            "total": 361,
+            "A_ungated": 0.6981,
+            "P": 0.9245,
+            "C": 0.2936,
+            "A": 0.2715,
+            "E2E": 0.8846
+          },
+          "30.0": {
+            "lam": 30.0,
+            "routes": 97,
+            "route_correct": 91,
+            "abstained": 264,
+            "total": 361,
+            "A_ungated": 0.7091,
+            "P": 0.9381,
+            "C": 0.2687,
+            "A": 0.2521,
+            "E2E": 0.8868
+          },
+          "100.0": {
+            "lam": 100.0,
+            "routes": 82,
+            "route_correct": 77,
+            "abstained": 279,
+            "total": 361,
+            "A_ungated": 0.7202,
+            "P": 0.939,
+            "C": 0.2271,
+            "A": 0.2133,
+            "E2E": 0.8841
+          }
+        }
+      }
+    },
+    "combined_best_rho_and_trained_projection": {
+      "rho_target": 0.5,
+      "train_config": {
+        "epochs": 30,
+        "lr": 0.003,
+        "l2_out": 0.05
+      },
+      "scratch_train_acc": [
+        0.9823,
+        0.9861,
+        0.9896,
+        0.9897,
+        0.9863
+      ],
+      "fixed_proj_at_same_rho": {
+        "lam": 30.0,
+        "routes": 69,
+        "route_correct": 66,
+        "abstained": 292,
+        "total": 361,
+        "A_ungated": 0.7258,
+        "P": 0.9565,
+        "C": 0.1911,
+        "A": 0.1828,
+        "E2E": 0.8849
+      },
+      "best": {
+        "lam": 100.0,
+        "routes": 86,
+        "route_correct": 81,
+        "abstained": 275,
+        "total": 361,
+        "A_ungated": 0.7064,
+        "P": 0.9419,
+        "C": 0.2382,
+        "A": 0.2244,
+        "E2E": 0.8856
+      },
+      "by_lambda": {
+        "0.001": {
+          "lam": 0.001,
+          "routes": 47,
+          "route_correct": 43,
+          "abstained": 314,
+          "total": 361,
+          "A_ungated": 0.6648,
+          "P": 0.9149,
+          "C": 0.1302,
+          "A": 0.1191,
+          "E2E": 0.8741
+        },
+        "0.01": {
+          "lam": 0.01,
+          "routes": 47,
+          "route_correct": 43,
+          "abstained": 314,
+          "total": 361,
+          "A_ungated": 0.6648,
+          "P": 0.9149,
+          "C": 0.1302,
+          "A": 0.1191,
+          "E2E": 0.8741
+        },
+        "0.1": {
+          "lam": 0.1,
+          "routes": 49,
+          "route_correct": 45,
+          "abstained": 312,
+          "total": 361,
+          "A_ungated": 0.6676,
+          "P": 0.9184,
+          "C": 0.1357,
+          "A": 0.1247,
+          "E2E": 0.8748
+        },
+        "0.5": {
+          "lam": 0.5,
+          "routes": 63,
+          "route_correct": 58,
+          "abstained": 298,
+          "total": 361,
+          "A_ungated": 0.6731,
+          "P": 0.9206,
+          "C": 0.1745,
+          "A": 0.1607,
+          "E2E": 0.8772
+        },
+        "1.0": {
+          "lam": 1.0,
+          "routes": 75,
+          "route_correct": 67,
+          "abstained": 286,
+          "total": 361,
+          "A_ungated": 0.6759,
+          "P": 0.8933,
+          "C": 0.2078,
+          "A": 0.1856,
+          "E2E": 0.8733
+        },
+        "3.0": {
+          "lam": 3.0,
+          "routes": 102,
+          "route_correct": 92,
+          "abstained": 259,
+          "total": 361,
+          "A_ungated": 0.6842,
+          "P": 0.902,
+          "C": 0.2825,
+          "A": 0.2548,
+          "E2E": 0.8776
+        },
+        "10.0": {
+          "lam": 10.0,
+          "routes": 111,
+          "route_correct": 102,
+          "abstained": 250,
+          "total": 361,
+          "A_ungated": 0.6925,
+          "P": 0.9189,
+          "C": 0.3075,
+          "A": 0.2825,
+          "E2E": 0.8837
+        },
+        "30.0": {
+          "lam": 30.0,
+          "routes": 104,
+          "route_correct": 96,
+          "abstained": 257,
+          "total": 361,
+          "A_ungated": 0.7064,
+          "P": 0.9231,
+          "C": 0.2881,
+          "A": 0.2659,
+          "E2E": 0.8839
+        },
+        "100.0": {
+          "lam": 100.0,
+          "routes": 86,
+          "route_correct": 81,
+          "abstained": 275,
+          "total": 361,
+          "A_ungated": 0.7064,
+          "P": 0.9419,
+          "C": 0.2382,
+          "A": 0.2244,
+          "E2E": 0.8856
+        }
+      },
+      "ood_note": "OOD_R reported for the fixed-projection reservoir at the same rho (OOD items have no trained W_in arm in this CV)."
+    },
+    "trained_input_projection_reg_probe": {
+      "e30_lr0.003_l2o0.2": {
+        "epochs": 30,
+        "lr": 0.003,
+        "l2_out": 0.2,
+        "scratch_train_acc": [
+          0.965,
+          0.983,
+          0.969,
+          0.969,
+          0.976
+        ],
+        "best": {
+          "lam": 3.0,
+          "routes": 103,
+          "route_correct": 94,
+          "abstained": 258,
+          "total": 361,
+          "A_ungated": 0.7175,
+          "P": 0.9126,
+          "C": 0.2853,
+          "A": 0.2604,
+          "E2E": 0.8807
+        }
+      },
+      "e30_lr0.003_l2o0.5": {
+        "epochs": 30,
+        "lr": 0.003,
+        "l2_out": 0.5,
+        "scratch_train_acc": [
+          0.926,
+          0.93,
+          0.91,
+          0.925,
+          0.932
+        ],
+        "best": {
+          "lam": 100.0,
+          "routes": 85,
+          "route_correct": 81,
+          "abstained": 276,
+          "total": 361,
+          "A_ungated": 0.7175,
+          "P": 0.9529,
+          "C": 0.2355,
+          "A": 0.2244,
+          "E2E": 0.888
+        }
+      },
+      "e10_lr0.003_l2o0.1": {
+        "epochs": 10,
+        "lr": 0.003,
+        "l2_out": 0.1,
+        "scratch_train_acc": [
+          0.756,
+          0.749,
+          0.772,
+          0.75,
+          0.758
+        ],
+        "best": {
+          "lam": 30.0,
+          "routes": 89,
+          "route_correct": 84,
+          "abstained": 272,
+          "total": 361,
+          "A_ungated": 0.7285,
+          "P": 0.9438,
+          "C": 0.2465,
+          "A": 0.2327,
+          "E2E": 0.8867
+        }
+      },
+      "e60_lr0.001_l2o0.3": {
+        "epochs": 60,
+        "lr": 0.001,
+        "l2_out": 0.3,
+        "scratch_train_acc": [
+          0.996,
+          0.997,
+          1.0,
+          0.997,
+          0.997
+        ],
+        "best": {
+          "lam": 30.0,
+          "routes": 109,
+          "route_correct": 102,
+          "abstained": 252,
+          "total": 361,
+          "A_ungated": 0.7202,
+          "P": 0.9358,
+          "C": 0.3019,
+          "A": 0.2825,
+          "E2E": 0.8885
+        }
+      }
+    },
+    "trained_input_projection_low_epoch_probe": {
+      "e5_lr0.003_l2o0.1": {
+        "epochs": 5,
+        "lr": 0.003,
+        "l2_out": 0.1,
+        "scratch_train_acc": [
+          0.594,
+          0.613,
+          0.637,
+          0.634,
+          0.631
+        ],
+        "best": {
+          "lam": 30.0,
+          "routes": 83,
+          "route_correct": 79,
+          "abstained": 278,
+          "total": 361,
+          "A_ungated": 0.7175,
+          "P": 0.9518,
+          "C": 0.2299,
+          "A": 0.2188,
+          "E2E": 0.8873
+        }
+      },
+      "e15_lr0.003_l2o0.1": {
+        "epochs": 15,
+        "lr": 0.003,
+        "l2_out": 0.1,
+        "scratch_train_acc": [
+          0.898,
+          0.906,
+          0.938,
+          0.911,
+          0.918
+        ],
+        "best": {
+          "lam": 30.0,
+          "routes": 90,
+          "route_correct": 85,
+          "abstained": 271,
+          "total": 361,
+          "A_ungated": 0.7202,
+          "P": 0.9444,
+          "C": 0.2493,
+          "A": 0.2355,
+          "E2E": 0.8871
+        }
+      },
+      "e10_lr0.01_l2o0.1": {
+        "epochs": 10,
+        "lr": 0.01,
+        "l2_out": 0.1,
+        "scratch_train_acc": [
+          0.364,
+          0.321,
+          0.336,
+          0.274,
+          0.375
+        ],
+        "best": {
+          "lam": 10.0,
+          "routes": 97,
+          "route_correct": 92,
+          "abstained": 264,
+          "total": 361,
+          "A_ungated": 0.7064,
+          "P": 0.9485,
+          "C": 0.2687,
+          "A": 0.2548,
+          "E2E": 0.8896
+        }
+      },
+      "e20_lr0.003_l2o0.05": {
+        "epochs": 20,
+        "lr": 0.003,
+        "l2_out": 0.05,
+        "scratch_train_acc": [
+          0.958,
+          0.958,
+          0.955,
+          0.945,
+          0.949
+        ],
+        "best": {
+          "lam": 100.0,
+          "routes": 75,
+          "route_correct": 72,
+          "abstained": 286,
+          "total": 361,
+          "A_ungated": 0.7258,
+          "P": 0.96,
+          "C": 0.2078,
+          "A": 0.1994,
+          "E2E": 0.8871
+        }
+      },
+      "e3_lr0.003_l2o0.1": {
+        "epochs": 3,
+        "lr": 0.003,
+        "l2_out": 0.1,
+        "scratch_train_acc": [
+          0.304,
+          0.324,
+          0.349,
+          0.308,
+          0.348
+        ],
+        "best": {
+          "lam": 30.0,
+          "routes": 78,
+          "route_correct": 74,
+          "abstained": 283,
+          "total": 361,
+          "A_ungated": 0.7202,
+          "P": 0.9487,
+          "C": 0.2161,
+          "A": 0.205,
+          "E2E": 0.8854
+        }
+      }
+    }
+  },
+  "best_rho_fixed_proj": 0.5,
+  "trained_projection_best": {
+    "config": "epochs30_lr0.003_l2out0.05",
+    "A_ungated": 0.7202,
+    "delta_vs_fixed_same_rho": -0.0056,
+    "delta_vs_reference_0.7258": -0.0056
+  },
+  "verdict": {
+    "verdict": "PARITY",
+    "spectral_radius": "PARITY (no gain; as-scaled rho=0.3727 already optimal regime, higher rho hurts)",
+    "trained_input_projection": "PARITY-to-WORSE (mean 0.7179 over 14 configs, best 0.7285 = +1 case = noise)",
+    "fixed_proj_baseline_A_ungated": 0.7258,
+    "reference_A_ungated": 0.7258,
+    "linear_probe_A_ungated": 0.7175,
+    "chain_floor": 0.868,
+    "noise_band_pt": 0.3,
+    "success_bar": "A > 0.7258 + 0.003 - NOT met by either axis"
+  },
+  "trained_projection_best_updated": {
+    "config": "e10_lr0.003_l2o0.1",
+    "A_ungated": 0.7285,
+    "delta_cases_vs_fixed_0.7258": 0.97,
+    "success_bar_met": false
+  },
+  "trained_projection_summary": {
+    "n_configs": 14,
+    "min": 0.7064,
+    "max": 0.7285,
+    "mean": 0.7179,
+    "median": 0.7175,
+    "fixed_proj_0.7258": 0.7258,
+    "note": "no monotone trend over epochs/l2; the best config (+1 case) is a spike - the 5- and 15-epoch neighbours are BELOW the fixed projection."
+  }
+}

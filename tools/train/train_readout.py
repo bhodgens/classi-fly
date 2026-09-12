@@ -4,10 +4,14 @@ Preferred solver: closed-form ridge regression on one-hot targets,
 
     W = (S^T S + lambda I)^-1 S^T Y        (deterministic, no lr to tune)
 
-with the bias folded in as an extra all-ones column. Requires numpy; without
-it the trainer falls back to multinomial logistic regression with a small
-learning rate floor of 1e-3 (a head trained at a backbone-style lr never
-learns - the "lr underdose" failure mode this leaf tests against).
+with the bias folded in as an extra all-ones column. The penalty is resolved
+per problem (``resolve_ridge_lambda``): a narrow readout keeps the legacy
+RIDGE_LAMBDA floor, a wide one gets a deterministic inner-CV choice, because
+a hardcoded floor is effectively unregularization once the feature count
+dwarfs the sample count. Requires numpy; without it the trainer falls back to
+multinomial logistic regression with a small learning rate floor of 1e-3 (a
+head trained at a backbone-style lr never learns - the "lr underdose" failure
+mode this leaf tests against).
 
 The reservoir itself is NEVER trained: it is read from a .fly artifact or an
 adjacency dict and stays frozen. Training is CPU-only and deterministic
@@ -30,7 +34,34 @@ from calibrate import choose_thresholds
 from states import load_states_config, states
 
 LR_FLOOR = 1e-3
+# The legacy floor penalty. It is the right value for a NARROW readout
+# (features <= WIDE_READOUT_DIM) and the wrong value for a wide one: at
+# ~2952 features on ~289 samples/fold it is effectively unregularized, and
+# the resulting readout made a working reservoir look useless (measured
+# all-case accuracy 0.125 -> 0.726 once the penalty was corrected; see
+# tools/eval/e1_corrected_results.json). It is therefore no longer the
+# blanket default for wide readouts - resolve_ridge_lambda() picks the
+# penalty per problem (deterministic inner CV).
 RIDGE_LAMBDA = 1e-3
+# At/above this feature count a readout is "wide" relative to the sample
+# counts this trainer sees, so the caller-supplied floor is overridden by
+# the inner-CV choice. Narrow readouts (the tiny fixtures, the orientation
+# repro) keep the legacy value exactly.
+WIDE_READOUT_DIM = 64
+# Candidate penalties, ascending. Spans the measured optima: 0.1 for a
+# 1024-dim raw-embedding probe, 10-30 for 2-3k-dim reservoir states.
+RIDGE_LAMBDA_GRID = (1e-3, 1e-2, 1e-1, 1.0, 3.0, 10.0, 30.0, 100.0, 300.0, 1000.0)
+INNER_FOLDS = 4
+INNER_SEED = 42
+# Fewest rows for which the inner CV is meaningful (~4 rows per inner fold).
+# Below this the documented heuristic is used instead; ties inside the inner
+# CV still break toward the smallest candidate, so degenerate data degrades
+# to the legacy floor on its own.
+MIN_AUTO_ROWS = 4 * INNER_FOLDS
+# Documented heuristic fallback (used only when the sample count is too
+# small for the inner CV to be meaningful): shrink in proportion to the
+# parameter-to-sample ratio.
+HEURISTIC_SCALE = 1.0
 REPORT_KEYS = ("train_accuracy", "thresholds", "pair_count")
 
 
@@ -58,10 +89,110 @@ def _softmax_probs(logits):
     return [e / z for e in exps]
 
 
-def ridge_fit(S, Y, lam=RIDGE_LAMBDA):
-    """Closed-form ridge with bias column: returns (W [N][K], bias [K])."""
+def _inner_folds(labels, folds, seed):
+    """Stratified inner-fold ids: shuffle per class, position % folds."""
+    if _np is None:
+        raise RuntimeError("_inner_folds requires numpy")
+    n = len(labels)
+    fold = _np.zeros(n, dtype=int)
+    rng = _np.random.default_rng(seed)
+    arr = _np.asarray(labels)
+    for cls in sorted(set(labels)):
+        idx = _np.where(arr == cls)[0]
+        rng.shuffle(idx)
+        for j, i in enumerate(idx):
+            fold[i] = j % folds
+    return fold
+
+
+def heuristic_ridge_lambda(n_features, n_samples):
+    """Documented fallback penalty: shrink with the parameter-to-sample ratio.
+
+    Used only when the sample count is too small for a meaningful inner CV,
+    and only for wide readouts. Coarse by construction (the measured optima
+    are data-dependent), but never the effectively-unregularized 1e-3.
+    """
+    return max(RIDGE_LAMBDA, HEURISTIC_SCALE * float(n_features) / max(int(n_samples), 1))
+
+
+def auto_ridge_lambda(S, Y, candidates=RIDGE_LAMBDA_GRID, folds=INNER_FOLDS, seed=INNER_SEED):
+    """Deterministic inner-CV ridge penalty for the given design matrix/targets.
+
+    The nested split is a stratified k-fold over the rows it is given (the
+    caller passes TRAIN-fold rows only, so no leak). Each candidate's score is
+    the mean inner-validation argmax accuracy; ties go to the smaller penalty
+    (ascending scan, strict improvement required). The candidate loop reuses
+    one symmetric eigendecomposition per inner fold, so 10 candidates cost one
+    ``eigh`` plus matmuls rather than ten 3k x 3k solves.
+
+    Narrow readouts (features < WIDE_READOUT_DIM) or too-few rows get the
+    legacy RIDGE_LAMBDA, which keeps the small-fixture behaviour byte-identical.
+    """
+    if _np is None:
+        return RIDGE_LAMBDA
+    X = _np.asarray(S, dtype=_np.float64)
+    Yv = _np.asarray(Y, dtype=_np.float64)
+    if X.ndim != 2 or Yv.ndim != 2 or X.shape[0] != Yv.shape[0]:
+        raise ValueError("S and Y must be 2-D with matching row counts")
+    n, d = X.shape
+    if d < WIDE_READOUT_DIM or n < MIN_AUTO_ROWS:
+        return RIDGE_LAMBDA
+
+    labels = [int(i) for i in _np.argmax(Yv, axis=1)]
+    inner = _inner_folds(labels, folds, seed)
+    acc = {float(c): [] for c in candidates}
+    for f in range(folds):
+        tr = inner != f
+        va = ~tr
+        if not tr.any() or not va.any():
+            continue
+        Xtr = _np.hstack([X[tr], _np.ones((int(tr.sum()), 1))])
+        A0 = Xtr.T @ Xtr
+        G = Xtr.T @ Yv[tr]
+        w, V = _np.linalg.eigh(A0)  # A0 symmetric positive semidefinite
+        VtG = V.T @ G
+        Xv = _np.hstack([X[va], _np.ones((int(va.sum()), 1))])
+        gold = [_np.argmax(row) for row in Yv[va]]
+        for c in candidates:
+            sol = V @ (VtG / (w + float(c))[:, None])
+            pred = _np.argmax(Xv @ sol, axis=1)
+            acc[float(c)].append(float((pred == gold).mean()))
+
+    best, best_acc = float(RIDGE_LAMBDA), -1.0
+    for c in candidates:  # ascending: first strict improvement wins
+        vals = acc[float(c)]
+        a = sum(vals) / len(vals) if vals else 0.0
+        if a > best_acc + 1e-12:
+            best, best_acc = float(c), a
+    return best
+
+
+def resolve_ridge_lambda(S, Y, lam=None):
+    """The penalty actually used: explicit ``lam`` wins, else the wide-readout
+    inner-CV choice (or the documented heuristic when there are too few rows),
+    else the legacy floor for narrow readouts."""
+    if lam is not None:
+        return float(lam)
+    if _np is None:
+        return RIDGE_LAMBDA
+    X = _np.asarray(S, dtype=_np.float64)
+    if X.ndim != 2 or X.shape[1] < WIDE_READOUT_DIM:
+        return RIDGE_LAMBDA
+    if X.shape[0] < MIN_AUTO_ROWS:
+        return heuristic_ridge_lambda(X.shape[1], X.shape[0])
+    return auto_ridge_lambda(S, Y)
+
+
+def ridge_fit(S, Y, lam=None):
+    """Closed-form ridge with bias column: returns (W [N][K], bias [K]).
+
+    ``lam=None`` (the default) resolves the penalty per problem via
+    resolve_ridge_lambda: narrow readouts keep RIDGE_LAMBDA, wide ones get a
+    deterministic inner-CV choice. Pass an explicit ``lam`` to override.
+    """
     if _np is None:
         raise RuntimeError("ridge_fit requires numpy; use logistic_train")
+    lam = resolve_ridge_lambda(S, Y, lam)
     X = _np.asarray(S, dtype=_np.float64)
     Yv = _np.asarray(Y, dtype=_np.float64)
     Xb = _np.hstack([X, _np.ones((X.shape[0], 1))])  # bias column
@@ -106,12 +237,15 @@ def logistic_train(S, y, classes, lr=LR_FLOOR, epochs=400, l2=1e-4):
     return W, bias
 
 
-def fit_readout(S, y, classes, lam=RIDGE_LAMBDA):
+def fit_readout(S, y, classes, lam=None):
     """Train the linear readout on frozen states.
 
     S: list of state vectors; y: labels; classes: fixed class order.
     Returns (W [N][K] nested lists, bias [K]). Deterministic: ridge closed
     form when numpy is present, fixed-order logistic otherwise.
+
+    ``lam=None`` resolves the ridge penalty per problem (inner CV for wide
+    readouts; the legacy floor for narrow ones) - see resolve_ridge_lambda.
     """
     Y = _one_hot(y, classes)
     if _np is not None:
@@ -119,10 +253,18 @@ def fit_readout(S, y, classes, lam=RIDGE_LAMBDA):
     return logistic_train(S, y, classes)
 
 
-def train_from_pairs(fly_path, pairs_path, target_precision=0.97, lam=RIDGE_LAMBDA):
+def train_from_pairs(fly_path, pairs_path, target_precision=0.97, lam=None):
     """Full offline training run: states -> readout -> thresholds.
 
-    Returns (export_dict, report_dict) ready for JSON serialization.
+    ``lam=None`` (default) resolves the ridge penalty from the training
+    states themselves via resolve_ridge_lambda, so a wide readout no longer
+    silently trains at the effectively-unregularized 1e-3 floor.
+
+    Returns (export_dict, report_dict) ready for JSON serialization. Both
+    keep their exact Contract 3 key sets (deliberately no extra fields: the
+    committed export/report consumers pin them); call
+    ``resolve_ridge_lambda(S, Y)`` (or pass ``lam=``) if the chosen penalty
+    needs to be logged.
     """
     cfg = load_states_config(fly_path)
     classes = []
@@ -235,10 +377,16 @@ def main(argv=None):
         "--calib", default="quantile", choices=["quantile"], help="calibration method"
     )
     p.add_argument("--target-precision", type=float, default=0.97)
+    p.add_argument(
+        "--ridge-lambda",
+        type=float,
+        default=None,
+        help="ridge penalty override; default = auto (inner CV for wide readouts)",
+    )
     args = p.parse_args(argv)
 
     export, report = train_from_pairs(
-        args.fly, args.pairs, target_precision=args.target_precision
+        args.fly, args.pairs, target_precision=args.target_precision, lam=args.ridge_lambda
     )
     Path(args.out).write_text(json.dumps(export) + "\n", encoding="utf-8")
     if args.report:

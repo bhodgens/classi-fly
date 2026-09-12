@@ -1,0 +1,555 @@
+{
+  "experiment": "Axis C - readout head variants on frozen larval reservoir states",
+  "source": {
+    "inputs": "/Users/caimlas/git/classi-fly/data/e1_inputs.json",
+    "adjacency": "/Users/caimlas/git/classi-fly/data/larval_adjacency.json",
+    "neurons": 2952,
+    "edges": 63545,
+    "license": "CC-BY-4.0",
+    "gold": 361,
+    "ood": 28,
+    "classes": [
+      "analyze",
+      "chat",
+      "code",
+      "debug",
+      "git",
+      "plan",
+      "platform",
+      "quickplan",
+      "recall",
+      "report",
+      "review",
+      "schedule",
+      "search"
+    ],
+    "embed_dim": 1024,
+    "states": "s = tanh(decay*s + W*s + win*x), steps=4, decay=0.8, win = seeded int8 projection (rng 42) scaled to 0.02",
+    "saturation": 0.0
+  },
+  "protocol": {
+    "folds": 5,
+    "seed": 42,
+    "fold_rule": "shuffle per class with np.random.default_rng(42), fold = position % 5",
+    "route_rule": "top-1 prob >= per-class calibrated threshold AND margin > 0.05",
+    "calibration": "choose_thresholds(train_probs, train_labels, target_precision=0.97)",
+    "margin_space": "each head's own margin (cosine for centroid, vote share for kNN, softmax probability for the linear/logistic heads); the centroid_prob_margin row repeats the centroid head with a probability-space margin as a sensitivity check",
+    "metrics": {
+      "P": "route_correct/routes (wrong routes stay in the denominator)",
+      "C": "routes/total",
+      "A": "route_correct/total",
+      "A_all": "ungated out-of-fold argmax accuracy (the quantity e1_corrected_results.json calls A)",
+      "E2E": "(route_correct + 0.868*abstained)/total"
+    },
+    "one_case_pt": 0.28
+  },
+  "heads": {
+    "ridge_fixed_lam_1e-3": {
+      "routes": 50,
+      "route_correct": 45,
+      "abstained": 311,
+      "total": 361,
+      "P": 0.9,
+      "C": 0.1385,
+      "A": 0.1247,
+      "A_all": 0.6343,
+      "E2E": 0.8724,
+      "route_count_disclosure": "50/361 direct routes",
+      "per_fold": [
+        {
+          "fold": 0,
+          "train": 283,
+          "test": 78,
+          "routes": 7,
+          "route_correct": 6,
+          "abstained": 71,
+          "oof_acc": 0.5897,
+          "selected_lam": 0.001
+        },
+        {
+          "fold": 1,
+          "train": 287,
+          "test": 74,
+          "routes": 11,
+          "route_correct": 10,
+          "abstained": 63,
+          "oof_acc": 0.6351,
+          "selected_lam": 0.001
+        },
+        {
+          "fold": 2,
+          "train": 289,
+          "test": 72,
+          "routes": 13,
+          "route_correct": 11,
+          "abstained": 59,
+          "oof_acc": 0.6944,
+          "selected_lam": 0.001
+        },
+        {
+          "fold": 3,
+          "train": 292,
+          "test": 69,
+          "routes": 12,
+          "route_correct": 11,
+          "abstained": 57,
+          "oof_acc": 0.6377,
+          "selected_lam": 0.001
+        },
+        {
+          "fold": 4,
+          "train": 293,
+          "test": 68,
+          "routes": 7,
+          "route_correct": 7,
+          "abstained": 61,
+          "oof_acc": 0.6176,
+          "selected_lam": 0.001
+        }
+      ],
+      "OOD_R": 0.9286,
+      "note": "legacy trainer default (the defect)"
+    },
+    "ridge_fixed_lam_30": {
+      "routes": 71,
+      "route_correct": 68,
+      "abstained": 290,
+      "total": 361,
+      "P": 0.9577,
+      "C": 0.1967,
+      "A": 0.1884,
+      "A_all": 0.7258,
+      "E2E": 0.8857,
+      "route_count_disclosure": "71/361 direct routes",
+      "per_fold": [
+        {
+          "fold": 0,
+          "train": 283,
+          "test": 78,
+          "routes": 13,
+          "route_correct": 13,
+          "abstained": 65,
+          "oof_acc": 0.6923,
+          "selected_lam": 30.0
+        },
+        {
+          "fold": 1,
+          "train": 287,
+          "test": 74,
+          "routes": 8,
+          "route_correct": 8,
+          "abstained": 66,
+          "oof_acc": 0.7432,
+          "selected_lam": 30.0
+        },
+        {
+          "fold": 2,
+          "train": 289,
+          "test": 72,
+          "routes": 17,
+          "route_correct": 16,
+          "abstained": 55,
+          "oof_acc": 0.7639,
+          "selected_lam": 30.0
+        },
+        {
+          "fold": 3,
+          "train": 292,
+          "test": 69,
+          "routes": 18,
+          "route_correct": 17,
+          "abstained": 51,
+          "oof_acc": 0.7101,
+          "selected_lam": 30.0
+        },
+        {
+          "fold": 4,
+          "train": 293,
+          "test": 68,
+          "routes": 15,
+          "route_correct": 14,
+          "abstained": 53,
+          "oof_acc": 0.7206,
+          "selected_lam": 30.0
+        }
+      ],
+      "OOD_R": 0.9286,
+      "note": "reference corrected run (e1_corrected_results.json)"
+    },
+    "ridge_auto_inner_cv": {
+      "routes": 78,
+      "route_correct": 74,
+      "abstained": 283,
+      "total": 361,
+      "P": 0.9487,
+      "C": 0.2161,
+      "A": 0.205,
+      "A_all": 0.7175,
+      "E2E": 0.8854,
+      "route_count_disclosure": "78/361 direct routes",
+      "per_fold": [
+        {
+          "fold": 0,
+          "train": 283,
+          "test": 78,
+          "routes": 13,
+          "route_correct": 13,
+          "abstained": 65,
+          "oof_acc": 0.6923,
+          "selected_lam": 30.0
+        },
+        {
+          "fold": 1,
+          "train": 287,
+          "test": 74,
+          "routes": 8,
+          "route_correct": 8,
+          "abstained": 66,
+          "oof_acc": 0.7432,
+          "selected_lam": 30.0
+        },
+        {
+          "fold": 2,
+          "train": 289,
+          "test": 72,
+          "routes": 24,
+          "route_correct": 22,
+          "abstained": 48,
+          "oof_acc": 0.7222,
+          "selected_lam": 10.0
+        },
+        {
+          "fold": 3,
+          "train": 292,
+          "test": 69,
+          "routes": 18,
+          "route_correct": 17,
+          "abstained": 51,
+          "oof_acc": 0.7101,
+          "selected_lam": 30.0
+        },
+        {
+          "fold": 4,
+          "train": 293,
+          "test": 68,
+          "routes": 15,
+          "route_correct": 14,
+          "abstained": 53,
+          "oof_acc": 0.7206,
+          "selected_lam": 30.0
+        }
+      ],
+      "OOD_R": 0.9286,
+      "note": "production resolve_ridge_lambda: deterministic inner CV per train fold"
+    },
+    "centroid_cosine_margin": {
+      "routes": 22,
+      "route_correct": 21,
+      "abstained": 339,
+      "total": 361,
+      "P": 0.9545,
+      "C": 0.0609,
+      "A": 0.0582,
+      "A_all": 0.6925,
+      "E2E": 0.8733,
+      "route_count_disclosure": "22/361 direct routes",
+      "per_fold": [
+        {
+          "fold": 0,
+          "train": 283,
+          "test": 78,
+          "routes": 4,
+          "route_correct": 3,
+          "abstained": 74,
+          "oof_acc": 0.6923
+        },
+        {
+          "fold": 1,
+          "train": 287,
+          "test": 74,
+          "routes": 5,
+          "route_correct": 5,
+          "abstained": 69,
+          "oof_acc": 0.7027
+        },
+        {
+          "fold": 2,
+          "train": 289,
+          "test": 72,
+          "routes": 5,
+          "route_correct": 5,
+          "abstained": 67,
+          "oof_acc": 0.6667
+        },
+        {
+          "fold": 3,
+          "train": 292,
+          "test": 69,
+          "routes": 4,
+          "route_correct": 4,
+          "abstained": 65,
+          "oof_acc": 0.7101
+        },
+        {
+          "fold": 4,
+          "train": 293,
+          "test": 68,
+          "routes": 4,
+          "route_correct": 4,
+          "abstained": 64,
+          "oof_acc": 0.6912
+        }
+      ],
+      "OOD_R": 0.8929,
+      "note": "campaign champion shape: class centroids + cosine margin, conf=softmax(cos/0.1)"
+    },
+    "centroid_prob_margin": {
+      "routes": 37,
+      "route_correct": 36,
+      "abstained": 324,
+      "total": 361,
+      "P": 0.973,
+      "C": 0.1025,
+      "A": 0.0997,
+      "A_all": 0.6925,
+      "E2E": 0.8788,
+      "route_count_disclosure": "37/361 direct routes",
+      "per_fold": [
+        {
+          "fold": 0,
+          "train": 283,
+          "test": 78,
+          "routes": 9,
+          "route_correct": 8,
+          "abstained": 69,
+          "oof_acc": 0.6923
+        },
+        {
+          "fold": 1,
+          "train": 287,
+          "test": 74,
+          "routes": 8,
+          "route_correct": 8,
+          "abstained": 66,
+          "oof_acc": 0.7027
+        },
+        {
+          "fold": 2,
+          "train": 289,
+          "test": 72,
+          "routes": 8,
+          "route_correct": 8,
+          "abstained": 64,
+          "oof_acc": 0.6667
+        },
+        {
+          "fold": 3,
+          "train": 292,
+          "test": 69,
+          "routes": 7,
+          "route_correct": 7,
+          "abstained": 62,
+          "oof_acc": 0.7101
+        },
+        {
+          "fold": 4,
+          "train": 293,
+          "test": 68,
+          "routes": 5,
+          "route_correct": 5,
+          "abstained": 63,
+          "oof_acc": 0.6912
+        }
+      ],
+      "OOD_R": 0.7857,
+      "note": "same centroids, margin in softmax-probability space (sensitivity check)"
+    },
+    "knn5_unanimity": {
+      "routes": 67,
+      "route_correct": 57,
+      "abstained": 294,
+      "total": 361,
+      "P": 0.8507,
+      "C": 0.1856,
+      "A": 0.1579,
+      "A_all": 0.5402,
+      "E2E": 0.8648,
+      "route_count_disclosure": "67/361 direct routes",
+      "per_fold": [
+        {
+          "fold": 0,
+          "train": 283,
+          "test": 78,
+          "routes": 12,
+          "route_correct": 9,
+          "abstained": 66,
+          "oof_acc": 0.4872
+        },
+        {
+          "fold": 1,
+          "train": 287,
+          "test": 74,
+          "routes": 16,
+          "route_correct": 12,
+          "abstained": 58,
+          "oof_acc": 0.527
+        },
+        {
+          "fold": 2,
+          "train": 289,
+          "test": 72,
+          "routes": 14,
+          "route_correct": 13,
+          "abstained": 58,
+          "oof_acc": 0.6111
+        },
+        {
+          "fold": 3,
+          "train": 292,
+          "test": 69,
+          "routes": 12,
+          "route_correct": 11,
+          "abstained": 57,
+          "oof_acc": 0.6087
+        },
+        {
+          "fold": 4,
+          "train": 293,
+          "test": 68,
+          "routes": 13,
+          "route_correct": 12,
+          "abstained": 55,
+          "oof_acc": 0.4706
+        }
+      ],
+      "OOD_R": 0.6429,
+      "note": "cosine kNN k=5, conf = vote share, margin = (top-runner)/k"
+    },
+    "logistic_numpy_l2_cv": {
+      "routes": 101,
+      "route_correct": 92,
+      "abstained": 260,
+      "total": 361,
+      "P": 0.9109,
+      "C": 0.2798,
+      "A": 0.2548,
+      "A_all": 0.7202,
+      "E2E": 0.88,
+      "route_count_disclosure": "101/361 direct routes",
+      "per_fold": [
+        {
+          "fold": 0,
+          "train": 283,
+          "test": 78,
+          "routes": 17,
+          "route_correct": 16,
+          "abstained": 61,
+          "oof_acc": 0.6923,
+          "selected_l2": 0.01,
+          "l2_equiv_ridge_lambda": 2.8
+        },
+        {
+          "fold": 1,
+          "train": 287,
+          "test": 74,
+          "routes": 16,
+          "route_correct": 14,
+          "abstained": 58,
+          "oof_acc": 0.7297,
+          "selected_l2": 0.001,
+          "l2_equiv_ridge_lambda": 0.3
+        },
+        {
+          "fold": 2,
+          "train": 289,
+          "test": 72,
+          "routes": 26,
+          "route_correct": 24,
+          "abstained": 46,
+          "oof_acc": 0.7778,
+          "selected_l2": 0.01,
+          "l2_equiv_ridge_lambda": 2.9
+        },
+        {
+          "fold": 3,
+          "train": 292,
+          "test": 69,
+          "routes": 26,
+          "route_correct": 23,
+          "abstained": 43,
+          "oof_acc": 0.6667,
+          "selected_l2": 0.1,
+          "l2_equiv_ridge_lambda": 29.2
+        },
+        {
+          "fold": 4,
+          "train": 293,
+          "test": 68,
+          "routes": 16,
+          "route_correct": 15,
+          "abstained": 52,
+          "oof_acc": 0.7353,
+          "selected_l2": 0.01,
+          "l2_equiv_ridge_lambda": 2.9
+        }
+      ],
+      "OOD_R": 0.7857,
+      "note": "multinomial logistic, full-batch GD + momentum, L2 by inner CV"
+    }
+  },
+  "cross_checks": {
+    "raw_embeddings_ridge_lam_0.1": {
+      "routes": 88,
+      "P": 0.9205,
+      "C": 0.2438,
+      "A": 0.2244,
+      "A_all": 0.7175,
+      "E2E": 0.8808,
+      "expected": {
+        "A_all": 0.7175,
+        "routes": 88,
+        "P": 0.921,
+        "C": 0.244,
+        "E2E": 0.8808
+      }
+    },
+    "sklearn_logistic_states_C0.01": {
+      "A_all": 0.7064,
+      "note": "independent multinomial-logistic implementation, ungated OOF"
+    },
+    "auto_lambda_on_all_gold": {
+      "selected": 30.0,
+      "measured_best_in_corrected_run": 30,
+      "legacy_default": 0.001
+    },
+    "legacy_floor_on_this_projection": {
+      "A_all_lam_1e-3": 0.6343,
+      "A_all_lam_30": 0.7258,
+      "delta_A_all": 0.0915,
+      "routes_lam_1e-3": 50,
+      "routes_lam_30": 71,
+      "note": "the committed e1_real run quoted 0.125 for the legacy floor, but that run's input projection differs (e1_real draws its projection from an rng already consumed by the fold shuffles). On the projection that reproduces e1_corrected_results.json exactly (routes=71, P=0.9577, C=0.1967, E2E=0.8857) the legacy floor costs 9.2 points of all-case accuracy and 21 of the 71 routes."
+    }
+  },
+  "verdict": {
+    "reference": {
+      "head": "ridge_fixed_lam_30",
+      "A": 0.1884,
+      "A_all": 0.7258,
+      "P": 0.9577,
+      "C": 0.1967,
+      "E2E": 0.8857
+    },
+    "best_head_by_A_all": "ridge_fixed_lam_30",
+    "best_head_by_A_route_correct_over_total": "logistic_numpy_l2_cv",
+    "best_head_by_E2E": "ridge_fixed_lam_30",
+    "beats_ridge_on_E2E": null,
+    "beats_ridge_on_P": "centroid_prob_margin",
+    "beats_ridge_on_A_route_correct_over_total": "logistic_numpy_l2_cv",
+    "beats_ridge_on_A_all_ungated": null,
+    "chain_floor": 0.868,
+    "any_head_beats_ridge": false,
+    "plain_verdict": "No head beats the ridge+margin head where it matters. E2E: best non-ridge 'logistic_numpy_l2_cv' = 0.8800 vs ridge 0.8857. Ungated out-of-fold accuracy (how much signal the head actually extracts from the states): ridge 0.7258, logistic_numpy_l2_cv 0.7202, centroid (cosine margin) 0.6925, kNN-unanimity 0.5402. The logistic head wins only the route_correct/total reading of A, by routing far more cases (C 0.2798 vs 0.1967) at lower precision (P 0.9109 vs 0.9577) - a coverage/precision trade that still lands below the ridge on E2E. The campaign's centroid+cosine-margin champion does not transfer to reservoir states."
+  },
+  "runtime_s": 311.9
+}

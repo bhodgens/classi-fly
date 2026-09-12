@@ -81,6 +81,45 @@ These are real properties, all verified by the test suite:
 - **No per-host training.** The readout is baked into the artifact; a host
   just loads and calls.
 
+## 4b. Measured resource use vs the current Stage-0
+
+Both sides measured on this machine, production-shaped artifact (larval, 2952
+neurons, embed_dim 1024, 13 classes):
+
+| | current meept Stage-0 | classi-fly reservoir |
+|---|---|---|
+| on-disk models | 7.39 MB (prefilter store 5.07 + tfidf veto 2.32) | 1.66 MB artifact (zstd, from 3.38 MB raw); +6.8 MB binary only if run as a sidecar |
+| resident memory | ~2.6 MB (1.82 MB example vectors + 0.81 MB veto) | **30.6 MB** |
+| load cost | negligible (JSON parse) | 7.2 ms, 30.6 MB, 40 allocs — once, at startup |
+| per-call compute | ~0.6-0.7 ms (kNN scan over 222x1024, plus ~0.4 ms veto) | **1.90 ms**, 74 KB, 5 allocs |
+| network | none | none |
+| per-host training | needs a labeled corpus to rebuild the store | none — the readout is baked into the artifact |
+
+The cost driver is instructive: 24.2 MB of the 30.6 MB heap, and about 92% of
+the per-call multiply-adds, are the 1024x2952 float64 input projection. The
+recurrence itself is only 4 x 63,545 MACs. Keeping the projection in int8 or
+float32 at runtime (it is stored int8) would put the heap near 9 MB and cut the
+call well under 1 ms. **The brain is not the expensive part; the projection is.**
+
+## 4c. The one measured advantage: graceful degradation
+
+From `docs/AXES-2026-09-12.md`, independently reproduced: with input dimensions
+zeroed on the test fold, the reservoir beats a linear probe on the same
+embeddings by **+68 cases (+18.8 pt) at 75% truncation (p<1e-12)**, **+24 cases
+at 50% truncation (p=0.006)**, and **+28 cases at 50% dropout (p=0.002)**, with
+parity under dense Gaussian noise. Accuracy on clean input is parity.
+
+What that does and does not buy meept:
+
+- It buys resilience to **partially missing or degraded embeddings** — a
+  fallback embedder, a truncated/partial vector, a dimension-subset path.
+- It does **not** buy accuracy, and it does not help with semantic drift
+  (paraphrase, short inputs, template shift) — dense-noise parity is the proxy
+  for that, and there it is level.
+- The mechanism is a random projection plus about four tanh steps; a synthetic
+  license-free matrix reproduces it, so **no connectome is required**. More
+  steps is worse (8 steps degrades to 166/207 vs 208/225 at 4).
+
 ## 5. The honest recommendation for meept
 
 1. **Do not replace meept's Stage-0 head with this reservoir.** At C 19.7% /
@@ -99,6 +138,15 @@ pattern, not the brain. The `.fly` format + `Load`/`Classify` + sidecar +
 `assert_only` gate is a reusable shape for shipping any small classifier head
 as a self-contained, license-audited, deterministic Go artifact. That is
 useful independent of the reservoir research result.
+
+**One narrower route that survived the research (see 4c).** If meept ever has a
+degraded-embedding path - a fallback embedder, a truncated vector, a
+dimension-subset mode - a small synthetic (license-free) reservoir is a better
+head there than a linear probe: +18.8 pt at 75% truncation, +7.8 pt at 50%
+dropout, at the cost of ~30 MB resident and ~1.9 ms per call (both reducible by
+keeping the input projection in int8/float32). Do this only if that failure
+mode is real for meept; if embeddings always arrive complete, the benefit is
+zero and the simpler head wins.
 
 ## 6. Conditions that would change this answer
 

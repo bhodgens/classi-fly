@@ -201,8 +201,11 @@ needed to build the binary itself.
 ## Roadmap
 
 1. **E1-E5 experiments** (RESEARCH.md §7): run the judge-mode evaluation on a
-   real corpus against the baselines. Needs the ~35 MB larval connectome
-   download (owner-gated) and a local embedding server.
+   real corpus against the baselines. **Pipeline shakedown done** (see
+   `tools/eval/e1_shakedown.py`): the full path runs on the real 2,952-neuron
+   larval connectome with stand-in embeddings; precision-first gates behave.
+   The accuracy claim still needs real embeddings (a local embedding server;
+   network probing from the agent is blocked by policy).
 2. Validate or fix the `build` scaffold path (Finding 2).
 3. Consumer wiring: the first host to use classi-fly as a second-opinion
    judge in production.

@@ -1,0 +1,37 @@
+{
+  "note": "judge/arbiter modes with a properly tuned penalty; earlier judge number (0.8524) used the broken lam=1e-3",
+  "rows": [
+    {
+      "head": "reservoir alone",
+      "routes": 71,
+      "P": 0.9577,
+      "C": 0.1967,
+      "E2E": 0.8857,
+      "route_correct": 68
+    },
+    {
+      "head": "linear-probe alone",
+      "routes": 88,
+      "P": 0.9205,
+      "C": 0.2438,
+      "E2E": 0.8808,
+      "route_correct": 81
+    },
+    {
+      "head": "judge: probe AND reservoir agree",
+      "routes": 70,
+      "P": 0.9571,
+      "C": 0.1939,
+      "E2E": 0.8853,
+      "route_correct": 67
+    },
+    {
+      "head": "judge: probe OR reservoir agree",
+      "routes": 89,
+      "P": 0.9213,
+      "C": 0.2465,
+      "E2E": 0.8812,
+      "route_correct": 82
+    }
+  ]
+}

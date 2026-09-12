@@ -99,11 +99,23 @@ ln(K) and the trainer's learn-check aborts. Note the scaffold pairs themselves
 are separable — the loss gate is firing on the combination of saturated states
 and Finding 1's wrong scoring path.
 
-**Disposition: `classi-fly build` (the one-command seed→trained-artifact
-convenience path) is marked UNVALIDATED.** The supported path is
-`tools/ingest` → `tools/train/train_readout.py` with real pairs → `classi-fly
-pack`, which does not depend on the scaffold. Re-validate after Finding 1 is
-fixed and the trainer is re-run end to end.
+**Disposition: RESOLVED 2026-09-11 — the `classi-fly build` path now
+VALIDATED.** Root cause was Finding 1 (the trainer's mis-oriented scoring
+made the learn-check fire on correct fits); after the Finding 1 fix, both
+build end-to-end tests pass unchanged against the same provisional pack
+(`TestBuildSyntheticEndToEnd`, `TestBuildScaffoldPairs`):
+
+```
+go test ./cmd/classi-fly/ -run TestBuild -v
+--- PASS: TestBuildSyntheticEndToEnd (0.23s)
+--- PASS: TestBuildScaffoldPairs (0.18s)
+--- PASS: TestBuildMissingPython (0.00s)
+--- PASS: TestBuildUsage (0.00s)
+```
+
+The supported shipping path remains `tools/ingest` -> `tools/train` with real
+pairs -> `classi-fly pack`; `build` is the convenience wrapper and is now
+covered by passing end-to-end tests.
 
 ### Finding 3 — No committed `results.json` (VERIFICATION SCOPE NOTE)
 

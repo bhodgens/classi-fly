@@ -22,13 +22,12 @@ consumers in [docs/INTEGRATION.md](docs/INTEGRATION.md).
 | Quantization drift (int8 vs float) | 64 probes, 0 disagreements |
 | License audit | PASS; FlyWire fenced as benchmark-only |
 | E2E metric recomputation | matches to 1e-9; tamper detection works |
+| `classi-fly build` end-to-end | PASS (4 tests; was UNVALIDATED, fixed 2026-09-11) |
 
 **Honest limits** (from docs/VERIFICATION.md): the classifier *machinery* is
 verified; the *accuracy claims* are not. Experiments E1-E5 (does the reservoir
 beat baselines on real embeddings?) are UNVALIDATED - no real-corpus run has
-happened yet. The `classi-fly build` convenience path is UNVALIDATED
-(state saturation on scaffold pairs); use `pack` with a properly trained
-readout instead.
+happened yet.
 
 ## What is in this repository
 

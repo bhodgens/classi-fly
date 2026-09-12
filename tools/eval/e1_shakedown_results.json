@@ -1,0 +1,64 @@
+{
+  "experiment": "E1-shakedown",
+  "embedding": "tfidf-standin (NOT real embeddings)",
+  "reservoir": {
+    "name": "larval-v1",
+    "neurons": 2952,
+    "edges": 63545,
+    "steps": 4,
+    "decay": 0.8,
+    "license": "CC-BY-4.0"
+  },
+  "corpus": "/Users/caimlas/git/classi-fly/testdata/eval-fixtures/fixture_corpus.json5",
+  "items": 19,
+  "classes": [
+    "alpha",
+    "beta",
+    "gamma"
+  ],
+  "saturation": 0.0,
+  "routes": 0,
+  "abstained": 19,
+  "total": 19,
+  "P": 1.0,
+  "C": 0.0,
+  "E2E": 0.868,
+  "per_fold": [
+    {
+      "fold": 0,
+      "train_acc": 1.0,
+      "train_loss": 0.5514,
+      "routes": 0,
+      "abstained": 6
+    },
+    {
+      "fold": 1,
+      "train_acc": 1.0,
+      "train_loss": 0.5514,
+      "routes": 0,
+      "abstained": 4
+    },
+    {
+      "fold": 2,
+      "train_acc": 1.0,
+      "train_loss": 0.5514,
+      "routes": 0,
+      "abstained": 3
+    },
+    {
+      "fold": 3,
+      "train_acc": 1.0,
+      "train_loss": 0.5514,
+      "routes": 0,
+      "abstained": 3
+    },
+    {
+      "fold": 4,
+      "train_acc": 1.0,
+      "train_loss": 0.5514,
+      "routes": 0,
+      "abstained": 3
+    }
+  ],
+  "route_count_disclosure": "0/19 direct routes (sub-one-case margins are noise at n=19)"
+}

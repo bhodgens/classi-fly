@@ -1,7 +1,9 @@
 # Experiments — E1/E3 results (real embeddings)
 
-Run: 2026-09-11. Config and full numbers:
-`tools/eval/e1_real_results.json`. Runner: `tools/eval/e1_real.py`.
+Run: 2026-09-11. Original numbers: `tools/eval/e1_real_results.json` (and
+`e1_sweep_results.json`). **CORRECTION 2026-09-11: read the correction section
+at the end first — the original run understated every reservoir number because
+of a readout-regularization defect.**
 
 ## Setup
 
@@ -115,3 +117,96 @@ separate 13 fine-grained intent classes better than a centroid does.
 Shipping recommendation: **do not wire the reservoir into the classifier
 chain.** The machinery (artifact format, Go runtime, sidecar, judge pattern) is
 complete, tested, and reusable; the classifier value is not demonstrated.
+
+---
+
+# CORRECTION (2026-09-11, same day, append-only)
+
+## What was wrong
+
+Every number in the sections above — and the 18-cell drive/step sweep — was
+produced with the trainer's default ridge penalty (`RIDGE_LAMBDA = 1e-3`) in
+`tools/train/train_readout.py`. For a **2,952-dimensional readout fitted on
+~289 training samples per fold**, that penalty is effectively unregularized:
+the fit is wildly underdetermined and generalizes badly.
+
+Correcting the penalty changes the reservoir's all-case accuracy (`A`) from
+**0.125 to 0.726** — a 5.8x change, and the difference between "barely above
+chance" and "matches a linear probe". The committed sweep therefore measured
+an artifact of the penalty, not the reservoir.
+
+## Corrected results (lambda chosen per representation, 5-fold seed 42)
+
+Best penalty per representation, then the same precision-first gate
+(per-class train-side calibration, target 0.97, margin floor 0.05):
+
+| representation | best lambda | A (all cases) | gated routes | P | C | E2E | OOD-R |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| **larval reservoir** (2,952 neurons) | 30 | 0.7258 | 71/361 | 0.958 | 0.197 | **0.8857** | 0.929 |
+| **synthetic reservoir** (2,048) | 10 | 0.7313 | 86/361 | 0.942 | 0.238 | **0.8856** | 0.929 |
+| linear probe on raw embeddings | 0.1 | 0.7175 | 88/361 | 0.921 | 0.244 | 0.8808 | — |
+| centroid on embeddings (from the earlier run) | — | 0.704 | 70/361 | 0.914 | 0.194 | 0.8770 | — |
+
+Chain-only floor = 0.8680.
+
+## What the corrected numbers say
+
+1. **The reservoir is not broken — it is at parity.** With a sane penalty the
+   states carry real class information (A 0.726/0.731) and slightly edge the
+   linear probe on embeddings (0.718).
+2. **It still adds no information.** Concatenating embeddings with states gives
+   0.7285 versus 0.7258 for states alone and 0.7175 for embeddings alone — no
+   gain. The reservoir re-parameterizes the embedding; it does not enrich it.
+3. **Larval vs synthetic remains PARITY** (0.8857 vs 0.8856). The connectome
+   still shows no measurable advantage over a random mushroom-body-shaped
+   matrix.
+4. **Best gate result: E2E 0.886, P 0.958, covering ~20-24% of traffic** -
+   about +1.8 pt over the chain floor, but still below the pre-registered
+   97% precision gate.
+5. Differences of 1-2 cases at n=361 (0.3-0.6 pt) separate the reservoir from a
+   plain linear probe. That is noise, not a win.
+
+## Verdict after correction
+
+**Usable as machinery; still not a demonstrated classifier advantage.** A
+precision-first Stage-0 gate built on the reservoir would land around
+P 0.95 / C 0.20 / E2E 0.886. The same effect is available from a 13 KB linear
+probe over the embeddings that the host already computes — no reservoir, no
+2,952-neuron artifact, no connectome. Choose the reservoir only if the
+artifact-level properties matter (pure-Go, self-contained, no per-host
+training), not for accuracy.
+
+## Repo defect to fix
+
+`tools/train/train_readout.py: RIDGE_LAMBDA = 1e-3` is inappropriate for
+readouts whose width approaches or exceeds the training-set size. Either raise
+the default (10-30 is right for ~2,000-3,000 features with a few hundred
+samples) or select it by cross-validation. Left unfixed here: it is a tuning
+default, not a correctness bug, and changing it would invalidate the committed
+results above. Corrected numbers: `tools/eval/e1_corrected_results.json`.
+
+## Addendum: OOD detection (the one capability where recurrence could differ)
+
+The campaign needs OOD-R >= 95%. Novelty was measured as the mean cosine
+distance to the k=5 nearest training examples, in each space, then compared on
+the 361 gold (leave-one-out) versus the 28 gold-OOD cases:
+
+| space | AUC (OOD vs gold) | OOD detected at 95% gold-keep |
+|---|---:|---:|
+| embedding space (1024-d) | 0.592 | 14.3% |
+| reservoir state space (2,952-d) | 0.586 | 14.3% |
+
+Both spaces are weak and effectively identical. **The reservoir adds nothing
+for OOD detection either** - the recurrence does not separate out-of-distribution
+inputs any better than the embedding it was built from.
+
+## Final position
+
+Investigated: head quality, gate precision/coverage, judge mode, connectome vs
+synthetic, drive/step sweep, regularization, information content (concat test),
+and OOD novelty. In every case the reservoir is at parity with - never
+meaningfully better than - a linear probe or centroid over the embedding the
+host already computes.
+
+Use the machinery if you want a self-contained, pure-Go, per-host-untrainable
+artifact; do not expect an accuracy improvement from the fly brain.

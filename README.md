@@ -23,19 +23,24 @@ consumers in [docs/INTEGRATION.md](docs/INTEGRATION.md).
 | License audit | PASS; FlyWire fenced as benchmark-only |
 | E2E metric recomputation | matches to 1e-9; tamper detection works |
 | `classi-fly build` end-to-end | PASS (4 tests; was UNVALIDATED, fixed 2026-09-11) |
-| E1/E3 classifier value (real embeddings) | **PARITY - no advantage** - see docs/EXPERIMENTS.md |
+| E1/E3 classifier value (real embeddings) | **PARITY on accuracy** - docs/EXPERIMENTS.md |
 | Reservoir vs linear probe on embeddings | 0.7258 vs 0.7175 accuracy; gated E2E 0.886 vs 0.881 - within noise at n=361 |
 | Larval connectome vs synthetic | PARITY (0.8857 vs 0.8856) |
 | OOD novelty (state space vs embedding space) | 0.586 vs 0.592 AUC - no advantage |
+| Four levers (spectral radius, trained projection, mushroom body, robustness) | 3 parity/worse; robustness is a **real win** - docs/AXES-2026-09-12.md |
+| **Robustness to missing input dims** | **+18.8 pt at 75% truncation (p<1e-12), +7.8 pt at 50% dropout**; parity under noise |
 
-**Honest limits** (from docs/VERIFICATION.md and docs/EXPERIMENTS.md): the
-*machinery* is verified and works. The *classifier advantage* is not
-demonstrated: with a properly tuned readout the reservoir reaches parity with
-a linear probe over the embeddings the host already computes, adds no
-information (concat test), shows no connectome-vs-synthetic gain, and no OOD
-advantage. A 13 KB linear probe does the same job. Read the CORRECTION section
-of docs/EXPERIMENTS.md - an earlier negative result was partly a
-regularization artifact.
+**Honest limits** (docs/VERIFICATION.md, EXPERIMENTS.md, AXES-2026-09-12.md,
+MEEPT-INTEGRATION.md): the *machinery* is verified and works. On **clean input
+the reservoir is at parity** with a linear probe over the embeddings the host
+already computes - it adds no information, the connectome shows no advantage
+over a synthetic matrix, the mushroom-body subcircuit is worse than the whole
+brain, and it is not a useful arbiter (correlated with the host head). Its one
+measured advantage is **graceful degradation when input dimensions go missing**,
+which a license-free synthetic matrix reproduces. Measured cost vs meept's
+current Stage-0: 1.66 MB on disk (smaller) but 30.6 MB resident and 1.90 ms per
+call (~3x the current gate); the input projection, not the recurrence, is the
+cost driver.
 
 ## What is in this repository
 

@@ -23,15 +23,19 @@ consumers in [docs/INTEGRATION.md](docs/INTEGRATION.md).
 | License audit | PASS; FlyWire fenced as benchmark-only |
 | E2E metric recomputation | matches to 1e-9; tamper detection works |
 | `classi-fly build` end-to-end | PASS (4 tests; was UNVALIDATED, fixed 2026-09-11) |
-| E1/E3 classifier value (real embeddings) | **NOT DEMONSTRATED** - see docs/EXPERIMENTS.md |
+| E1/E3 classifier value (real embeddings) | **PARITY - no advantage** - see docs/EXPERIMENTS.md |
+| Reservoir vs linear probe on embeddings | 0.7258 vs 0.7175 accuracy; gated E2E 0.886 vs 0.881 - within noise at n=361 |
+| Larval connectome vs synthetic | PARITY (0.8857 vs 0.8856) |
+| OOD novelty (state space vs embedding space) | 0.586 vs 0.592 AUC - no advantage |
 
 **Honest limits** (from docs/VERIFICATION.md and docs/EXPERIMENTS.md): the
-classifier *machinery* is verified; the *classifier value* was measured and
-**NOT demonstrated**. E1/E3 ran with real embeddings (Qwen3-Embedding-0.6B,
-389 cases, 5-fold): the reservoir routes 50/361 cases at P 0.900 (E2E 0.8724)
-and is dominated by a plain embedding centroid (0.704 accuracy). A 18-cell
-drive/step sweep stayed inside a 0.6-point E2E band. Verdict: do not wire it
-into the classification chain. Full numbers in docs/EXPERIMENTS.md.
+*machinery* is verified and works. The *classifier advantage* is not
+demonstrated: with a properly tuned readout the reservoir reaches parity with
+a linear probe over the embeddings the host already computes, adds no
+information (concat test), shows no connectome-vs-synthetic gain, and no OOD
+advantage. A 13 KB linear probe does the same job. Read the CORRECTION section
+of docs/EXPERIMENTS.md - an earlier negative result was partly a
+regularization artifact.
 
 ## What is in this repository
 

@@ -1,0 +1,63 @@
+{
+  "corpus": 361,
+  "corrections_available": 3,
+  "chain_baseline": 0.868,
+  "rows": [
+    {
+      "variant": "frozen readout (what classi-fly ships)",
+      "routes": 71,
+      "P": 0.9577,
+      "C": 0.1967,
+      "E2E": 0.8857,
+      "wrong_routes": 3
+    },
+    {
+      "variant": "online delta-rule eta=0.05",
+      "routes": 68,
+      "P": 0.9559,
+      "C": 0.1884,
+      "E2E": 0.8846,
+      "wrong_routes": 3
+    },
+    {
+      "variant": "online delta-rule eta=0.2",
+      "routes": 66,
+      "P": 0.9545,
+      "C": 0.1828,
+      "E2E": 0.8838,
+      "wrong_routes": 3
+    },
+    {
+      "variant": "online delta-rule eta=1.0",
+      "routes": 102,
+      "P": 0.902,
+      "C": 0.2825,
+      "E2E": 0.8776,
+      "wrong_routes": 10
+    },
+    {
+      "variant": "threshold-only adaptation step=0.02",
+      "routes": 71,
+      "P": 0.9577,
+      "C": 0.1967,
+      "E2E": 0.8857,
+      "wrong_routes": 3
+    },
+    {
+      "variant": "threshold-only adaptation step=0.10",
+      "routes": 64,
+      "P": 0.9531,
+      "C": 0.1773,
+      "E2E": 0.8831,
+      "wrong_routes": 3
+    },
+    {
+      "variant": "anchored weight drift (EWC-lite)",
+      "routes": 68,
+      "P": 0.9559,
+      "C": 0.1884,
+      "E2E": 0.8846,
+      "wrong_routes": 3
+    }
+  ]
+}

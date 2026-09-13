@@ -172,14 +172,92 @@ correction signal exists. Adaptation and precision pull against each other.
 4. Is the robustness win (missing input dimensions) actually reachable in
    production meept, or is it solving a failure mode that never occurs?
 
-## 7. Lane status
+## 7. Lane 1 results (2026-09-12) - the first positive result in the project
+
+Harness: `tools/control/world.py` (7 sensors -> 2 motor commands, unit-disc
+phototaxis arena, 200-episode standard evaluation, modes `open` and `blink`).
+Runners and raw rows: `tools/control/reservoir_{imitation,search,selective}.py`
+and their `_results.json`.
+
+Bars (measured): heuristic 100% / 17.5 steps (open), 100% / 50.6 (blink3);
+memory-heuristic 100% / 18.1 (blink3); random 6.5%. Success saturates for both
+good baselines, so **mean steps-to-success is the discriminating metric**.
+
+| controller | open | blink3 | blink8 |
+|---|---|---|---|
+| reservoir + imitation readout (1A) | 100% / 17.4 | 100% / **17.8** | 100% / 40.9 |
+| direct linear map, same 7 sensors, same fit | 100% / 17.5 | 50.5% / 32.9 | 42.5% / 61.7 |
+| reservoir + random decoder | ~1% | ~1% | ~1% |
+| teacher (hand-written) | 100% / 17.5 | 100% / 18.1 | 100% / 31.4 |
+| reservoir + reward-search decoder (1B) | 100% / 17.9 | 99.5% / 31.6 | - |
+| dense trained readout on all 2952 states (1C) | 100% / 23.2 | 100% / 23.7 | - |
+| **DOOMFLY 2-neuron calibrated readout (1C)** | 100% / **18.4** | 49% / 71.1 | - |
+| degree-preserving shuffled wiring (1C) | 100% / 23.2 | 100% / 22.4 | - |
+| random sparse wiring, same counts (1C) | 100% / 23.1 | 100% / 22.3 | - |
+
+### What this establishes
+
+1. **Recurrence pays - the first measurable win for the substrate anywhere in
+   this project.** On the partially observable task the reservoir holds 100%
+   success while a memoryless map of the same sensors collapses to 50.5%
+   (blink3) and 42.5% (blink8). Independently reproduced by the orchestrator
+   with its own code (reservoir 100% / 17.1 vs direct 66.7% / 76.5 at n=60).
+   The mechanism is not mysterious: the light sensors are blanked two steps in
+   three, so a memoryless map literally cannot know where the light is.
+2. **The connectome is still not special.** 1C: real wiring is never better -
+   indistinguishable in open mode, and in blink mode it is slightly *worse*
+   than all five shuffled and all five random draws. That is the third
+   independent confirmation of the "biology is not the active ingredient"
+   result, now in the control domain rather than classification.
+3. **Reward search works but loses to imitation.** 1B: evolution strategy over
+   32-64 parameters reaches imitation parity in open mode (17.9 vs 17.4 steps)
+   and 99.5% in blink3 - but at 31.6 steps versus imitation's 17.8. It learns;
+   it needs a teacher to match one. Cost: 432,000 training episodes, 51.4M env
+   steps, ~29 minutes of wall clock.
+4. **The DOOMFLY pattern is genuine.** 1C: a two-neuron readout with one
+   calibrated gain per action - exactly the published pattern - reaches 18.4
+   steps in open mode, beating the dense 2952-input trained readout (23.2) and
+   nearly matching the hand-written rule (17.5). Selection matters: uncalibrated
+   random 8-neuron draws lose 10-30 steps. So the method people are using on the
+   male CNS is sound; it is the *wiring's* contribution that is not.
+5. **Weight scale dwarfs every other knob.** 1B: the raw int8 connectome has
+   spectral radius 42.7 and saturates 79% of units, capping blink learning at
+   29.5%; normalizing to spectral radius 0.9 lifts it to 98.5%. Bigger effect
+   than the search dimension or the training signal. Control-domain echo of the
+   classification sweep: scaling, not topology.
+
+### Bounds and caveats
+
+- Blind-gap length matters: at blink8 the reservoir is 100% but 9.5 steps
+  slower than the teacher, so it degrades faster than a hand-written rule as
+  observability drops.
+- The transducer is 7 synthetic sensors; this says nothing about real visual
+  input, and nothing about the male CNS at scale.
+- One harness bug was found and fixed during this lane (declared 8 sensors,
+  emitted 7). An (8, N) random draw and a (7, N) draw share identical rows 0-6,
+  so no measured result changes - verified directly.
+
+## 8. Lane status
 
 | lane | status | evidence |
 |---|---|---|
-| 1. fixed-graph control loop | open, untested | none yet - ranked first |
+| 1. fixed-graph control loop | **done - recurrence pays, biology does not** | `tools/control/`, table above |
 | 2. online plasticity | **closed (negative)** | `tools/eval/plasticity_probe.py` |
 | 2b. calibration-only adaptation | benched, low priority | same run: neutral |
-| 2c. scalar-reward reinforcement | untested, lowest priority | rationale above |
-| 3. temporal / rhythmic tasks | open, untested | none yet |
+| 2c. scalar-reward reinforcement | **partially answered by 1B**: reward-only search learns but trails a teacher | `tools/control/reservoir_search_results.json` |
+| 3. temporal / rhythmic tasks | open, untested - now better motivated (recurrence paid off) | none yet |
 | 4. geometry & motion (CNS-male) | open, untested; MaleCNS cost assessed | `docs/MALECNS-ASSESSMENT.md` |
 | 5. fixed benchmark substrate | partially done | Go runtime + benchmarks exist |
+
+### Next candidates, in priority order
+
+1. **Lane 3 (temporal),** now the strongest open lead: recurrence demonstrably
+   paid off on a partially observable task, so a stream/rhythm task is the
+   natural next test, and unlike classification it is not saturated.
+2. **Harden lane 1:** sweep blink period and sensor noise to find where the
+   recurrence advantage disappears, and test whether it survives with only 512
+   neurons (which would make the artifact cheap).
+3. **Real visual input** (optic lobe or a real camera-frame transducer) if the
+   synthetic result is to be extended - this is where MaleCNS's optic lobes
+   would actually be the point, at the cost documented in the MaleCNS
+   assessment.

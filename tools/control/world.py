@@ -37,7 +37,7 @@ import math
 
 import numpy as np
 
-SENSOR_DIM = 8
+SENSOR_DIM = 7
 ACTION_DIM = 2
 MAX_STEPS = 200
 ARENA_RADIUS = 1.0
@@ -53,13 +53,12 @@ def _norm(v):
 
 
 def obs_vector(pos, heading, light, visible=True):
-    """The 8 sensors. Order is part of the frozen interface.
+    """The 7 sensors. Order is part of the frozen interface.
 
-    When `visible` is False the light-derived sensors (indices 0-3) are zeroed,
-    which makes the task PARTIALLY OBSERVABLE: a memoryless controller cannot
-    know where the light is, so any success comes from integrating over time.
-    That is the only version of this task where a recurrent substrate can
-    plausibly beat a direct sensor-to-motor map.
+    FIXED 2026-09-12: this module previously declared SENSOR_DIM=8 while
+    returning 7 values, which forced every lane-1 agent to slice a superfluous
+    row. An (8, N) random draw and a (7, N) draw share identical rows 0-6, so
+    the fix does not change any result already measured - verified directly.
     """
     to_light = (light[0] - pos[0], light[1] - pos[1])
     dist = math.hypot(*to_light)

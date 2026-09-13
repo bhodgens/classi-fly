@@ -237,7 +237,75 @@ good baselines, so **mean steps-to-success is the discriminating metric**.
   emitted 7). An (8, N) random draw and a (7, N) draw share identical rows 0-6,
   so no measured result changes - verified directly.
 
-## 8. Lane status
+## 8. Mapping lane 1 back onto classification (meept and elsewhere)
+
+Lane 1's win was memory under partial input. Only one meept classification
+sub-problem has that shape, one lesson transfers without any model, and one is
+conditional.
+
+### 8.1 The real mapping: session-state intents as a SEQUENCE problem
+
+The campaign recorded that some intents are not decidable from the message
+alone - "implement tasks 7 and 8" is code text but may mean "execute the
+approved plan", and the discriminator is whether a plan is active. Per-message
+accuracy on that class plateaus near 84% (docs/plans/classifier-iteration/).
+That is a partially observable problem, exactly the shape lane 1 showed a
+recurrent substrate can handle.
+
+Design: classify a short SEQUENCE of turns rather than one message. Per-turn
+features are cheap - message embedding, plan-active flag, tracked-task count,
+previous agent, previous-turn-was-a-correction, turn index. A fixed recurrent
+core folds the sequence into one state; a small readout names the intent. Only
+the readout trains.
+
+**Cheap prerequisite test - do this first, and it needs no reservoir.**
+Concatenate the last three turns' features and fit a plain logistic
+regression. If that beats the per-message ceiling on plan-versus-code, session
+context is usable and a recurrent core is worth trying. If it does not, the
+ceiling is real and no architecture will fix it. Test the hypothesis before
+building the machinery.
+
+Gate: requires session-labelled transcripts. The adjudicated replay corpus is
+48 cases, so this is data-gated before it is idea-gated.
+
+### 8.2 The immediate mapping: scaling discipline, no new model
+
+Lane 1's largest single effect was scaling, not structure: raw connectome
+weights saturate 79% of units and cap learning at 29.5%; rescaling to spectral
+radius 0.9 lifts the identical network to 98.5%. Classification hit the same
+class of bug twice - a ridge penalty of 1e-3 where 30 was correct (+9 points),
+and a projection scale that mattered more than the network.
+
+Checklist to apply before any head work: sweep embedding normalisation, route
+threshold calibration, and any linear head's penalty. Cheap, and it has already
+paid twice.
+
+### 8.3 The conditional mapping: degraded embeddings
+
+Measured: with input dimensions missing, a reservoir head retains far more
+accuracy than a linear head (+18.8 pt at 75% truncation, +7.8 pt at 50%
+dropout). Relevant only if a consumer ever has a fallback embedder, a truncated
+vector, or a partially failed embedding batch. Today it does not, so the
+benefit is zero.
+
+### 8.4 Corroboration of an existing recommendation
+
+1C found that two hand-picked neurons with calibrated gains beat a dense
+trained readout over all 2,952 neurons. That is the control-domain form of "a
+few prototypes plus calibration beats dense learned weights on a big fixed
+transform" - independent support for the centroid head recommendation in meept
+issue #39.
+
+### 8.5 What not to do
+
+- Not a per-message reservoir head: parity with a ~13 KB linear probe at ~12x
+  the memory.
+- Not online learning from corrections: 3 corrections in 361 cases at the
+  shipped precision - no signal (`tools/eval/plasticity_probe.py`).
+- Not the fly wiring: three independent confirmations across classification and
+  control that it is not the active ingredient.
+
+## 9. Lane status
 
 | lane | status | evidence |
 |---|---|---|

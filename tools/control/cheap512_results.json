@@ -1,0 +1,119 @@
+{
+  "config": {
+    "neurons": 512,
+    "rho": 0.5,
+    "dist": "lognormal",
+    "decay": 0.8,
+    "steps": 4,
+    "embed_dim": 7,
+    "eval": "200 eps seed0=1000"
+  },
+  "modes": {
+    "blink3": {
+      "lam": 1.0,
+      "val_mse": 0.235334,
+      "float_reference": {
+        "success_rate": 1.0,
+        "mean_steps": 18.2
+      },
+      "fly_artifact": {
+        "success_rate": 1.0,
+        "mean_steps": 18.4,
+        "timeouts": 0,
+        "episodes": 200
+      },
+      "go_classify_spot_check": [
+        {
+          "python": "thrust",
+          "go": "thrust",
+          "agree": true
+        },
+        {
+          "python": "thrust",
+          "go": "thrust",
+          "agree": true
+        },
+        {
+          "python": "thrust",
+          "go": "thrust",
+          "agree": true
+        },
+        {
+          "python": "thrust",
+          "go": "thrust",
+          "agree": true
+        },
+        {
+          "python": "turn",
+          "go": "thrust",
+          "agree": false
+        }
+      ],
+      "fly_bytes": 12131
+    },
+    "blink8": {
+      "lam": 1.0,
+      "val_mse": 1.009075,
+      "float_reference": {
+        "success_rate": 1.0,
+        "mean_steps": 37.6
+      },
+      "fly_artifact": {
+        "success_rate": 1.0,
+        "mean_steps": 39.9,
+        "timeouts": 0,
+        "episodes": 200
+      },
+      "go_classify_spot_check": [
+        {
+          "python": "turn",
+          "go": "thrust",
+          "agree": false
+        },
+        {
+          "python": "thrust",
+          "go": "thrust",
+          "agree": true
+        },
+        {
+          "python": "thrust",
+          "go": "thrust",
+          "agree": true
+        },
+        {
+          "python": "thrust",
+          "go": "thrust",
+          "agree": true
+        },
+        {
+          "python": "thrust",
+          "go": "thrust",
+          "agree": true
+        }
+      ],
+      "fly_bytes": 12136
+    }
+  },
+  "go": {},
+  "sizes": {
+    "cheap512_blink3_fly": 12131,
+    "cheap512_blink8_fly": 12136,
+    "prod2952_fly": 1660332
+  },
+  "references": {
+    "real_connectome_blink3": {
+      "success_rate": 1.0,
+      "mean_steps": 17.8
+    },
+    "cosweep_512_row": {
+      "success_rate": 1.0,
+      "mean_steps": 18.2,
+      "blink8": {
+        "success_rate": 1.0,
+        "mean_steps": 37.6
+      }
+    }
+  },
+  "verdict": "CHEAP ARTIFACT MATCHES",
+  "runtime_seconds": 2.3
+}

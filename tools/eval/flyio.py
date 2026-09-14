@@ -47,6 +47,27 @@ class Info:
 
 
 def _maybe_zstd(raw: bytes) -> bytes:
+    """Normalize a .fly file to (header_len + header + raw payload) form.
+
+    Two layouts exist:
+    - Python-fixture layout: EITHER the whole file is a zstd frame of a raw
+      artifact, OR the raw artifact bytes directly.
+    - Go packer layout (reservoir.WriteFile): clear "FLYRES01 + headerLen +
+      JSON header" in front of a zstd-COMPRESSED payload. The payload frame
+      is decompressed in place so Load()'s header offsets still resolve; the
+      reassembled buffer keeps its original header bytes.
+    """
+    if raw[:8] == MAGIC:
+        (hl,) = struct.unpack_from("<I", raw, 8)
+        payload = raw[12 + hl:]
+        if raw[12:13] == b"{" and payload[:4] == ZSTD_MAGIC:
+            try:
+                import zstandard
+            except ImportError as exc:
+                raise RuntimeError(
+                    "fly: zstd-compressed .fly needs the zstandard module") from exc
+            return raw[:12 + hl] + zstandard.ZstdDecompressor().decompress(payload)
+        return raw
     if raw[:4] == ZSTD_MAGIC:
         try:
             import zstandard

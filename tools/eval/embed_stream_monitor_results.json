@@ -1,0 +1,101 @@
+{
+  "protocol": {
+    "warmup_gold": 100,
+    "shift_ood": 30,
+    "return_gold": 150,
+    "trials": 12,
+    "threshold_pctile": 0.99,
+    "seed": 42,
+    "reservoir": "larval 2952, steps=4, decay=0.8, win rng(42)*0.02, ws=1/127",
+    "state_not_reset_between_items": true,
+    "pool_sizes": {
+      "gold": 361,
+      "ood_gold": 28,
+      "ood_synthetic": 64
+    }
+  },
+  "thresholds": {
+    "10": {
+      "state": 0.13717723487065178,
+      "embed_win": 0.4248519897564141,
+      "embed_cal": 0.23537468808841044
+    },
+    "25": {
+      "state": 0.12575315113034383,
+      "embed_win": 0.42133458322377554,
+      "embed_cal": 0.23537468808841044
+    },
+    "50": {
+      "state": 0.12473141078063413,
+      "embed_win": 0.41962166489344904,
+      "embed_cal": 0.23537468808841044
+    }
+  },
+  "results": {
+    "10": {
+      "state": {
+        "detected_trials": "3/12",
+        "median_latency": 4.0,
+        "worst_latency": 7,
+        "fa_per_100_gold_mean": 0.0
+      },
+      "embed_win": {
+        "detected_trials": "9/12",
+        "median_latency": 7.0,
+        "worst_latency": 27,
+        "fa_per_100_gold_mean": 0.65
+      },
+      "embed_cal": {
+        "detected_trials": "12/12",
+        "median_latency": 2.5,
+        "worst_latency": 9,
+        "fa_per_100_gold_mean": 1.01
+      }
+    },
+    "25": {
+      "state": {
+        "detected_trials": "5/12",
+        "median_latency": 2.0,
+        "worst_latency": 17,
+        "fa_per_100_gold_mean": 0.87
+      },
+      "embed_win": {
+        "detected_trials": "9/12",
+        "median_latency": 4.0,
+        "worst_latency": 17,
+        "fa_per_100_gold_mean": 0.6
+      },
+      "embed_cal": {
+        "detected_trials": "12/12",
+        "median_latency": 2.5,
+        "worst_latency": 9,
+        "fa_per_100_gold_mean": 0.87
+      }
+    },
+    "50": {
+      "state": {
+        "detected_trials": "10/12",
+        "median_latency": 6.0,
+        "worst_latency": 30,
+        "fa_per_100_gold_mean": 0.83
+      },
+      "embed_win": {
+        "detected_trials": "12/12",
+        "median_latency": 5.5,
+        "worst_latency": 27,
+        "fa_per_100_gold_mean": 0.67
+      },
+      "embed_cal": {
+        "detected_trials": "12/12",
+        "median_latency": 2.5,
+        "worst_latency": 9,
+        "fa_per_100_gold_mean": 0.83
+      }
+    }
+  },
+  "verdict": {
+    "best_state_window": 50,
+    "best_embed_baseline": "embed_win",
+    "verdict": "STATE-NOVELTY WORSE"
+  }
+}

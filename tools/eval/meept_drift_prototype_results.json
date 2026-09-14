@@ -1,0 +1,1667 @@
+{
+  "meta": {
+    "db_rows": 635,
+    "db_sessions": 491,
+    "single_turn_sessions": 449,
+    "multi_turn_sessions": 42,
+    "multi_turn_sessions_ge3": 20,
+    "e1_reference_classes": [
+      "analyze",
+      "chat",
+      "code",
+      "debug",
+      "git",
+      "plan",
+      "platform",
+      "quickplan",
+      "recall",
+      "report",
+      "review",
+      "schedule",
+      "search"
+    ],
+    "feature_dims": 15,
+    "features_used": [
+      "confidence",
+      "intent_one_hot_vs_e1_13_plus_out_of_vocab"
+    ],
+    "features_dropped": {
+      "margin": "all NULL in dispatch_log (verified)",
+      "has_parts": "all 0 in dispatch_log (verified)",
+      "turn_no": "excluded from novelty features - constant-signal confound; 2/42 multi-turn sessions have turn_no>0 by construction"
+    },
+    "reference_population_size": 449,
+    "cosine_threshold_p95": 0.4371,
+    "reference_cos_distance": {
+      "mean": 0.2179,
+      "p50": 0.1823,
+      "p95": 0.4371,
+      "max": 0.7822
+    }
+  },
+  "summary": {
+    "sessions_with_cosine_drift": 15,
+    "sessions_with_isoforest_drift": 26,
+    "sessions_with_intent_change_rule": 22,
+    "overlap_cosine_and_rule": 14,
+    "overlap_isoforest_and_rule": 22,
+    "cosine_precision_vs_rule": 0.933,
+    "cosine_recall_vs_rule": 0.636,
+    "cosine_only_sessions": 8,
+    "rule_only_cosine_sessions": 1
+  },
+  "drift_vs_rarity": {
+    "note": "does the novelty signal track WITHIN-session change, or just session-level intent rarity?",
+    "flagged_change_turns": "20/48",
+    "flagged_same_intent_turns": "19/96",
+    "novelty_delta_maxmin_mean_change_sessions": 0.3805,
+    "novelty_delta_maxmin_mean_stable_sessions": 0.0167,
+    "novelty_delta_maxmin_median_change": 0.358,
+    "novelty_delta_maxmin_median_stable": 0.0132,
+    "flagged_sessions_containing_oov_intent": "8/15"
+  },
+  "sessions": [
+    {
+      "session_id": "conv-010d0596c3bc8251",
+      "n_turns": 3,
+      "intents": [
+        "code",
+        "chat",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.2285,
+        0.4371,
+        0.4371
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true,
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-02f41c5d9a68e1c9",
+      "n_turns": 4,
+      "intents": [
+        "skill",
+        "skill",
+        "platform",
+        "platform"
+      ],
+      "cosine_dist": [
+        0.1818,
+        0.1444,
+        0.4976,
+        0.4691
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "iso_flag": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        false,
+        true,
+        false
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-088f38534bc14426",
+      "n_turns": 3,
+      "intents": [
+        "code",
+        "chat",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.2285,
+        0.7049,
+        0.7049
+      ],
+      "cosine_flag": [
+        false,
+        true,
+        true
+      ],
+      "iso_flag": [
+        false,
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true,
+        false
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-0c4b9cad1f3a3720",
+      "n_turns": 2,
+      "intents": [
+        "code",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.1572,
+        0.4371
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-0c6614d0534cd3b3",
+      "n_turns": 2,
+      "intents": [
+        "code",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.2285,
+        0.4371
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-25197e866ebdd863",
+      "n_turns": 2,
+      "intents": [
+        "code",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.1572,
+        0.4371
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-35f69c7607ff5cac",
+      "n_turns": 2,
+      "intents": [
+        "skill",
+        "skill"
+      ],
+      "cosine_dist": [
+        0.1818,
+        0.1818
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-3bd4f3cc8feea4a3",
+      "n_turns": 2,
+      "intents": [
+        "skill",
+        "skill"
+      ],
+      "cosine_dist": [
+        0.1797,
+        0.1444
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-46ff867df539f46e",
+      "n_turns": 3,
+      "intents": [
+        "code",
+        "chat",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.2285,
+        0.4371,
+        0.4371
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true,
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-541c00dacb34f905",
+      "n_turns": 2,
+      "intents": [
+        "code",
+        "code"
+      ],
+      "cosine_dist": [
+        0.1572,
+        0.1439
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-5a483daa4d2d7cf9",
+      "n_turns": 2,
+      "intents": [
+        "code",
+        "code"
+      ],
+      "cosine_dist": [
+        0.2285,
+        0.1445
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-6253e0a51bc2612e",
+      "n_turns": 2,
+      "intents": [
+        "skill",
+        "skill"
+      ],
+      "cosine_dist": [
+        0.1833,
+        0.1797
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-6c0f1011288d6c67",
+      "n_turns": 2,
+      "intents": [
+        "researcher",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.1853,
+        0.7049
+      ],
+      "cosine_flag": [
+        false,
+        true
+      ],
+      "iso_flag": [
+        false,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-74800237cf423128",
+      "n_turns": 4,
+      "intents": [
+        "skill",
+        "skill",
+        "skill",
+        "skill"
+      ],
+      "cosine_dist": [
+        0.1797,
+        0.1444,
+        0.1887,
+        0.1833
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false,
+        false,
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-7e2b202f6a954f09",
+      "n_turns": 12,
+      "intents": [
+        "tooluse",
+        "tooluse",
+        "tooluse",
+        "tooluse",
+        "tooluse",
+        "tooluse",
+        "tooluse",
+        "tooluse",
+        "tooluse",
+        "tooluse",
+        "tooluse",
+        "tooluse"
+      ],
+      "cosine_dist": [
+        0.1579,
+        0.1579,
+        0.1584,
+        0.1584,
+        0.1584,
+        0.1459,
+        0.1593,
+        0.1599,
+        0.1599,
+        0.1577,
+        0.1599,
+        0.1565
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "rule_flag_intent_change": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": true,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-7efd31fcd08e9caa",
+      "n_turns": 2,
+      "intents": [
+        "code",
+        "code"
+      ],
+      "cosine_dist": [
+        0.1572,
+        0.144
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-83ee881874f24ce2",
+      "n_turns": 3,
+      "intents": [
+        "code",
+        "chat",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.2285,
+        0.7049,
+        0.7049
+      ],
+      "cosine_flag": [
+        false,
+        true,
+        true
+      ],
+      "iso_flag": [
+        false,
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true,
+        false
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-915530c5a0515dca",
+      "n_turns": 2,
+      "intents": [
+        "skill",
+        "skill"
+      ],
+      "cosine_dist": [
+        0.1818,
+        0.1818
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-9801182da7858afc",
+      "n_turns": 2,
+      "intents": [
+        "code",
+        "compound"
+      ],
+      "cosine_dist": [
+        0.1758,
+        0.5388
+      ],
+      "cosine_flag": [
+        false,
+        true
+      ],
+      "iso_flag": [
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-a1a61494cd94f8fe",
+      "n_turns": 3,
+      "intents": [
+        "skill",
+        "skill",
+        "skill"
+      ],
+      "cosine_dist": [
+        0.1818,
+        0.1818,
+        0.1818
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false,
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-a6e316978e18a0f8",
+      "n_turns": 2,
+      "intents": [
+        "code",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.2285,
+        0.7049
+      ],
+      "cosine_flag": [
+        false,
+        true
+      ],
+      "iso_flag": [
+        false,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-a8379ea7440a9820",
+      "n_turns": 2,
+      "intents": [
+        "code",
+        "code"
+      ],
+      "cosine_dist": [
+        0.1572,
+        0.144
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-a8abd81645a02ac8",
+      "n_turns": 2,
+      "intents": [
+        "skill",
+        "skill"
+      ],
+      "cosine_dist": [
+        0.1833,
+        0.1833
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-ae38d720742de967",
+      "n_turns": 2,
+      "intents": [
+        "chat",
+        "skill"
+      ],
+      "cosine_dist": [
+        0.4371,
+        0.1657
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-b2b875179ce5b772",
+      "n_turns": 3,
+      "intents": [
+        "code",
+        "chat",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.2285,
+        0.4371,
+        0.4371
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true,
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-bf5a3c456a71d0ba",
+      "n_turns": 2,
+      "intents": [
+        "skill",
+        "skill"
+      ],
+      "cosine_dist": [
+        0.1818,
+        0.1818
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-c40addb85b780bfb",
+      "n_turns": 2,
+      "intents": [
+        "platform",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.4976,
+        0.7049
+      ],
+      "cosine_flag": [
+        true,
+        true
+      ],
+      "iso_flag": [
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-cdd0f136cab73626",
+      "n_turns": 3,
+      "intents": [
+        "skill",
+        "skill",
+        "skill"
+      ],
+      "cosine_dist": [
+        0.1818,
+        0.1818,
+        0.1818
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false,
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-cf0f0a573f3eb4af",
+      "n_turns": 3,
+      "intents": [
+        "code",
+        "chat",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.2285,
+        0.7049,
+        0.7049
+      ],
+      "cosine_flag": [
+        false,
+        true,
+        true
+      ],
+      "iso_flag": [
+        false,
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true,
+        false
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-cf2a9e825cb5f4cf",
+      "n_turns": 5,
+      "intents": [
+        "skill",
+        "skill",
+        "chat",
+        "chat",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.1818,
+        0.1444,
+        0.7049,
+        0.4371,
+        0.4371
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false,
+        true,
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        false,
+        true,
+        false,
+        false
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-d7278a46aa743bd6",
+      "n_turns": 2,
+      "intents": [
+        "code",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.1572,
+        0.4371
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-dc44e34660a42e71",
+      "n_turns": 2,
+      "intents": [
+        "code",
+        "code"
+      ],
+      "cosine_dist": [
+        0.1572,
+        0.1439
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-does-not-exist",
+      "n_turns": 4,
+      "intents": [
+        "chat",
+        "chat",
+        "chat",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.4371,
+        0.4371,
+        0.4371,
+        0.4371
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "iso_flag": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        false,
+        false,
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": true,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-e76182c53bc9873c",
+      "n_turns": 4,
+      "intents": [
+        "skill",
+        "skill",
+        "skill",
+        "skill"
+      ],
+      "cosine_dist": [
+        0.1797,
+        0.1444,
+        0.1887,
+        0.1818
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false,
+        false,
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-e8e3ab885569d566",
+      "n_turns": 2,
+      "intents": [
+        "chat",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.7049,
+        0.7049
+      ],
+      "cosine_flag": [
+        true,
+        true
+      ],
+      "iso_flag": [
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": false
+    },
+    {
+      "session_id": "conv-f56bfa6f3e102726",
+      "n_turns": 10,
+      "intents": [
+        "skill",
+        "skill",
+        "skill",
+        "skill",
+        "skill",
+        "skill",
+        "skill",
+        "skill",
+        "skill",
+        "platform"
+      ],
+      "cosine_dist": [
+        0.1797,
+        0.1444,
+        0.1797,
+        0.1444,
+        0.1797,
+        0.1444,
+        0.1887,
+        0.1833,
+        0.1833,
+        0.4976
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "iso_flag": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "rule_flag_intent_change": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "conv-fb86329f810c1cab",
+      "n_turns": 2,
+      "intents": [
+        "code",
+        "code"
+      ],
+      "cosine_dist": [
+        0.158,
+        0.1391
+      ],
+      "cosine_flag": [
+        false,
+        false
+      ],
+      "iso_flag": [
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": true,
+      "any_rule": false
+    },
+    {
+      "session_id": "session-443390a83b97886e",
+      "n_turns": 22,
+      "intents": [
+        "code",
+        "code",
+        "chat",
+        "code",
+        "chat",
+        "plan",
+        "code",
+        "plan",
+        "plan",
+        "code",
+        "chat",
+        "code",
+        "code",
+        "code",
+        "code",
+        "code",
+        "chat",
+        "code",
+        "code",
+        "code",
+        "code",
+        "code"
+      ],
+      "cosine_dist": [
+        0.1571,
+        0.1571,
+        0.4371,
+        0.1572,
+        0.7049,
+        0.5143,
+        0.1443,
+        0.5194,
+        0.4889,
+        0.1578,
+        0.7049,
+        0.1578,
+        0.1573,
+        0.1439,
+        0.1391,
+        0.1391,
+        0.7049,
+        0.1391,
+        0.1578,
+        0.1578,
+        0.1578,
+        0.1578
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "iso_flag": [
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "session-6ef9cc62ebecffec",
+      "n_turns": 14,
+      "intents": [
+        "schedule",
+        "compound",
+        "schedule",
+        "schedule",
+        "schedule",
+        "code",
+        "code",
+        "chat",
+        "code",
+        "code",
+        "code",
+        "chat",
+        "code",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.4991,
+        0.5388,
+        0.4706,
+        0.4706,
+        0.4706,
+        0.1507,
+        0.1391,
+        0.4238,
+        0.1391,
+        0.1575,
+        0.1573,
+        0.4371,
+        0.1573,
+        0.4371
+      ],
+      "cosine_flag": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "iso_flag": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        false,
+        true
+      ],
+      "rule_flag_intent_change": [
+        true,
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
+        true,
+        false,
+        false,
+        true,
+        true,
+        true
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "session-89e9417fb6c19d98",
+      "n_turns": 22,
+      "intents": [
+        "chat",
+        "skill",
+        "chat",
+        "chat",
+        "chat",
+        "tooluse",
+        "quickplan",
+        "quickplan",
+        "quickplan",
+        "instruction",
+        "tooluse",
+        "code",
+        "code",
+        "quickplan",
+        "quickplan",
+        "quickplan",
+        "quickplan",
+        "quickplan",
+        "quickplan",
+        "quickplan",
+        "tooluse",
+        "tooluse"
+      ],
+      "cosine_dist": [
+        0.7049,
+        0.1818,
+        0.5432,
+        0.5432,
+        0.5432,
+        0.1592,
+        0.7822,
+        0.7822,
+        0.7822,
+        0.1444,
+        0.1563,
+        0.1507,
+        0.1391,
+        0.7822,
+        0.7822,
+        0.7822,
+        0.7822,
+        0.7822,
+        0.7822,
+        0.7822,
+        0.1592,
+        0.1466
+      ],
+      "cosine_flag": [
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "iso_flag": [
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        true,
+        true,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+        true,
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "session-957efd881f8ffe18",
+      "n_turns": 14,
+      "intents": [
+        "chat",
+        "chat",
+        "chat",
+        "chat",
+        "chat",
+        "chat",
+        "chat",
+        "chat",
+        "chat",
+        "chat",
+        "clarify",
+        "chat",
+        "chat",
+        "chat"
+      ],
+      "cosine_dist": [
+        0.5432,
+        0.4116,
+        0.4238,
+        0.4116,
+        0.4116,
+        0.4116,
+        0.4116,
+        0.4116,
+        0.4116,
+        0.4371,
+        0.1499,
+        0.4371,
+        0.7049,
+        0.4371
+      ],
+      "cosine_flag": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "iso_flag": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rule_flag_intent_change": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false
+      ],
+      "any_drift_cosine": true,
+      "any_drift_iso": true,
+      "any_rule": true
+    },
+    {
+      "session_id": "session-996ca25ddae0c2cc",
+      "n_turns": 3,
+      "intents": [
+        "skill",
+        "skill",
+        "skill"
+      ],
+      "cosine_dist": [
+        0.1818,
+        0.1818,
+        0.1444
+      ],
+      "cosine_flag": [
+        false,
+        false,
+        false
+      ],
+      "iso_flag": [
+        false,
+        false,
+        false
+      ],
+      "rule_flag_intent_change": [
+        false,
+        false
+      ],
+      "any_drift_cosine": false,
+      "any_drift_iso": false,
+      "any_rule": false
+    }
+  ]
+}

@@ -340,6 +340,12 @@ issue #39.
 
 ## 9. Lane status
 
+Housekeeping closed 2026-09-14: the 8 stray tracked .pyc files are untracked
+and pushed (c201d9b); the Qwen3 embedding server (pid 28308) used for the
+real-embedding runs has been stopped. Restart command is recorded in
+docs/EXPERIMENTS.md's companion notes: meept's scripts/embed_server.py on port
+8090 with /Volumes/LLMs/Qwen3-Embedding-0.6B-4bit-DWQ.
+
 | lane | status | evidence |
 |---|---|---|
 | 1. fixed-graph control loop | **done - recurrence pays, biology does not** | `tools/control/`, table above |

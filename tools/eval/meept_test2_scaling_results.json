@@ -1,0 +1,898 @@
+{
+  "experiment": "meept test 2 - do the three scaling knobs buy anything?",
+  "mapping": "docs/DIRECTIONS.md section 8.2 (scaling discipline, no new model)",
+  "source": {
+    "inputs": "/Users/caimlas/git/classi-fly/data/e1_inputs.json",
+    "adjacency": "/Users/caimlas/git/classi-fly/data/larval_adjacency.json",
+    "gold": 361,
+    "ood": 28,
+    "classes": [
+      "analyze",
+      "chat",
+      "code",
+      "debug",
+      "git",
+      "plan",
+      "platform",
+      "quickplan",
+      "recall",
+      "report",
+      "review",
+      "schedule",
+      "search"
+    ],
+    "embed_dim": 1024,
+    "neurons": 2952,
+    "edges": 63545,
+    "states_saturation": 0.0,
+    "embeddings_unit_norm": true,
+    "states_recipe": "s = tanh(0.8*s + W@s + win*x), steps=4, win = seeded int8 projection (rng 42) shape (1024,2952) * 0.02"
+  },
+  "protocol": {
+    "folds": 5,
+    "seed": 42,
+    "fold_rule": "shuffle per class with np.random.default_rng(42), fold = position % 5",
+    "route_rule": "top-1 prob >= calibrated threshold AND (top1-top2) margin > 0.05",
+    "calibration": "choose_thresholds(train rows clearing the margin floor, target_precision) - TRAIN side only",
+    "metrics": {
+      "P": "route_correct/routes (wrong routes stay in the denominator)",
+      "C": "routes/total",
+      "A": "route_correct/total",
+      "A_all": "ungated out-of-fold argmax accuracy over all gold",
+      "E2E": "(route_correct + 0.868*abstained)/total"
+    },
+    "one_case_pt": 0.28,
+    "chain_floor": 0.868
+  },
+  "baselines_to_beat": {
+    "centroid_head": {
+      "routes": 70,
+      "P": 0.914,
+      "C": 0.194,
+      "E2E": 0.877
+    },
+    "ridge_states_lam30": {
+      "routes": 71,
+      "P": 0.9577,
+      "C": 0.1967,
+      "E2E": 0.8857
+    },
+    "linear_probe_emb_lam0.1": {
+      "routes": 88,
+      "P": 0.9205,
+      "C": 0.2438,
+      "E2E": 0.8808
+    }
+  },
+  "self_check": {
+    "linear_probe_emb_lam0.1": {
+      "routes": 88,
+      "route_correct": 81,
+      "abstained": 273,
+      "total": 361,
+      "P": 0.9205,
+      "C": 0.2438,
+      "A": 0.2244,
+      "A_all": 0.7175,
+      "E2E": 0.8808
+    },
+    "expected_probe": {
+      "routes": 88,
+      "P": 0.9205,
+      "C": 0.2438,
+      "E2E": 0.8808
+    },
+    "ridge_states_lam30": {
+      "routes": 71,
+      "route_correct": 68,
+      "abstained": 290,
+      "total": 361,
+      "P": 0.9577,
+      "C": 0.1967,
+      "A": 0.1884,
+      "A_all": 0.7258,
+      "E2E": 0.8857
+    },
+    "expected_states": {
+      "routes": 71,
+      "P": 0.9577,
+      "C": 0.1967,
+      "E2E": 0.8857
+    },
+    "probe_reproduced": true,
+    "states_reproduced": true
+  },
+  "knob1_normalisation": {
+    "note": "linear probe (ridge) on embeddings; lam0.1 is the committed baseline penalty, auto is the inner-CV choice. 'raw' and 'l2' coincide because the stored embeddings are already unit-norm.",
+    "rows": {
+      "raw__lam0.1": {
+        "routes": 88,
+        "route_correct": 81,
+        "abstained": 273,
+        "total": 361,
+        "P": 0.9205,
+        "C": 0.2438,
+        "A": 0.2244,
+        "A_all": 0.7175,
+        "E2E": 0.8808,
+        "lambda": 0.1
+      },
+      "raw__auto": {
+        "routes": 88,
+        "route_correct": 81,
+        "abstained": 273,
+        "total": 361,
+        "P": 0.9205,
+        "C": 0.2438,
+        "A": 0.2244,
+        "A_all": 0.7175,
+        "E2E": 0.8808,
+        "lambda": "auto"
+      },
+      "l2__lam0.1": {
+        "routes": 88,
+        "route_correct": 81,
+        "abstained": 273,
+        "total": 361,
+        "P": 0.9205,
+        "C": 0.2438,
+        "A": 0.2244,
+        "A_all": 0.7175,
+        "E2E": 0.8808,
+        "lambda": 0.1
+      },
+      "l2__auto": {
+        "routes": 88,
+        "route_correct": 81,
+        "abstained": 273,
+        "total": 361,
+        "P": 0.9205,
+        "C": 0.2438,
+        "A": 0.2244,
+        "A_all": 0.7175,
+        "E2E": 0.8808,
+        "lambda": "auto"
+      },
+      "l2_centred__lam0.1": {
+        "routes": 92,
+        "route_correct": 85,
+        "abstained": 269,
+        "total": 361,
+        "P": 0.9239,
+        "C": 0.2548,
+        "A": 0.2355,
+        "A_all": 0.6981,
+        "E2E": 0.8822,
+        "lambda": 0.1
+      },
+      "l2_centred__auto": {
+        "routes": 61,
+        "route_correct": 56,
+        "abstained": 300,
+        "total": 361,
+        "P": 0.918,
+        "C": 0.169,
+        "A": 0.1551,
+        "A_all": 0.7119,
+        "E2E": 0.8765,
+        "lambda": "auto"
+      },
+      "standardised__lam0.1": {
+        "routes": 37,
+        "route_correct": 33,
+        "abstained": 324,
+        "total": 361,
+        "P": 0.8919,
+        "C": 0.1025,
+        "A": 0.0914,
+        "A_all": 0.6316,
+        "E2E": 0.8704,
+        "lambda": 0.1
+      },
+      "standardised__auto": {
+        "routes": 33,
+        "route_correct": 31,
+        "abstained": 328,
+        "total": 361,
+        "P": 0.9394,
+        "C": 0.0914,
+        "A": 0.0859,
+        "A_all": 0.7202,
+        "E2E": 0.8745,
+        "lambda": "auto"
+      }
+    }
+  },
+  "knob1_x_knob3_probe_grid": {
+    "raw__lam0.001": {
+      "routes": 52,
+      "route_correct": 44,
+      "abstained": 309,
+      "total": 361,
+      "P": 0.8462,
+      "C": 0.144,
+      "A": 0.1219,
+      "A_all": 0.6399,
+      "E2E": 0.8649,
+      "penalty": 0.001
+    },
+    "raw__lam0.01": {
+      "routes": 79,
+      "route_correct": 71,
+      "abstained": 282,
+      "total": 361,
+      "P": 0.8987,
+      "C": 0.2188,
+      "A": 0.1967,
+      "A_all": 0.6814,
+      "E2E": 0.8747,
+      "penalty": 0.01
+    },
+    "raw__lam0.1": {
+      "routes": 88,
+      "route_correct": 81,
+      "abstained": 273,
+      "total": 361,
+      "P": 0.9205,
+      "C": 0.2438,
+      "A": 0.2244,
+      "A_all": 0.7175,
+      "E2E": 0.8808,
+      "penalty": 0.1
+    },
+    "raw__lam1": {
+      "routes": 15,
+      "route_correct": 14,
+      "abstained": 346,
+      "total": 361,
+      "P": 0.9333,
+      "C": 0.0416,
+      "A": 0.0388,
+      "A_all": 0.6759,
+      "E2E": 0.8707,
+      "penalty": 1.0
+    },
+    "raw__lam10": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.4681,
+      "E2E": 0.868,
+      "penalty": 10.0
+    },
+    "raw__lam30": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.2548,
+      "E2E": 0.868,
+      "penalty": 30.0
+    },
+    "raw__lam100": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.2244,
+      "E2E": 0.868,
+      "penalty": 100.0
+    },
+    "raw__lam1000": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.2244,
+      "E2E": 0.868,
+      "penalty": 1000.0
+    },
+    "l2__lam0.001": {
+      "routes": 52,
+      "route_correct": 44,
+      "abstained": 309,
+      "total": 361,
+      "P": 0.8462,
+      "C": 0.144,
+      "A": 0.1219,
+      "A_all": 0.6399,
+      "E2E": 0.8649,
+      "penalty": 0.001
+    },
+    "l2__lam0.01": {
+      "routes": 79,
+      "route_correct": 71,
+      "abstained": 282,
+      "total": 361,
+      "P": 0.8987,
+      "C": 0.2188,
+      "A": 0.1967,
+      "A_all": 0.6814,
+      "E2E": 0.8747,
+      "penalty": 0.01
+    },
+    "l2__lam0.1": {
+      "routes": 88,
+      "route_correct": 81,
+      "abstained": 273,
+      "total": 361,
+      "P": 0.9205,
+      "C": 0.2438,
+      "A": 0.2244,
+      "A_all": 0.7175,
+      "E2E": 0.8808,
+      "penalty": 0.1
+    },
+    "l2__lam1": {
+      "routes": 15,
+      "route_correct": 14,
+      "abstained": 346,
+      "total": 361,
+      "P": 0.9333,
+      "C": 0.0416,
+      "A": 0.0388,
+      "A_all": 0.6759,
+      "E2E": 0.8707,
+      "penalty": 1.0
+    },
+    "l2__lam10": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.4681,
+      "E2E": 0.868,
+      "penalty": 10.0
+    },
+    "l2__lam30": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.2548,
+      "E2E": 0.868,
+      "penalty": 30.0
+    },
+    "l2__lam100": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.2244,
+      "E2E": 0.868,
+      "penalty": 100.0
+    },
+    "l2__lam1000": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.2244,
+      "E2E": 0.868,
+      "penalty": 1000.0
+    },
+    "l2_centred__lam0.001": {
+      "routes": 47,
+      "route_correct": 40,
+      "abstained": 314,
+      "total": 361,
+      "P": 0.8511,
+      "C": 0.1302,
+      "A": 0.1108,
+      "A_all": 0.6343,
+      "E2E": 0.8658,
+      "penalty": 0.001
+    },
+    "l2_centred__lam0.01": {
+      "routes": 57,
+      "route_correct": 49,
+      "abstained": 304,
+      "total": 361,
+      "P": 0.8596,
+      "C": 0.1579,
+      "A": 0.1357,
+      "A_all": 0.651,
+      "E2E": 0.8667,
+      "penalty": 0.01
+    },
+    "l2_centred__lam0.1": {
+      "routes": 92,
+      "route_correct": 85,
+      "abstained": 269,
+      "total": 361,
+      "P": 0.9239,
+      "C": 0.2548,
+      "A": 0.2355,
+      "A_all": 0.6981,
+      "E2E": 0.8822,
+      "penalty": 0.1
+    },
+    "l2_centred__lam1": {
+      "routes": 57,
+      "route_correct": 54,
+      "abstained": 304,
+      "total": 361,
+      "P": 0.9474,
+      "C": 0.1579,
+      "A": 0.1496,
+      "A_all": 0.7202,
+      "E2E": 0.8805,
+      "penalty": 1.0
+    },
+    "l2_centred__lam10": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.5596,
+      "E2E": 0.868,
+      "penalty": 10.0
+    },
+    "l2_centred__lam30": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.4681,
+      "E2E": 0.868,
+      "penalty": 30.0
+    },
+    "l2_centred__lam100": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.2687,
+      "E2E": 0.868,
+      "penalty": 100.0
+    },
+    "l2_centred__lam1000": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.2244,
+      "E2E": 0.868,
+      "penalty": 1000.0
+    },
+    "standardised__lam0.001": {
+      "routes": 37,
+      "route_correct": 33,
+      "abstained": 324,
+      "total": 361,
+      "P": 0.8919,
+      "C": 0.1025,
+      "A": 0.0914,
+      "A_all": 0.6316,
+      "E2E": 0.8704,
+      "penalty": 0.001
+    },
+    "standardised__lam0.01": {
+      "routes": 37,
+      "route_correct": 33,
+      "abstained": 324,
+      "total": 361,
+      "P": 0.8919,
+      "C": 0.1025,
+      "A": 0.0914,
+      "A_all": 0.6316,
+      "E2E": 0.8704,
+      "penalty": 0.01
+    },
+    "standardised__lam0.1": {
+      "routes": 37,
+      "route_correct": 33,
+      "abstained": 324,
+      "total": 361,
+      "P": 0.8919,
+      "C": 0.1025,
+      "A": 0.0914,
+      "A_all": 0.6316,
+      "E2E": 0.8704,
+      "penalty": 0.1
+    },
+    "standardised__lam1": {
+      "routes": 41,
+      "route_correct": 37,
+      "abstained": 320,
+      "total": 361,
+      "P": 0.9024,
+      "C": 0.1136,
+      "A": 0.1025,
+      "A_all": 0.6343,
+      "E2E": 0.8719,
+      "penalty": 1.0
+    },
+    "standardised__lam10": {
+      "routes": 49,
+      "route_correct": 44,
+      "abstained": 312,
+      "total": 361,
+      "P": 0.898,
+      "C": 0.1357,
+      "A": 0.1219,
+      "A_all": 0.6454,
+      "E2E": 0.8721,
+      "penalty": 10.0
+    },
+    "standardised__lam30": {
+      "routes": 58,
+      "route_correct": 54,
+      "abstained": 303,
+      "total": 361,
+      "P": 0.931,
+      "C": 0.1607,
+      "A": 0.1496,
+      "A_all": 0.662,
+      "E2E": 0.8781,
+      "penalty": 30.0
+    },
+    "standardised__lam100": {
+      "routes": 81,
+      "route_correct": 77,
+      "abstained": 280,
+      "total": 361,
+      "P": 0.9506,
+      "C": 0.2244,
+      "A": 0.2133,
+      "A_all": 0.687,
+      "E2E": 0.8865,
+      "penalty": 100.0
+    },
+    "standardised__lam1000": {
+      "routes": 33,
+      "route_correct": 31,
+      "abstained": 328,
+      "total": 361,
+      "P": 0.9394,
+      "C": 0.0914,
+      "A": 0.0859,
+      "A_all": 0.7202,
+      "E2E": 0.8745,
+      "penalty": 1000.0
+    }
+  },
+  "knob3_penalty_states": {
+    "lam0.001": {
+      "routes": 50,
+      "route_correct": 45,
+      "abstained": 311,
+      "total": 361,
+      "P": 0.9,
+      "C": 0.1385,
+      "A": 0.1247,
+      "A_all": 0.6343,
+      "E2E": 0.8724,
+      "penalty": 0.001
+    },
+    "lam0.01": {
+      "routes": 50,
+      "route_correct": 45,
+      "abstained": 311,
+      "total": 361,
+      "P": 0.9,
+      "C": 0.1385,
+      "A": 0.1247,
+      "A_all": 0.6343,
+      "E2E": 0.8724,
+      "penalty": 0.01
+    },
+    "lam0.1": {
+      "routes": 51,
+      "route_correct": 46,
+      "abstained": 310,
+      "total": 361,
+      "P": 0.902,
+      "C": 0.1413,
+      "A": 0.1274,
+      "A_all": 0.6482,
+      "E2E": 0.8728,
+      "penalty": 0.1
+    },
+    "lam1": {
+      "routes": 76,
+      "route_correct": 68,
+      "abstained": 285,
+      "total": 361,
+      "P": 0.8947,
+      "C": 0.2105,
+      "A": 0.1884,
+      "A_all": 0.6676,
+      "E2E": 0.8736,
+      "penalty": 1.0
+    },
+    "lam10": {
+      "routes": 93,
+      "route_correct": 86,
+      "abstained": 268,
+      "total": 361,
+      "P": 0.9247,
+      "C": 0.2576,
+      "A": 0.2382,
+      "A_all": 0.7064,
+      "E2E": 0.8826,
+      "penalty": 10.0
+    },
+    "lam30": {
+      "routes": 71,
+      "route_correct": 68,
+      "abstained": 290,
+      "total": 361,
+      "P": 0.9577,
+      "C": 0.1967,
+      "A": 0.1884,
+      "A_all": 0.7258,
+      "E2E": 0.8857,
+      "penalty": 30.0
+    },
+    "lam100": {
+      "routes": 27,
+      "route_correct": 26,
+      "abstained": 334,
+      "total": 361,
+      "P": 0.963,
+      "C": 0.0748,
+      "A": 0.072,
+      "A_all": 0.6787,
+      "E2E": 0.8751,
+      "penalty": 100.0
+    },
+    "lam1000": {
+      "routes": 0,
+      "route_correct": 0,
+      "abstained": 361,
+      "total": 361,
+      "P": 1.0,
+      "C": 0.0,
+      "A": 0.0,
+      "A_all": 0.5125,
+      "E2E": 0.868,
+      "penalty": 1000.0
+    }
+  },
+  "knob2_calibration": {
+    "note": "frontier over target precision x per-class/global threshold, run on the best states carrier and the best probe carrier",
+    "carrier_states": {
+      "penalty": 30.0,
+      "rows": {
+        "perclass__tp0.90": {
+          "routes": 71,
+          "route_correct": 68,
+          "abstained": 290,
+          "total": 361,
+          "P": 0.9577,
+          "C": 0.1967,
+          "A": 0.1884,
+          "A_all": 0.7258,
+          "E2E": 0.8857,
+          "target_precision": 0.9
+        },
+        "perclass__tp0.95": {
+          "routes": 71,
+          "route_correct": 68,
+          "abstained": 290,
+          "total": 361,
+          "P": 0.9577,
+          "C": 0.1967,
+          "A": 0.1884,
+          "A_all": 0.7258,
+          "E2E": 0.8857,
+          "target_precision": 0.95
+        },
+        "perclass__tp0.97": {
+          "routes": 71,
+          "route_correct": 68,
+          "abstained": 290,
+          "total": 361,
+          "P": 0.9577,
+          "C": 0.1967,
+          "A": 0.1884,
+          "A_all": 0.7258,
+          "E2E": 0.8857,
+          "target_precision": 0.97
+        },
+        "global__tp0.90": {
+          "routes": 71,
+          "route_correct": 68,
+          "abstained": 290,
+          "total": 361,
+          "P": 0.9577,
+          "C": 0.1967,
+          "A": 0.1884,
+          "A_all": 0.7258,
+          "E2E": 0.8857,
+          "target_precision": 0.9
+        },
+        "global__tp0.95": {
+          "routes": 71,
+          "route_correct": 68,
+          "abstained": 290,
+          "total": 361,
+          "P": 0.9577,
+          "C": 0.1967,
+          "A": 0.1884,
+          "A_all": 0.7258,
+          "E2E": 0.8857,
+          "target_precision": 0.95
+        },
+        "global__tp0.97": {
+          "routes": 71,
+          "route_correct": 68,
+          "abstained": 290,
+          "total": 361,
+          "P": 0.9577,
+          "C": 0.1967,
+          "A": 0.1884,
+          "A_all": 0.7258,
+          "E2E": 0.8857,
+          "target_precision": 0.97
+        }
+      }
+    },
+    "carrier_probe": {
+      "normalisation": "standardised",
+      "penalty": 100.0,
+      "rows": {
+        "perclass__tp0.90": {
+          "routes": 81,
+          "route_correct": 77,
+          "abstained": 280,
+          "total": 361,
+          "P": 0.9506,
+          "C": 0.2244,
+          "A": 0.2133,
+          "A_all": 0.687,
+          "E2E": 0.8865,
+          "target_precision": 0.9
+        },
+        "perclass__tp0.95": {
+          "routes": 81,
+          "route_correct": 77,
+          "abstained": 280,
+          "total": 361,
+          "P": 0.9506,
+          "C": 0.2244,
+          "A": 0.2133,
+          "A_all": 0.687,
+          "E2E": 0.8865,
+          "target_precision": 0.95
+        },
+        "perclass__tp0.97": {
+          "routes": 81,
+          "route_correct": 77,
+          "abstained": 280,
+          "total": 361,
+          "P": 0.9506,
+          "C": 0.2244,
+          "A": 0.2133,
+          "A_all": 0.687,
+          "E2E": 0.8865,
+          "target_precision": 0.97
+        },
+        "global__tp0.90": {
+          "routes": 93,
+          "route_correct": 89,
+          "abstained": 268,
+          "total": 361,
+          "P": 0.957,
+          "C": 0.2576,
+          "A": 0.2465,
+          "A_all": 0.687,
+          "E2E": 0.8909,
+          "target_precision": 0.9
+        },
+        "global__tp0.95": {
+          "routes": 93,
+          "route_correct": 89,
+          "abstained": 268,
+          "total": 361,
+          "P": 0.957,
+          "C": 0.2576,
+          "A": 0.2465,
+          "A_all": 0.687,
+          "E2E": 0.8909,
+          "target_precision": 0.95
+        },
+        "global__tp0.97": {
+          "routes": 93,
+          "route_correct": 89,
+          "abstained": 268,
+          "total": 361,
+          "P": 0.957,
+          "C": 0.2576,
+          "A": 0.2465,
+          "A_all": 0.687,
+          "E2E": 0.8909,
+          "target_precision": 0.97
+        }
+      }
+    }
+  },
+  "best_combination": {
+    "section": "front_probe",
+    "key": "global__tp0.90",
+    "row": {
+      "routes": 93,
+      "route_correct": 89,
+      "abstained": 268,
+      "total": 361,
+      "P": 0.957,
+      "C": 0.2576,
+      "A": 0.2465,
+      "A_all": 0.687,
+      "E2E": 0.8909,
+      "target_precision": 0.9,
+      "OOD_R": 0.8571,
+      "config": "linear probe on standardised embeddings, penalty 100.0, global thresholds @ tp0.90"
+    },
+    "description": "linear probe on standardised embeddings, penalty 100.0, global thresholds @ tp0.90"
+  },
+  "verdict": {
+    "knob1_normalisation": "KNOB MATTERS",
+    "knob2_calibration": "KNOB MATTERS",
+    "knob3_penalty": "KNOB MATTERS",
+    "spreads": {
+      "knob1_normalisation_E2E": 0.0118,
+      "knob2_calibration_E2E": 0.0052,
+      "knob3_penalty_states_E2E": 0.0177,
+      "knob3_penalty_probe_E2E": 0.0159
+    },
+    "deltas_vs_baselines": {
+      "best_vs_probe_lam0.1": {
+        "dE2E": 0.0101,
+        "droutes": 5,
+        "dP": 0.0365
+      },
+      "best_vs_states_lam30": {
+        "dE2E": 0.0052,
+        "droutes": 22,
+        "dP": -0.0007
+      },
+      "states_best_vs_states_lam30": {
+        "dE2E": 0.0,
+        "droutes": 0,
+        "dP": 0.0
+      }
+    },
+    "plain": "Normalisation: KNOB MATTERS (E2E spread 0.0118 over raw/l2/l2-centred/standardised at the baseline penalty). Calibration: KNOB MATTERS (E2E spread 0.0052 across tp 0.90-0.97 x per-class/global on both carriers). Penalty: KNOB MATTERS (E2E spread 0.0177 on states, 0.0159 on the probe). Best configuration: linear probe on standardised embeddings, penalty 100.0, global thresholds @ tp0.90 -> routes 93, P 0.957, C 0.2576, A_all 0.687, E2E 0.8909; vs the committed probe row (88 routes, E2E 0.8808), vs the committed states row (71 routes, E2E 0.8857)."
+  },
+  "runtime_s": 30.9,
+  "one_case_pt": 0.28
+}

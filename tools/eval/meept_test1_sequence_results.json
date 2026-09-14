@@ -1,0 +1,247 @@
+{
+  "audit": {
+    "audited_at_utc": "2026-09-14T04:25:10Z",
+    "dispatch_rows": 611,
+    "dispatch_sessions": 489,
+    "session_size_histogram": {
+      "1": 447,
+      "2": 22,
+      "3": 9,
+      "4": 4,
+      "5": 2,
+      "7": 1,
+      "10": 1,
+      "14": 2,
+      "22": 1
+    },
+    "sessions_gt1": 42,
+    "sessions_ge3": 20,
+    "outcome_counts": {
+      "ok": 6,
+      "pending": 605
+    },
+    "corrected_agent_nonempty": 0,
+    "rows_with_error": 0,
+    "intent_type_counts": {
+      "analyze": 1,
+      "chat": 88,
+      "clarify": 45,
+      "code": 243,
+      "coder": 46,
+      "committer": 9,
+      "compound": 3,
+      "debug": 1,
+      "dispatcher": 1,
+      "image-gen": 9,
+      "image_gen": 1,
+      "plan": 3,
+      "platform": 5,
+      "researcher": 4,
+      "schedule": 4,
+      "skill": 81,
+      "tooluse": 11,
+      "video-gen": 8,
+      "writer": 48
+    },
+    "plans_db": {
+      "plan_states": {
+        "draft": 640
+      },
+      "plans_with_source_session": 0,
+      "plans_confirmed": 0,
+      "plan_sessions_rows": 0,
+      "plan_signoffs_rows": 0,
+      "plan_source_sessions_matching_dispatch_sessions": 0
+    },
+    "gold_cases": 361,
+    "gold_has_session_field": false
+  },
+  "reduced_test": {
+    "target_classes": [
+      "code",
+      "quickplan"
+    ],
+    "subset_size": 139,
+    "subset_counts": {
+      "code": 81,
+      "quickplan": 58
+    },
+    "cue_positive_counts": {
+      "code": 8,
+      "quickplan": 32
+    },
+    "cue_positive_rate": {
+      "code": 0.09876543209876543,
+      "quickplan": 0.5517241379310345
+    },
+    "context_features": [
+      "quickplan_cue_match",
+      "log1p_msg_len",
+      "plan_active(unavailable=0)"
+    ],
+    "context_block_scale_for_matched_variant": "sqrt(1024/3)",
+    "cv": "5-fold stratified, seed 42, shuffle per class, fold = position % 5",
+    "ridge_lambda_grid": [
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      3.0,
+      10.0,
+      30.0,
+      100.0
+    ],
+    "per_message_embedding": {
+      "accuracy": 0.7553956834532374,
+      "n_correct": 105,
+      "n_total": 139,
+      "per_class": {
+        "code": {
+          "tp": 55,
+          "fp": 8,
+          "fn": 26,
+          "precision": 0.873015873015873,
+          "recall": 0.6790123456790124,
+          "support": 81
+        },
+        "quickplan": {
+          "tp": 50,
+          "fp": 26,
+          "fn": 8,
+          "precision": 0.6578947368421053,
+          "recall": 0.8620689655172413,
+          "support": 58
+        }
+      },
+      "lambdas_per_fold": [
+        0.001,
+        0.001,
+        0.001,
+        0.001,
+        0.001
+      ]
+    },
+    "embedding_plus_context": {
+      "accuracy": 0.7553956834532374,
+      "n_correct": 105,
+      "n_total": 139,
+      "per_class": {
+        "code": {
+          "tp": 55,
+          "fp": 8,
+          "fn": 26,
+          "precision": 0.873015873015873,
+          "recall": 0.6790123456790124,
+          "support": 81
+        },
+        "quickplan": {
+          "tp": 50,
+          "fp": 26,
+          "fn": 8,
+          "precision": 0.6578947368421053,
+          "recall": 0.8620689655172413,
+          "support": 58
+        }
+      },
+      "lambdas_per_fold": [
+        0.001,
+        0.001,
+        0.001,
+        0.001,
+        0.001
+      ]
+    },
+    "embedding_plus_context_block_matched": {
+      "accuracy": 0.7553956834532374,
+      "n_correct": 105,
+      "n_total": 139,
+      "per_class": {
+        "code": {
+          "tp": 56,
+          "fp": 9,
+          "fn": 25,
+          "precision": 0.8615384615384616,
+          "recall": 0.691358024691358,
+          "support": 81
+        },
+        "quickplan": {
+          "tp": 49,
+          "fp": 25,
+          "fn": 9,
+          "precision": 0.6621621621621622,
+          "recall": 0.8448275862068966,
+          "support": 58
+        }
+      },
+      "lambdas_per_fold": [
+        0.001,
+        0.001,
+        0.001,
+        0.001,
+        0.001
+      ]
+    }
+  },
+  "context_feature_alone": {
+    "cue_only_rule": {
+      "accuracy": 0.7553956834532374,
+      "n_correct": 105,
+      "per_class": {
+        "code": {
+          "tp": 73,
+          "fp": 26,
+          "fn": 8,
+          "precision": 0.7373737373737373,
+          "recall": 0.9012345679012346,
+          "support": 81
+        },
+        "quickplan": {
+          "tp": 32,
+          "fp": 8,
+          "fn": 26,
+          "precision": 0.8,
+          "recall": 0.5517241379310345,
+          "support": 58
+        }
+      }
+    },
+    "length_only_rule": {
+      "accuracy": 0.7266187050359713,
+      "n_correct": 101,
+      "per_class": {
+        "code": {
+          "tp": 57,
+          "fp": 14,
+          "fn": 24,
+          "precision": 0.8028169014084507,
+          "recall": 0.7037037037037037,
+          "support": 81
+        },
+        "quickplan": {
+          "tp": 44,
+          "fp": 24,
+          "fn": 14,
+          "precision": 0.6470588235294118,
+          "recall": 0.7586206896551724,
+          "support": 58
+        }
+      }
+    },
+    "majority_rule": 0.5827338129496403
+  },
+  "cue_vs_embedding_signal": {
+    "cue_fixes_embedding_errors": 24,
+    "cue_breaks_embedding_correct": 24,
+    "net": 0
+  },
+  "verdict": {
+    "delta_correct_cases": 0,
+    "delta_accuracy": 0.0,
+    "delta_correct_cases_block_matched": 0,
+    "delta_accuracy_block_matched": 0.0,
+    "context_beats_per_message": false,
+    "session_sequence_model_trainable_today": false,
+    "session_context_measurable_today": false,
+    "data_needed": "labelled multi-turn transcripts: dispatch_sessions with >=3 turns is 20 (>=2 is 42) and NONE carry a gold intent label (outcome is 'pending' for all but a handful, corrected_agent is empty in every row, no table records plan-active per turn). A sequence model that folds 3 turns needs at least a few hundred labelled multi-turn sessions in the quickplan/code pair to detect an effect; today that number is zero."
+  }
+}

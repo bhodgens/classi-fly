@@ -298,13 +298,28 @@ Checklist to apply before any head work: sweep embedding normalisation, route
 threshold calibration, and any linear head's penalty. Cheap, and it has already
 paid twice.
 
-### 8.3 The conditional mapping: degraded embeddings
+**Tested 2026-09-13 (`docs/MEEPT-TESTS.md` test 2): confirmed, but small.** All
+three knobs move E2E (penalty 0.0177 > normalisation 0.0118 > calibration
+0.0052). Best config found - standardised embeddings, penalty 100, global
+threshold - gives 93 routes at P 0.9570 and E2E 0.8909, about +3.6 cases over
+the probe baseline. **Adopt the procedure, not that config:** OOD abstain rate
+falls to 0.857 (below the 0.95 bar) and a 3.6-case margin is inside noise at
+n=361.
 
-Measured: with input dimensions missing, a reservoir head retains far more
-accuracy than a linear head (+18.8 pt at 75% truncation, +7.8 pt at 50%
-dropout). Relevant only if a consumer ever has a fallback embedder, a truncated
-vector, or a partially failed embedding batch. Today it does not, so the
-benefit is zero.
+### 8.3 The conditional mapping: degraded embeddings - RETRACTED 2026-09-13
+
+Measured again against meept's actual head shapes
+(`docs/MEEPT-TESTS.md` test 3): the reservoir's robustness edge is real against
+a linear probe (+68 cases at 75% truncation, reproduced) but the **centroid head
+is better under missing input** (+32 cases at truncation, +25 at dropout), and
+the shipping gate erases the difference - at 75% truncation every head sits
+within 0.002 of the 0.868 chain floor with the reservoir routing zero cases.
+Under dense noise the reservoir is the *less safe* head (routes 77 cases at
+precision 0.22 at sigma 0.2, while the cosine-margin head abstains).
+
+**Retracted: do not add the reservoir for degraded embeddings.** The transferable
+finding is a safety property - cosine and vote margins fail safe, probability
+margins do not - which argues *for* the centroid head shape in meept issue #39.
 
 ### 8.4 Corroboration of an existing recommendation
 

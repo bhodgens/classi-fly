@@ -1,0 +1,392 @@
+{
+  "experiment": "meept-test3-degraded-embeddings",
+  "question": "Does the reservoir head's robustness edge (axis D: +18.8pt at 75% truncation) translate into a benefit for MEEPT's actual heads in degraded-embedding mode?",
+  "data": {
+    "gold_cases": 361,
+    "ood_cases": 28,
+    "classes": 13,
+    "embed_dim": 1024,
+    "one_case_pt": 0.277
+  },
+  "protocol": {
+    "folds": 5,
+    "seed": 42,
+    "corrupt_seed": 7,
+    "fold_rule": "per-class shuffle with default_rng(42); fold = position % 5",
+    "route_rule": "top-1 >= per-class calibrated threshold (choose_thresholds, target 0.97) AND margin > 0.05",
+    "margin_space": {
+      "centroid_cosine_margin": "top1-top2 cosine",
+      "knn5_unanimity": "(majority-runner)/k",
+      "linear_probe_raw": "softmax probability",
+      "reservoir": "softmax probability"
+    },
+    "knn_shipped_rule": "unanimity (all 5 agree) AND top-1 cosine >= 0.70",
+    "corruption_scope": "TEST folds + OOD only, after training on clean data",
+    "corruption_rng": "fresh default_rng(7) per (condition, fold); identical corrupted tensor fed to all four heads",
+    "reservoir_recipe": "win = default_rng(42) int8(-6..6) * 0.02 (1024x2952); s = tanh(0.8*s + W@s + win@x), 4 steps; W = larval weights / 127 (scipy.sparse)",
+    "penalty_policy": "clean-optimal per ridge representation, held fixed across all conditions (no tuning on corrupted test data)"
+  },
+  "penalties": {
+    "linear_probe_raw": 0.1,
+    "reservoir": 30.0
+  },
+  "results": {
+    "centroid_cosine_margin": {
+      "clean": {
+        "A": 0.7036,
+        "routes": 24,
+        "P": 0.9583,
+        "C": 0.0665,
+        "E2E": 0.874,
+        "wrong_routes": 1,
+        "OOD_R": 0.8929
+      },
+      "trunc_last50pct": {
+        "A": 0.6731,
+        "routes": 17,
+        "P": 0.9412,
+        "C": 0.0471,
+        "E2E": 0.8714,
+        "wrong_routes": 1,
+        "OOD_R": 0.9643
+      },
+      "trunc_last75pct": {
+        "A": 0.6648,
+        "routes": 1,
+        "P": 1.0,
+        "C": 0.0028,
+        "E2E": 0.8684,
+        "wrong_routes": 0,
+        "OOD_R": 1.0
+      },
+      "dropout50pct": {
+        "A": 0.6427,
+        "routes": 10,
+        "P": 0.9,
+        "C": 0.0277,
+        "E2E": 0.8689,
+        "wrong_routes": 1,
+        "OOD_R": 0.9643
+      },
+      "noise_sigma=0.2": {
+        "A": 0.2244,
+        "routes": 0,
+        "P": 1.0,
+        "C": 0.0,
+        "E2E": 0.868,
+        "wrong_routes": 0,
+        "OOD_R": 1.0
+      }
+    },
+    "knn5_unanimity": {
+      "clean": {
+        "A": 0.5374,
+        "routes": 74,
+        "P": 0.8378,
+        "C": 0.205,
+        "E2E": 0.8618,
+        "wrong_routes": 12,
+        "OOD_R": 0.7143,
+        "shipped_rule_variant": {
+          "A": 0.5374,
+          "routes": 26,
+          "P": 0.9615,
+          "C": 0.072,
+          "E2E": 0.8747,
+          "wrong_routes": 1,
+          "OOD_R": 0.8214,
+          "note": "meept shipped rule: unanimity + cosine floor 0.70"
+        }
+      },
+      "trunc_last50pct": {
+        "A": 0.5402,
+        "routes": 82,
+        "P": 0.8659,
+        "C": 0.2271,
+        "E2E": 0.8675,
+        "wrong_routes": 11,
+        "OOD_R": 0.7143,
+        "shipped_rule_variant": {
+          "A": 0.5402,
+          "routes": 7,
+          "P": 1.0,
+          "C": 0.0194,
+          "E2E": 0.8706,
+          "wrong_routes": 0,
+          "OOD_R": 1.0,
+          "note": "meept shipped rule: unanimity + cosine floor 0.70"
+        }
+      },
+      "trunc_last75pct": {
+        "A": 0.5042,
+        "routes": 77,
+        "P": 0.8052,
+        "C": 0.2133,
+        "E2E": 0.8546,
+        "wrong_routes": 15,
+        "OOD_R": 0.7143,
+        "shipped_rule_variant": {
+          "A": 0.5042,
+          "routes": 0,
+          "P": 1.0,
+          "C": 0.0,
+          "E2E": 0.868,
+          "wrong_routes": 0,
+          "OOD_R": 1.0,
+          "note": "meept shipped rule: unanimity + cosine floor 0.70"
+        }
+      },
+      "dropout50pct": {
+        "A": 0.5014,
+        "routes": 78,
+        "P": 0.7949,
+        "C": 0.2161,
+        "E2E": 0.8522,
+        "wrong_routes": 16,
+        "OOD_R": 0.6786,
+        "shipped_rule_variant": {
+          "A": 0.5014,
+          "routes": 2,
+          "P": 1.0,
+          "C": 0.0055,
+          "E2E": 0.8687,
+          "wrong_routes": 0,
+          "OOD_R": 1.0,
+          "note": "meept shipped rule: unanimity + cosine floor 0.70"
+        }
+      },
+      "noise_sigma=0.2": {
+        "A": 0.277,
+        "routes": 57,
+        "P": 0.3158,
+        "C": 0.1579,
+        "E2E": 0.7808,
+        "wrong_routes": 39,
+        "OOD_R": 0.8571,
+        "shipped_rule_variant": {
+          "A": 0.277,
+          "routes": 0,
+          "P": 1.0,
+          "C": 0.0,
+          "E2E": 0.868,
+          "wrong_routes": 0,
+          "OOD_R": 1.0,
+          "note": "meept shipped rule: unanimity + cosine floor 0.70"
+        }
+      }
+    },
+    "linear_probe_raw": {
+      "clean": {
+        "A": 0.7175,
+        "routes": 88,
+        "P": 0.9205,
+        "C": 0.2438,
+        "E2E": 0.8808,
+        "wrong_routes": 7,
+        "OOD_R": 0.9286
+      },
+      "trunc_last50pct": {
+        "A": 0.6205,
+        "routes": 22,
+        "P": 1.0,
+        "C": 0.0609,
+        "E2E": 0.876,
+        "wrong_routes": 0,
+        "OOD_R": 1.0
+      },
+      "trunc_last75pct": {
+        "A": 0.3878,
+        "routes": 3,
+        "P": 0.6667,
+        "C": 0.0083,
+        "E2E": 0.8663,
+        "wrong_routes": 1,
+        "OOD_R": 1.0
+      },
+      "dropout50pct": {
+        "A": 0.5208,
+        "routes": 16,
+        "P": 0.875,
+        "C": 0.0443,
+        "E2E": 0.8683,
+        "wrong_routes": 2,
+        "OOD_R": 1.0
+      },
+      "noise_sigma=0.2": {
+        "A": 0.1939,
+        "routes": 244,
+        "P": 0.2172,
+        "C": 0.6759,
+        "E2E": 0.4281,
+        "wrong_routes": 191,
+        "OOD_R": 0.3214
+      }
+    },
+    "reservoir": {
+      "clean": {
+        "A": 0.7258,
+        "routes": 71,
+        "P": 0.9577,
+        "C": 0.1967,
+        "E2E": 0.8857,
+        "wrong_routes": 3,
+        "OOD_R": 0.9286
+      },
+      "trunc_last50pct": {
+        "A": 0.687,
+        "routes": 5,
+        "P": 1.0,
+        "C": 0.0139,
+        "E2E": 0.8698,
+        "wrong_routes": 0,
+        "OOD_R": 1.0
+      },
+      "trunc_last75pct": {
+        "A": 0.5762,
+        "routes": 0,
+        "P": 1.0,
+        "C": 0.0,
+        "E2E": 0.868,
+        "wrong_routes": 0,
+        "OOD_R": 1.0
+      },
+      "dropout50pct": {
+        "A": 0.5734,
+        "routes": 5,
+        "P": 1.0,
+        "C": 0.0139,
+        "E2E": 0.8698,
+        "wrong_routes": 0,
+        "OOD_R": 1.0
+      },
+      "noise_sigma=0.2": {
+        "A": 0.1884,
+        "routes": 77,
+        "P": 0.2208,
+        "C": 0.2133,
+        "E2E": 0.73,
+        "wrong_routes": 60,
+        "OOD_R": 0.8571
+      }
+    }
+  },
+  "cross_check": {
+    "reservoir_clean_reference_e1_corrected": {
+      "A": 0.7258,
+      "routes": 71,
+      "P": 0.9577,
+      "C": 0.1967,
+      "E2E": 0.8857
+    },
+    "probe_clean_reference_e1_corrected": {
+      "A": 0.7175,
+      "routes": 88,
+      "P": 0.9205,
+      "C": 0.2438,
+      "E2E": 0.8808
+    },
+    "reservoir_clean_measured": {
+      "A": 0.7258,
+      "routes": 71,
+      "P": 0.9577,
+      "C": 0.1967,
+      "E2E": 0.8857,
+      "wrong_routes": 3,
+      "OOD_R": 0.9286
+    },
+    "probe_clean_measured": {
+      "A": 0.7175,
+      "routes": 88,
+      "P": 0.9205,
+      "C": 0.2438,
+      "E2E": 0.8808,
+      "wrong_routes": 7,
+      "OOD_R": 0.9286
+    }
+  },
+  "verdict": {
+    "missing_input_worst": "dropout50pct",
+    "global_worst": "noise_sigma=0.2",
+    "at_missing_input_worst_vs_centroid": {
+      "condition": "dropout50pct",
+      "reservoir_A": 0.5734,
+      "other_A": 0.6427,
+      "delta_A_cases": -25,
+      "reservoir_E2E": 0.8698,
+      "other_E2E": 0.8689,
+      "delta_E2E": 0.0009,
+      "reservoir_routes": 5,
+      "other_routes": 10
+    },
+    "at_missing_input_worst_vs_knn5": {
+      "condition": "dropout50pct",
+      "reservoir_A": 0.5734,
+      "other_A": 0.5014,
+      "delta_A_cases": 26,
+      "reservoir_E2E": 0.8698,
+      "other_E2E": 0.8522,
+      "delta_E2E": 0.0176,
+      "reservoir_routes": 5,
+      "other_routes": 78
+    },
+    "at_missing_input_worst_vs_linear_probe": {
+      "condition": "dropout50pct",
+      "reservoir_A": 0.5734,
+      "other_A": 0.5208,
+      "delta_A_cases": 19,
+      "reservoir_E2E": 0.8698,
+      "other_E2E": 0.8683,
+      "delta_E2E": 0.0015,
+      "reservoir_routes": 5,
+      "other_routes": 16
+    },
+    "at_global_worst_vs_centroid": {
+      "condition": "noise_sigma=0.2",
+      "reservoir_A": 0.1884,
+      "other_A": 0.2244,
+      "delta_A_cases": -13,
+      "reservoir_E2E": 0.73,
+      "other_E2E": 0.868,
+      "delta_E2E": -0.138,
+      "reservoir_routes": 77,
+      "other_routes": 0
+    },
+    "at_global_worst_vs_knn5": {
+      "condition": "noise_sigma=0.2",
+      "reservoir_A": 0.1884,
+      "other_A": 0.277,
+      "delta_A_cases": -32,
+      "reservoir_E2E": 0.73,
+      "other_E2E": 0.7808,
+      "delta_E2E": -0.0508,
+      "reservoir_routes": 77,
+      "other_routes": 57
+    },
+    "at_global_worst_vs_linear_probe": {
+      "condition": "noise_sigma=0.2",
+      "reservoir_A": 0.1884,
+      "other_A": 0.1939,
+      "delta_A_cases": -2,
+      "reservoir_E2E": 0.73,
+      "other_E2E": 0.4281,
+      "delta_E2E": 0.3019,
+      "reservoir_routes": 77,
+      "other_routes": 244
+    },
+    "axis_D_replication": {
+      "claim": "+18.8pt / +68 cases for the reservoir over a linear probe at 75% truncation",
+      "measured_reservoir_A": 0.5762,
+      "measured_probe_A": 0.3878,
+      "delta_A_cases": 68,
+      "replicates": true
+    }
+  },
+  "verdict_label": "RESERVOIR HELPS ONLY OVER THE SHIPPED kNN HEAD, NOT OVER THE PROPOSED CENTROID HEAD - AND NOT IN THE SHIPPING (E2E) METRIC",
+  "cost": {
+    "reservoir_artifact_bytes_raw_int8_projection": 3022848,
+    "reservoir_artifact_compressed_1_66MB": true,
+    "reservoir_resident_mb": 30,
+    "centroid_artifact_13KB_int8": 13312
+  },
+  "runtime_s": 10.6
+}

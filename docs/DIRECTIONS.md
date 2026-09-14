@@ -370,12 +370,14 @@ evidence posted on issue #39.
 
 ### Next candidates, in priority order
 
-1. **Lane 3 (temporal),** now the strongest open lead: recurrence demonstrably
-   paid off on a partially observable task, so a stream/rhythm task is the
-   natural next test, and unlike classification it is not saturated.
-2. **Harden lane 1:** sweep blink period and sensor noise to find where the
-   recurrence advantage disappears, and test whether it survives with only 512
-   neurons (which would make the artifact cheap).
+1. **Lane 3 (temporal) - IN FLIGHT (2026-09-14):** rhythm/phase detection and
+   period-change anomaly detection on the same substrate, plus a 512-2,048
+   size co-sweep against spectral radius and weight distribution (the lane-1
+   hardening gap). Two subagents running; results land in
+   `tools/control/lane3_results.json` and `tools/control/size_cosweep_results.json`.
+2. ~~Harden lane 1~~ **DONE (2026-09-14):** blink sweep + size sweep complete -
+   see section 7. The advantage is a cliff at blink12, and 512 neurons fails
+   while 2,048 only partially recovers (37%).
 3. **Real visual input** (optic lobe or a real camera-frame transducer) if the
    synthetic result is to be extended - this is where MaleCNS's optic lobes
    would actually be the point, at the cost documented in the MaleCNS

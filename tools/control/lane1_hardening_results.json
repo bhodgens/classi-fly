@@ -1,0 +1,366 @@
+{
+  "lane": "1 hardening - blink-period sweep and reservoir size sweep",
+  "harness": "tools/control/world.py (frozen)",
+  "procedure": "identical to lane 1A (tools/control/reservoir_imitation.py): MemoryHeuristic teacher in blink mode, ridge sweep in arctanh space, val-selected lambda, refit on train+val",
+  "connectome": {
+    "name": "larval-v1",
+    "neurons": 2952,
+    "edges": 63545
+  },
+  "eval": {
+    "episodes": 200,
+    "seed0": 1000,
+    "train_seed0": 5000,
+    "val_seed0": 6000,
+    "train_pairs": 10000,
+    "val_pairs": 2000
+  },
+  "sweeps": {
+    "blink_periods": [
+      2,
+      3,
+      5,
+      8,
+      12,
+      20
+    ],
+    "size_sweep_blink_period": 3,
+    "sizes": [
+      512,
+      1024,
+      2952
+    ],
+    "synthetic_fan_in": 21.526,
+    "synthetic_graph_seed": 123,
+    "synthetic_note": "random signed sparse, integers/-127 dequant, density matched to the real connectome; projection = rng(42) int -6..6 * 0.02"
+  },
+  "metric_note": "mean_steps_to_success averages SUCCESSFUL episodes only; timeouts is the count of failed (200-step) episodes.",
+  "reference_lane1A": {
+    "blink3_reservoir": "100% / 17.8",
+    "blink3_direct": "50.5% / 32.9",
+    "blink8_reservoir": "100% / 40.9",
+    "blink8_direct": "42.5% / 61.7"
+  },
+  "blink_sweep": [
+    {
+      "controller": "reservoir[real2952_bp2]",
+      "blink_period": 2,
+      "n_train_episodes": 576,
+      "n_val_episodes": 124,
+      "best_lambda": 1.0,
+      "val_mse": 0.071645,
+      "episodes": 200,
+      "success_rate": 1.0,
+      "mean_steps_to_success": 17.6,
+      "mean_final_dist": 0.0508,
+      "timeouts": 0
+    },
+    {
+      "controller": "direct_linear_map",
+      "blink_period": 2,
+      "best_lambda": 1.0,
+      "val_mse": 1.475912,
+      "episodes": 200,
+      "success_rate": 0.775,
+      "mean_steps_to_success": 24.8,
+      "mean_final_dist": 0.0939,
+      "timeouts": 45
+    },
+    {
+      "controller": "MemoryHeuristic",
+      "blink_period": 2,
+      "episodes": 200,
+      "success_rate": 1.0,
+      "mean_steps_to_success": 17.7,
+      "mean_final_dist": 0.0515,
+      "timeouts": 0
+    },
+    {
+      "controller": "reservoir[real2952_bp3]",
+      "blink_period": 3,
+      "n_train_episodes": 566,
+      "n_val_episodes": 122,
+      "best_lambda": 1.0,
+      "val_mse": 0.094763,
+      "episodes": 200,
+      "success_rate": 1.0,
+      "mean_steps_to_success": 17.8,
+      "mean_final_dist": 0.0526,
+      "timeouts": 0
+    },
+    {
+      "controller": "direct_linear_map",
+      "blink_period": 3,
+      "best_lambda": 1.0,
+      "val_mse": 2.047854,
+      "episodes": 200,
+      "success_rate": 0.505,
+      "mean_steps_to_success": 32.9,
+      "mean_final_dist": 0.2679,
+      "timeouts": 99
+    },
+    {
+      "controller": "MemoryHeuristic",
+      "blink_period": 3,
+      "episodes": 200,
+      "success_rate": 1.0,
+      "mean_steps_to_success": 18.1,
+      "mean_final_dist": 0.0501,
+      "timeouts": 0
+    },
+    {
+      "controller": "reservoir[real2952_bp5]",
+      "blink_period": 5,
+      "n_train_episodes": 496,
+      "n_val_episodes": 99,
+      "best_lambda": 0.1,
+      "val_mse": 0.234374,
+      "episodes": 200,
+      "success_rate": 1.0,
+      "mean_steps_to_success": 24.2,
+      "mean_final_dist": 0.0594,
+      "timeouts": 0
+    },
+    {
+      "controller": "direct_linear_map",
+      "blink_period": 5,
+      "best_lambda": 10.0,
+      "val_mse": 4.041975,
+      "episodes": 200,
+      "success_rate": 0.46,
+      "mean_steps_to_success": 57.9,
+      "mean_final_dist": 0.5013,
+      "timeouts": 108
+    },
+    {
+      "controller": "MemoryHeuristic",
+      "blink_period": 5,
+      "episodes": 200,
+      "success_rate": 1.0,
+      "mean_steps_to_success": 21.3,
+      "mean_final_dist": 0.0583,
+      "timeouts": 0
+    },
+    {
+      "controller": "reservoir[real2952_bp8]",
+      "blink_period": 8,
+      "n_train_episodes": 312,
+      "n_val_episodes": 63,
+      "best_lambda": 0.1,
+      "val_mse": 0.332933,
+      "episodes": 200,
+      "success_rate": 1.0,
+      "mean_steps_to_success": 40.9,
+      "mean_final_dist": 0.0575,
+      "timeouts": 0
+    },
+    {
+      "controller": "direct_linear_map",
+      "blink_period": 8,
+      "best_lambda": 10.0,
+      "val_mse": 4.540221,
+      "episodes": 200,
+      "success_rate": 0.425,
+      "mean_steps_to_success": 61.7,
+      "mean_final_dist": 0.4391,
+      "timeouts": 115
+    },
+    {
+      "controller": "MemoryHeuristic",
+      "blink_period": 8,
+      "episodes": 200,
+      "success_rate": 1.0,
+      "mean_steps_to_success": 31.4,
+      "mean_final_dist": 0.056,
+      "timeouts": 0
+    },
+    {
+      "controller": "reservoir[real2952_bp12]",
+      "blink_period": 12,
+      "n_train_episodes": 100,
+      "n_val_episodes": 22,
+      "best_lambda": 0.1,
+      "val_mse": 0.68732,
+      "episodes": 200,
+      "success_rate": 0.775,
+      "mean_steps_to_success": 102.9,
+      "mean_final_dist": 0.1396,
+      "timeouts": 45
+    },
+    {
+      "controller": "direct_linear_map",
+      "blink_period": 12,
+      "best_lambda": 1.0,
+      "val_mse": 5.257744,
+      "episodes": 200,
+      "success_rate": 0.445,
+      "mean_steps_to_success": 138.7,
+      "mean_final_dist": 0.3187,
+      "timeouts": 111
+    },
+    {
+      "controller": "MemoryHeuristic",
+      "blink_period": 12,
+      "episodes": 200,
+      "success_rate": 0.945,
+      "mean_steps_to_success": 94.3,
+      "mean_final_dist": 0.0728,
+      "timeouts": 11
+    },
+    {
+      "controller": "reservoir[real2952_bp20]",
+      "blink_period": 20,
+      "n_train_episodes": 52,
+      "n_val_episodes": 10,
+      "best_lambda": 1.0,
+      "val_mse": 1.945595,
+      "episodes": 200,
+      "success_rate": 0.065,
+      "mean_steps_to_success": 118.2,
+      "mean_final_dist": 0.6141,
+      "timeouts": 187
+    },
+    {
+      "controller": "direct_linear_map",
+      "blink_period": 20,
+      "best_lambda": 0.001,
+      "val_mse": 5.148689,
+      "episodes": 200,
+      "success_rate": 0.015,
+      "mean_steps_to_success": 154.3,
+      "mean_final_dist": 0.5835,
+      "timeouts": 197
+    },
+    {
+      "controller": "MemoryHeuristic",
+      "blink_period": 20,
+      "episodes": 200,
+      "success_rate": 0.085,
+      "mean_steps_to_success": 85.1,
+      "mean_final_dist": 0.8295,
+      "timeouts": 183
+    }
+  ],
+  "size_sweep": [
+    {
+      "controller": "reservoir[syn512_bp3]",
+      "blink_period": 3,
+      "n_train_episodes": 566,
+      "n_val_episodes": 122,
+      "best_lambda": 100.0,
+      "val_mse": 2.050962,
+      "episodes": 200,
+      "success_rate": 0.22,
+      "mean_steps_to_success": 69.0,
+      "mean_final_dist": 0.6866,
+      "timeouts": 156
+    },
+    {
+      "controller": "reservoir[syn1024_bp3]",
+      "blink_period": 3,
+      "n_train_episodes": 566,
+      "n_val_episodes": 122,
+      "best_lambda": 100.0,
+      "val_mse": 1.966291,
+      "episodes": 200,
+      "success_rate": 0.225,
+      "mean_steps_to_success": 55.4,
+      "mean_final_dist": 0.7069,
+      "timeouts": 155
+    },
+    {
+      "controller": "reservoir[real2952]",
+      "blink_period": 3,
+      "n_train_episodes": 566,
+      "n_val_episodes": 122,
+      "best_lambda": 1.0,
+      "val_mse": 0.094763,
+      "episodes": 200,
+      "success_rate": 1.0,
+      "mean_steps_to_success": 17.8,
+      "mean_final_dist": 0.0526,
+      "timeouts": 0
+    },
+    {
+      "controller": "direct_linear_map",
+      "blink_period": 3,
+      "best_lambda": 1.0,
+      "val_mse": 2.047854,
+      "episodes": 200,
+      "success_rate": 0.505,
+      "mean_steps_to_success": 32.9,
+      "mean_final_dist": 0.2679,
+      "timeouts": 99
+    }
+  ],
+  "size_sweep_robustness": {
+    "purpose": "check the N=512 collapse is not a single graph-draw fluke; locate the size threshold. Same synthetic construction, extra seeds/sizes.",
+    "rows": [
+      {
+        "controller": "reservoir[syn512_s123]",
+        "blink_period": 3,
+        "n_train_episodes": 566,
+        "n_val_episodes": 122,
+        "best_lambda": 100.0,
+        "val_mse": 2.050962,
+        "episodes": 200,
+        "success_rate": 0.22,
+        "mean_steps_to_success": 69.0,
+        "mean_final_dist": 0.6866,
+        "timeouts": 156
+      },
+      {
+        "controller": "reservoir[syn512_s124]",
+        "blink_period": 3,
+        "n_train_episodes": 566,
+        "n_val_episodes": 122,
+        "best_lambda": 100.0,
+        "val_mse": 2.104387,
+        "episodes": 200,
+        "success_rate": 0.215,
+        "mean_steps_to_success": 56.9,
+        "mean_final_dist": 0.727,
+        "timeouts": 157
+      },
+      {
+        "controller": "reservoir[syn512_s125]",
+        "blink_period": 3,
+        "n_train_episodes": 566,
+        "n_val_episodes": 122,
+        "best_lambda": 100.0,
+        "val_mse": 2.213999,
+        "episodes": 200,
+        "success_rate": 0.175,
+        "mean_steps_to_success": 39.4,
+        "mean_final_dist": 0.7884,
+        "timeouts": 165
+      },
+      {
+        "controller": "reservoir[syn1536_s123]",
+        "blink_period": 3,
+        "n_train_episodes": 566,
+        "n_val_episodes": 122,
+        "best_lambda": 100.0,
+        "val_mse": 1.834003,
+        "episodes": 200,
+        "success_rate": 0.355,
+        "mean_steps_to_success": 67.8,
+        "mean_final_dist": 0.589,
+        "timeouts": 129
+      },
+      {
+        "controller": "reservoir[syn2048_s123]",
+        "blink_period": 3,
+        "n_train_episodes": 566,
+        "n_val_episodes": 122,
+        "best_lambda": 100.0,
+        "val_mse": 1.682038,
+        "episodes": 200,
+        "success_rate": 0.37,
+        "mean_steps_to_success": 72.1,
+        "mean_final_dist": 0.5811,
+        "timeouts": 126
+      }
+    ]
+  }
+}

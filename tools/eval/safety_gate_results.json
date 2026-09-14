@@ -1,0 +1,49 @@
+{
+  "gate": "safety-first (centroid cosine margin + supervised OOD probe)",
+  "folds": 5,
+  "seed": 42,
+  "target_precision": 0.97,
+  "chain_baseline": 0.868,
+  "probe_retention": 0.95,
+  "ood_real_pending": true,
+  "rows": [
+    {
+      "routes": 24,
+      "P": 0.9583,
+      "C": 0.0665,
+      "E2E": 0.874,
+      "ood_abstain": {
+        "gold": 1.0,
+        "synthetic": 1.0
+      },
+      "target_precision": 0.97
+    },
+    {
+      "routes": 24,
+      "P": 0.9583,
+      "C": 0.0665,
+      "E2E": 0.874,
+      "ood_abstain": {
+        "gold": 1.0,
+        "synthetic": 1.0
+      },
+      "target_precision": 0.95
+    },
+    {
+      "routes": 23,
+      "P": 0.9565,
+      "C": 0.0637,
+      "E2E": 0.8736,
+      "ood_abstain": {
+        "gold": 1.0,
+        "synthetic": 1.0
+      },
+      "target_precision": 0.97,
+      "variant": "calibrate_on_all_train_rows"
+    }
+  ],
+  "noise_fail_safe": {
+    "passed": true,
+    "detail": "abstained at all noise levels"
+  }
+}

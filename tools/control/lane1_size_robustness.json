@@ -1,0 +1,67 @@
+[
+  {
+    "controller": "reservoir[syn512_s123]",
+    "blink_period": 3,
+    "n_train_episodes": 566,
+    "n_val_episodes": 122,
+    "best_lambda": 100.0,
+    "val_mse": 2.050962,
+    "episodes": 200,
+    "success_rate": 0.22,
+    "mean_steps_to_success": 69.0,
+    "mean_final_dist": 0.6866,
+    "timeouts": 156
+  },
+  {
+    "controller": "reservoir[syn512_s124]",
+    "blink_period": 3,
+    "n_train_episodes": 566,
+    "n_val_episodes": 122,
+    "best_lambda": 100.0,
+    "val_mse": 2.104387,
+    "episodes": 200,
+    "success_rate": 0.215,
+    "mean_steps_to_success": 56.9,
+    "mean_final_dist": 0.727,
+    "timeouts": 157
+  },
+  {
+    "controller": "reservoir[syn512_s125]",
+    "blink_period": 3,
+    "n_train_episodes": 566,
+    "n_val_episodes": 122,
+    "best_lambda": 100.0,
+    "val_mse": 2.213999,
+    "episodes": 200,
+    "success_rate": 0.175,
+    "mean_steps_to_success": 39.4,
+    "mean_final_dist": 0.7884,
+    "timeouts": 165
+  },
+  {
+    "controller": "reservoir[syn1536_s123]",
+    "blink_period": 3,
+    "n_train_episodes": 566,
+    "n_val_episodes": 122,
+    "best_lambda": 100.0,
+    "val_mse": 1.834003,
+    "episodes": 200,
+    "success_rate": 0.355,
+    "mean_steps_to_success": 67.8,
+    "mean_final_dist": 0.589,
+    "timeouts": 129
+  },
+  {
+    "controller": "reservoir[syn2048_s123]",
+    "blink_period": 3,
+    "n_train_episodes": 566,
+    "n_val_episodes": 122,
+    "best_lambda": 100.0,
+    "val_mse": 1.682038,
+    "episodes": 200,
+    "success_rate": 0.37,
+    "mean_steps_to_success": 72.1,
+    "mean_final_dist": 0.5811,
+    "timeouts": 126
+  }
+]

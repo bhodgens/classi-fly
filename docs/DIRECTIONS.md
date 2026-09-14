@@ -265,8 +265,26 @@ context is usable and a recurrent core is worth trying. If it does not, the
 ceiling is real and no architecture will fix it. Test the hypothesis before
 building the machinery.
 
-Gate: requires session-labelled transcripts. The adjudicated replay corpus is
-48 cases, so this is data-gated before it is idea-gated.
+Gate: requires session-labelled transcripts. **Data audit (2026-09-12) says
+they do not exist yet.** From `~/.meept/metrics.db` table `dispatch_log`:
+
+| fact | measured |
+|---|---|
+| dispatch rows | 606 |
+| distinct sessions | 489 |
+| sessions with 1 row | 484 |
+| sessions with 2 rows | 4 |
+| sessions with 3 or more rows | 19 |
+| rows with `outcome` beyond 'pending' | **1 of 606** |
+| rows with a populated `corrected_agent` | 0 |
+
+So a session-sequence model is not trainable today: there are 19 multi-turn
+sessions, and the outcome loop is installed but has recorded essentially no
+outcomes, which also means there is no correction signal to learn from - the
+same emptiness the plasticity probe found (3 corrections in 361 cases at the
+shipped precision). The mapping is real but **blocked on instrumentation**: the
+cheapest unblock is to start populating `outcome` / `corrected_agent` and to
+harvest multi-turn sessions, not to build a model.
 
 ### 8.2 The immediate mapping: scaling discipline, no new model
 

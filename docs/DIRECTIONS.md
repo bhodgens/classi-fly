@@ -350,6 +350,18 @@ issue #39.
 | 4. geometry & motion (CNS-male) | open, untested; MaleCNS cost assessed | `docs/MALECNS-ASSESSMENT.md` |
 | 5. fixed benchmark substrate | partially done | Go runtime + benchmarks exist |
 
+### Safety-first gate (owner decision 2026-09-13: OOD policy = safety)
+
+Status: three-part wave dispatched. (a) real-OOD mining from meept's
+adversarial corpus - **WAITING-429** (rate-limited at dispatch; to be
+re-dispatched after the siblings land); (b) safety-first gate module (centroid +
+cosine margin, supervised OOD probe as a second opinion, calibrated on the
+probe-passing subset, fail-safe under noise); (c) lane-1 hardening (blink-period
+sweep + 512-neuron size test). Results pending.
+
+Also this wave: meept issue #40 filed (outcome-loop instrumentation), measured
+evidence posted on issue #39.
+
 ### Next candidates, in priority order
 
 1. **Lane 3 (temporal),** now the strongest open lead: recurrence demonstrably

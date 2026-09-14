@@ -5,7 +5,7 @@
   "target_precision": 0.97,
   "chain_baseline": 0.868,
   "probe_retention": 0.95,
-  "ood_real_pending": true,
+  "ood_real_pending": false,
   "rows": [
     {
       "routes": 24,
@@ -14,7 +14,8 @@
       "E2E": 0.874,
       "ood_abstain": {
         "gold": 1.0,
-        "synthetic": 1.0
+        "synthetic": 1.0,
+        "real": 1.0
       },
       "target_precision": 0.97
     },
@@ -25,7 +26,8 @@
       "E2E": 0.874,
       "ood_abstain": {
         "gold": 1.0,
-        "synthetic": 1.0
+        "synthetic": 1.0,
+        "real": 1.0
       },
       "target_precision": 0.95
     },
@@ -36,7 +38,8 @@
       "E2E": 0.8736,
       "ood_abstain": {
         "gold": 1.0,
-        "synthetic": 1.0
+        "synthetic": 1.0,
+        "real": 1.0
       },
       "target_precision": 0.97,
       "variant": "calibrate_on_all_train_rows"

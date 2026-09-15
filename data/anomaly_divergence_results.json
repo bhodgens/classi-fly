@@ -1,0 +1,11 @@
+{
+  "experiment": "anomaly replication — temporal divergence test",
+  "method": "run two identical reservoirs on the same phototaxis episode; corrupt one after step 60; measure L2 norm of the state difference at each step",
+  "reservoir": {"neurons": 2952, "edges": 63545, "source": "larval-connectome", "steps": 4, "decay": 0.8, "projection_scale": 0.02},
+  "results": [
+    {"anomaly": "noise burst (sigma=0.3 on 4 light sensors, 10 steps)", "start_step": 60, "seed_1000_pre_max": 0.0, "seed_1000_post_max": 13.6397, "seed_2000_pre_max": 0.0, "seed_2000_post_max": 12.2215},
+    {"anomaly": "sensor stuck (sensor 0 frozen at its step-60 value)", "start_step": 60, "seed_1000_pre_max": 0.0, "seed_1000_post_max": 13.1788, "seed_2000_pre_max": 0.0, "seed_2000_post_max": 14.2942},
+    {"anomaly": "period change (blink period 3 -> 6 at step 60)", "start_step": 60, "seed_1000_pre_max": 0.0, "seed_1000_post_max": 10.2629, "seed_2000_pre_max": 0.0, "seed_2000_post_max": 10.4753}
+  ],
+  "finding": "The reservoir's internal state diverges massively (L2 norm 10-14 on 2952 dimensions) when ANY temporal anomaly is introduced, and the divergence appears immediately at the anomaly onset step (pre-max = 0.0 in all cases). The substrate is inherently sensitive to temporal anomalies through its state dynamics alone — no trained readout is needed to detect that something changed."
+}

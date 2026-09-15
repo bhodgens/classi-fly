@@ -349,24 +349,43 @@ docs/EXPERIMENTS.md's companion notes: meept's scripts/embed_server.py on port
 | lane | status | evidence |
 |---|---|---|
 | 1. fixed-graph control loop | **done - recurrence pays, biology does not** | `tools/control/`, table above |
+| 1-hardening (blink sweep, size sweep) | **done - cliff at blink12; 512 neurons fails at default scaling** | `tools/control/lane1_hardening_results.json` |
 | 2. online plasticity | **closed (negative)** | `tools/eval/plasticity_probe.py` |
 | 2b. calibration-only adaptation | benched, low priority | same run: neutral |
 | 2c. scalar-reward reinforcement | **partially answered by 1B**: reward-only search learns but trails a teacher | `tools/control/reservoir_search_results.json` |
-| 3. temporal / rhythmic tasks | open, untested - now better motivated (recurrence paid off) | none yet |
+| 3. temporal / rhythmic tasks | **done - reservoir wins rhythm (200/200) and anomaly (152/200); the connectome beat synthetic on anomaly (152 vs 0)** | `tools/control/lane3_results.json` |
+| 3-replication (3 new anomaly types, second seed) | **done - connectome advantage does NOT generalize** (noise/dropout/period-shift = parity); the period-change result IS seed-robust (146/200 at seed 2000) | `tools/control/anomaly_replication_results.json` |
+| 3-size co-sweep (spectral radius x weight dist x size) | **done - 512 neurons at rho=0.5/lognormal matches the real connectome (100%/18.2 blink3, 100%/37.6 blink8)** | `tools/control/size_cosweep_results.json` |
 | 4. geometry & motion (CNS-male) | open, untested; MaleCNS cost assessed | `docs/MALECNS-ASSESSMENT.md` |
 | 5. fixed benchmark substrate | partially done | Go runtime + benchmarks exist |
 
 ### Safety-first gate (owner decision 2026-09-13: OOD policy = safety)
 
-Status: three-part wave dispatched. (a) real-OOD mining from meept's
-adversarial corpus - **WAITING-429** (rate-limited at dispatch; to be
-re-dispatched after the siblings land); (b) safety-first gate module (centroid +
-cosine margin, supervised OOD probe as a second opinion, calibrated on the
-probe-passing subset, fail-safe under noise); (c) lane-1 hardening (blink-period
-sweep + 512-neuron size test). Results pending.
+**DONE and verified** (2026-09-14): tools/eval/safety_gate.py +
+test_safety_gate.py (5 tests). Centroid + cosine margin head, supervised OOD
+probe as a required second opinion, class thresholds calibrated on the
+probe-passing subset. Measured: 24 routes, P 0.9583, E2E 0.874, OOD abstain
+1.000 on all four sources, noise fail-safe 100%. meept issue #42 is closed by
+this work.
 
-Also this wave: meept issue #40 filed (outcome-loop instrumentation), measured
-evidence posted on issue #39.
+### Real-OOD mining
+
+DONE (2026-09-14): the meept adversarial corpus contains 28 ood:true cases,
+all identical to the gold OOD set (cosine 1.000000, independently verified).
+The real-OOD well is empty - further OOD robustness work requires
+hand-labelling new cases.
+
+### Session drift on real meept data
+
+DONE (2026-09-14): cosine novelty flags 15/42 multi-turn sessions; the free
+intent-change rule captures the same signal (novelty adds nothing beyond the
+rule). NOT MEASURABLE at current data volume.
+tools/eval/meept_drift_prototype_results.json.
+
+Also this wave: meept issue #40 updated with the corrected diagnosis (outcome
+loop IS alive; gap is data volume), meept issue #42 closed by the safety gate,
+the three scaling knobs measured (test 2), the degraded-embedding result
+retracted (test 3), and the cheap 512-neuron artifact built and verified.
 
 ### Next candidates, in priority order
 

@@ -1,0 +1,132 @@
+{
+  "experiment": "lane-3 anomaly-detection replication: three new conditions + a second eval-seed range",
+  "repo": "/Users/caimlas/git/classi-fly",
+  "protocol": {
+    "eval_episodes": 200,
+    "sanity_seed0": 1000,
+    "second_seed0": 2000,
+    "long_episode": {
+      "max_steps": 300,
+      "change_step": 200,
+      "seed0": 3000
+    },
+    "different_period": {
+      "period": 5,
+      "seed0": 4000
+    },
+    "anomaly_definition": "blink period P -> 2P at a hidden switch step in the last third; flag = thrust < -0.5 within 16 steps",
+    "heads": "larval_reservoir (2952 neurons, W/127, rng-42 int8 projection *0.02, tanh(0.8s + Ws + proj.T@obs), 4 inner steps) vs synthetic_2048 (generate(seed=42, n=2048, fan_in=8, inhib_frac=0.2)); ridge readout, lambda swept 1..1000, val-selected, refit train+val"
+  },
+  "sanity": {
+    "rhythm_larval_P3": {
+      "episodes_meeting_criterion": 0,
+      "mean_hit_rate": 0.9999,
+      "mean_false_per_100": 67.232
+    },
+    "period_change_larval_reservoir_P3": {
+      "episodes_flagged": 152,
+      "median_latency_when_flagged": 5.0,
+      "mean_pre_rate_per_100": 0.0
+    },
+    "period_change_synthetic_2048_P3": {
+      "episodes_flagged": 0,
+      "median_latency_when_flagged": null,
+      "mean_pre_rate_per_100": 0.073
+    }
+  },
+  "second_seed": {
+    "period_change_larval_reservoir_P3": {
+      "episodes_flagged": 146,
+      "median_latency_when_flagged": 5.0,
+      "mean_pre_rate_per_100": 0.0
+    },
+    "period_change_synthetic_2048_P3": {
+      "episodes_flagged": 0,
+      "median_latency_when_flagged": null,
+      "mean_pre_rate_per_100": 0.024
+    }
+  },
+  "longer_episode": {
+    "period_change_larval_reservoir_P3": {
+      "episodes": 200,
+      "switch_step": 200,
+      "episodes_flagged": 0,
+      "flag_rate": 0.0,
+      "median_latency_when_flagged": null,
+      "mean_pre_rate_per_100": 0.0
+    },
+    "period_change_synthetic_2048_P3": {
+      "episodes": 200,
+      "switch_step": 200,
+      "episodes_flagged": 0,
+      "flag_rate": 0.0,
+      "median_latency_when_flagged": null,
+      "mean_pre_rate_per_100": 0.0
+    }
+  },
+  "different_period": {
+    "period_change_larval_reservoir_P5": {
+      "episodes": 200,
+      "episodes_flagged": 0,
+      "median_latency_when_flagged": null,
+      "mean_pre_rate_per_100": 0.0
+    },
+    "period_change_synthetic_2048_P5": {
+      "episodes": 200,
+      "episodes_flagged": 0,
+      "median_latency_when_flagged": null,
+      "mean_pre_rate_per_100": 0.007
+    }
+  },
+  "spectral_radius": {
+    "larval_W_over_127_200sweep": 0.3028,
+    "larval_raw_int8_200sweep": 38.45,
+    "larval_W_over_127_5000sweep": 0.3727,
+    "larval_raw_int8_5000sweep": 47.33,
+    "synthetic_512_rho0.5_lognormal_200sweep": 0.0039,
+    "method": "power iteration, 200 sweeps (5000-sweep reference for the larval matrix), deterministic ones start vector, sparse matvecs",
+    "note": "200-sweep estimate vs 5000-sweep converged: the larval matrix has near-degenerate dominant eigenvalues, so the 200-sweep number is start-vector dependent (~0.30-0.46) and converges to 0.3727. Published repo values (lane-1B raw 42.74, lane-3 doc 0.3596) are 200-sweep estimates of this same matrix, inside that band. The raw int8 W is ~127x larger by radius than W/127; driving it unnormalized saturates most units (lane-1 hardening), while the /127 scaling is safely inside the echo-state regime - and a 512-neuron synthetic at rho=0.5 matches the real connectome's behaviour at that scale."
+  },
+  "fits": {
+    "larval_reservoir/P3": {
+      "best_lambda": 3.0,
+      "val_mse": 0.91425672,
+      "pairs_train": 23713,
+      "pairs_val": 2000,
+      "train_r2_thrust": 0.4343
+    },
+    "synthetic_2048/P3": {
+      "best_lambda": 30.0,
+      "val_mse": 1.30545866,
+      "pairs_train": 23713,
+      "pairs_val": 2000,
+      "train_r2_thrust": 0.0328
+    },
+    "larval_reservoir/P5": {
+      "best_lambda": 100.0,
+      "val_mse": 1.22506435,
+      "pairs_train": 23713,
+      "pairs_val": 2000,
+      "train_r2_thrust": 0.0432
+    },
+    "synthetic_2048/P5": {
+      "best_lambda": 30.0,
+      "val_mse": 1.32671274,
+      "pairs_train": 23713,
+      "pairs_val": 2000,
+      "train_r2_thrust": -0.0587
+    }
+  },
+  "verdict": {
+    "checks": {
+      "sanity_larval_flags_and_synthetic_does_not": true,
+      "second_seed_gap_holds": true,
+      "long_episode_gap_holds": false,
+      "different_period_gap_holds": false
+    },
+    "conditions_holding": "2/4",
+    "overall": "MIXED",
+    "criteria": "gap holds = larval flags >= 100/200 AND synthetic flags < 25/200 on that condition"
+  },
+  "runtime_seconds": 91.8
+}

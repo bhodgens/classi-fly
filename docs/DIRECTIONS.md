@@ -338,6 +338,35 @@ issue #39.
 - Not the fly wiring: three independent confirmations across classification and
   control that it is not the active ingredient.
 
+### 8.6 Outcome loop: CORRECTED (2026-09-14) — the loop is alive, the gap is data volume
+
+The original data audit in this file used a stale snapshot and claimed that
+`corrected_agent` was never populated. That is wrong. The re-route detector
+exists (`internal/metrics/store.go:967`, wired at `dispatcher.go:3849`) and
+works in production: **32 resolved outcomes** (24 ok, 4 corrected with
+populated `corrected_agent`, 4 failed_replan) across 42 multi-turn sessions.
+The real gap is that only 20 sessions have 3+ turns and only 1 correction
+occurred in a multi-turn session — accumulating at ~5 per week. meept issue
+#40 has been updated with the corrected diagnosis.
+
+### 8.7 Anomaly replication: the connectome advantage does NOT generalize
+
+The lane 3 finding (larval reservoir 152/200 anomaly detection vs synthetic
+0/200) was tested against three new anomaly types with a second seed:
+
+| anomaly type | larval detected | synthetic detected |
+|---|---:|---:|
+| period change (original, seed 2000) | 146/200 | 0/200 |
+| noise burst (σ=0.3, 10 steps) | 198/200 | 198/200 |
+| sensor stuck (>10 constant) | 3/200 | 5/200 |
+| double-speed period (3→1) | 149/200 | 149/200 |
+
+The period-change result is seed-robust but does not generalize: noise bursts
+and double-speed changes are detected equally by both substrates, and the
+frozen-output detector fires near-zero for both. The larval readout was
+trained to flag exactly the period-doubling temporal signature — the advantage
+is task-specific, not a general anomaly-detection capability.
+
 ## 9. Lane status
 
 Housekeeping closed 2026-09-14: the 8 stray tracked .pyc files are untracked
@@ -358,6 +387,10 @@ docs/EXPERIMENTS.md's companion notes: meept's scripts/embed_server.py on port
 | 3-size co-sweep (spectral radius x weight dist x size) | **done - 512 neurons at rho=0.5/lognormal matches the real connectome (100%/18.2 blink3, 100%/37.6 blink8)** | `tools/control/size_cosweep_results.json` |
 | 4. geometry & motion (CNS-male) | open, untested; MaleCNS cost assessed | `docs/MALECNS-ASSESSMENT.md` |
 | 5. fixed benchmark substrate | partially done | Go runtime + benchmarks exist |
+| 6. safety gate (OOD policy = safety) | **done - P 0.958, OOD 1.000, noise fail-safe 100%** | `tools/eval/safety_gate.py`, 5 tests |
+| 7. session drift (real meept data) | **tested - NOT MEASURABLE at current data volume** | `tools/eval/meept_drift_prototype.py` |
+| 8. embedding-stream health check | **done - state-novelty WORSE than per-item cosine novelty** | `tools/eval/embed_stream_monitor.py` |
+| 9. cheap 512-neuron artifact | **done - 12 KB, end-to-end verified through Go CLI** | `tools/eval/cheap512_artifact.py` |
 
 ### Safety-first gate (owner decision 2026-09-13: OOD policy = safety)
 

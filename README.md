@@ -4,11 +4,15 @@ A fly-reservoir classifier built from the **larval Drosophila connectome**
 ([Winding et al. 2023, *Science*](https://doi.org/10.1126/science.add9330)) —
 the complete wiring diagram of a fruit fly brain: 3,016 neurons and 548,000
 synapses, reconstructed from electron microscopy and released under CC BY 4.0.
-A sparse fixed "reservoir" derived from that connectome transforms an
-embedding through a few tanh recurrence steps, and a small trained linear
-readout picks the class (or abstains). The whole classifier ships as a single
-compressed `.fly` artifact (well under 1 MB) loadable by a static Go binary,
-so consumers need no Python, no model server, and no heavyweight ML runtime.
+The connectivity data used here is packaged as a CSV in the
+[BPU repository](https://github.com/tingshanL/BPU) ([arXiv 2507.10951](https://arxiv.org/abs/2507.10951)),
+which first demonstrated the connectome as a fixed recurrent layer for
+classification. A sparse fixed "reservoir" derived from that connectome
+transforms an embedding through a few tanh recurrence steps, and a small
+trained linear readout picks the class (or abstains). The whole classifier
+ships as a single compressed `.fly` artifact (well under 1 MB) loadable by a
+static Go binary, so consumers need no Python, no model server, and no
+heavyweight ML runtime.
 
 ## What it does, in plain terms
 

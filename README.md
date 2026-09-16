@@ -1,11 +1,44 @@
 # classi-fly
 
-A fly-reservoir classifier: a tiny, frozen, deterministic classifier that
-mimics the insect mushroom body — a sparse fixed "reservoir" transforms an
+A fly-reservoir classifier built from the **larval Drosophila connectome**
+([Winding et al. 2023, *Science*](https://doi.org/10.1126/science.add9330)) —
+the complete wiring diagram of a fruit fly brain: 3,016 neurons and 548,000
+synapses, reconstructed from electron microscopy and released under CC BY 4.0.
+A sparse fixed "reservoir" derived from that connectome transforms an
 embedding through a few tanh recurrence steps, and a small trained linear
 readout picks the class (or abstains). The whole classifier ships as a single
 compressed `.fly` artifact (well under 1 MB) loadable by a static Go binary,
 so consumers need no Python, no model server, and no heavyweight ML runtime.
+
+## What it does, in plain terms
+
+The project set out to answer one question: can a fly brain — mapped neuron by
+neuron — make a text classifier better? The answer turned out to be **no for
+accuracy**: the reservoir matched a simple linear probe (72.6% vs 71.8%) but
+didn't beat it. **Yes for robustness**: it kept working when half its input
+went missing, while the simple baseline fell apart. **Yes for temporal
+anomaly detection**: its internal state diverges immediately and visibly when
+the input stream's pattern shifts — no trained readout, no labels needed.
+**Yes for size and speed**: the final artifact is 12 KB, loads instantly, and
+runs in under 2 milliseconds.
+
+What was actually built is a reusable toolkit:
+
+- A **file format** (`.fly`) that packages a trained classifier into something
+  a Go program can load and use without any Python or ML libraries.
+- A **command-line tool** (`classi-fly`) for packing, inspecting, and running
+  these classifiers.
+- A **web service** mode so other programs can send it a vector and get a
+  label back.
+- A **safety gate** that refuses to answer when it's not confident — the
+  philosophy being "admit you don't know" is better than guessing wrong.
+- A **test suite** proving it all works.
+
+The honest finding: the fly brain wiring itself wasn't the magic ingredient —
+a randomly wired network of the same shape performs identically. But the
+*architecture* (sparse, recurrent, small) has real advantages for a specific
+kind of problem: staying useful when the input is noisy or incomplete, and
+detecting when something about the stream has changed.
 
 ## Status
 

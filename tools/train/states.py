@@ -33,6 +33,12 @@ from pathlib import Path
 
 try:
     import numpy as _np
+
+    if not hasattr(_np, "frombuffer") or not hasattr(_np, "linalg"):
+        # Namespace package left behind by a partially-removed pip install:
+        # importable but hollow (no attributes). Treat it as absent so the
+        # documented stdlib fallback below runs instead of crashing mid-call.
+        _np = None
 except ImportError:  # stdlib fallback; never install anything
     _np = None
 

@@ -65,8 +65,10 @@ type Reservoir struct {
 // readout logits (l[c] = dot(readout[:, c], s) * readout_scale + bias[c]) ->
 // softmax -> top-1/top-2 with margin. It abstains (Abstained=true, zero
 // Confidence/Margin) when the top-1 probability is below the winning
-// class's threshold. Dimension mismatch is an error. Deterministic: fixed
-// iteration order, no map iteration, no shared mutable state.
+// class's threshold, or when the embedding contains a NaN/±Inf value
+// (see the non-finite guard below). Dimension mismatch is an error.
+// Deterministic: fixed iteration order, no map iteration, no shared
+// mutable state.
 func (r *Reservoir) Classify(embedding []float32) (Result, error) {
 	if r == nil {
 		return Result{}, fmt.Errorf("reservoir: Classify on nil Reservoir")
@@ -74,6 +76,21 @@ func (r *Reservoir) Classify(embedding []float32) (Result, error) {
 	if len(embedding) != r.info.EmbedDim {
 		return Result{}, fmt.Errorf("reservoir: embedding dim %d != artifact embed_dim %d",
 			len(embedding), r.info.EmbedDim)
+	}
+	// Non-finite input guard (FINDING 1 fix): a NaN/±Inf embedding
+	// propagates through the recurrence into the softmax, and the abstain
+	// gate below cannot fire on it (NaN < threshold is always false), so
+	// the old code returned a non-abstained Result with Confidence=NaN —
+	// an invalid score presented as valid. Abstention is this package's
+	// convention for "no valid answer from this input" (see the Result
+	// contract above); errors stay reserved for contract violations
+	// (nil receiver, wrong dimension). Class is empty because no winning
+	// lane was computed.
+	for _, v := range embedding {
+		f := float64(v)
+		if math.IsNaN(f) || math.IsInf(f, 0) {
+			return Result{Class: "", Confidence: 0, Margin: 0, Abstained: true}, nil
+		}
 	}
 	n := r.info.Neurons
 	k := len(r.classes)

@@ -14,13 +14,15 @@ package reservoir
 //	     declared class (classify.go:26-31 contract; 163-166 impl).
 //	  P2 dimension contract: an embedding of the wrong length is always an
 //	     error and never a valid Result (classify.go:74-77).
-//	  P3 no-panic on hostile embeddings: NaN/±Inf/extreme-magnitude float32
-//	     values of the correct dimension never panic and, when they return
-//	     a non-abstained result, never violate P1's bounds. (The numerically
-//	     stable softmax at classify.go:132-141 keeps sum > 0; NaN logits may
-//	     legitimately yield NaN confidence only for non-finite inputs, so
-//	     the bound check is on abstained-vs-not shape, not on finite inputs
-//	     alone.)
+//	P3 hostile embeddings are handled, never panic: an embedding
+//	   containing NaN/±Inf is rejected up front by the non-finite guard
+//	   (classify.go) and must yield an abstained Result with exact-zero
+//	   Confidence/Margin; extreme-magnitude finite float32 values go
+//	   through the full pipeline and, when non-abstained, must satisfy
+//	   P1's bounds. (FIXED FINDING 1: before the guard, a NaN embedding
+//	   produced a non-abstained Result with Confidence=NaN because
+//	   NaN < threshold is always false, so the abstain gate could not
+//	   fire. The assertion below pins the fixed behavior.)
 //	  P4 determinism: identical (reservoir, embedding) pairs produce
 //	     bit-identical Results (classify.go:68-69 "fixed iteration order,
 //	     no map iteration" contract).
@@ -205,14 +207,15 @@ func TestPropertyClassify_WrongDimErrors(t *testing.T) {
 	}
 }
 
-// TestPropertyClassify_HostileEmbeddingsNoPanic is P3. Known deviation
-// (FINDING 1): an embedding containing NaN can produce a non-abstained
-// Result with Confidence=NaN (NaN < threshold is false at classify.go:163,
-// so the abstain gate cannot fire). The assertion below therefore only
-// requires no-panic plus: non-finite confidence IMPLIES the winning-class
-// check could not distinguish; i.e. we record the case rather than fail on
-// the NaN confidence itself, but anything finite must still satisfy the
-// simplex bounds.
+// TestPropertyClassify_HostileEmbeddingsNoPanic is P3. FINDING 1 (fixed):
+// an embedding containing NaN used to produce a non-abstained Result with
+// Confidence=NaN (NaN < threshold is false at the abstain gate, so it
+// could not fire). The non-finite guard in Classify now rejects NaN/±Inf
+// embeddings up front as an abstained result, so this test asserts the
+// fixed behavior: every poison-free-hostile case that produced NaN used to
+// be logged as a witness; now any non-finite value in the input MUST
+// yield Abstained=true with exact-zero Confidence/Margin, and everything
+// else must satisfy the simplex bounds.
 func TestPropertyClassify_HostileEmbeddingsNoPanic(t *testing.T) {
 	const seed = 20261114
 	rng := rand.New(rand.NewSource(seed))
@@ -220,17 +223,35 @@ func TestPropertyClassify_HostileEmbeddingsNoPanic(t *testing.T) {
 		float32(math.NaN()), float32(math.Inf(1)), float32(math.Inf(-1)),
 		float32(math.MaxFloat32), -float32(math.MaxFloat32), 0, 1e30, -1e30,
 	}
+	abstainedNonFinite := 0
 	for c := 0; c < 300; c++ {
 		r, a := buildAndLoadProperty(t, rng)
 		x := randEmbedding(rng, a.Info.EmbedDim)
+		containsNonFinite := false
 		for i := range x { // poison a random subset with hostile values
 			if rng.Intn(3) == 0 {
 				x[i] = hostile[rng.Intn(len(hostile))]
+			}
+			if math.IsNaN(float64(x[i])) || math.IsInf(float64(x[i]), 0) {
+				containsNonFinite = true
 			}
 		}
 		res, err := r.Classify(x) // must not panic
 		if err != nil {
 			t.Fatalf("seed=%d case=%d: unexpected error: %v", seed, c, err)
+		}
+		if containsNonFinite {
+			// FIXED FINDING 1: the guard must abstain on any non-finite
+			// input value — never a non-abstained NaN result.
+			if !res.Abstained {
+				t.Fatalf("seed=%d case=%d: embedding %v with NaN/±Inf produced non-abstained result %+v", seed, c, x, res)
+			}
+			if res.Confidence != 0 || res.Margin != 0 || math.IsNaN(res.Confidence) {
+				t.Fatalf("seed=%d case=%d: abstained result carries Confidence=%g Margin=%g (want exact 0)",
+					seed, c, res.Confidence, res.Margin)
+			}
+			abstainedNonFinite++
+			continue
 		}
 		if res.Abstained {
 			if res.Confidence != 0 || res.Margin != 0 {
@@ -239,11 +260,12 @@ func TestPropertyClassify_HostileEmbeddingsNoPanic(t *testing.T) {
 			continue
 		}
 		if math.IsNaN(res.Confidence) || math.IsInf(res.Confidence, 0) {
-			// FINDING 1 counterexample witness — log, do not normalize away.
-			t.Logf("FINDING 1 (case=%d embedding=%v): non-abstained result with non-finite confidence %+v", c, x, res)
-			continue
+			t.Fatalf("seed=%d case=%d: finite embedding %v produced non-finite confidence %+v", seed, c, x, res)
 		}
 		checkShape(t, "20261114", c, res, &a)
+	}
+	if abstainedNonFinite == 0 {
+		t.Fatalf("seed=%d: no case carried a NaN/±Inf embedding; generator cannot reach the guard path", seed)
 	}
 }
 
